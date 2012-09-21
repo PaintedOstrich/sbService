@@ -1,47 +1,46 @@
 var async   = require('async');
 var express = require('express');
 var util    = require('util');
+var http = require('http');
+var pageLocals = require('./middleware/pageLocals');
 
 // create an express webserver
-var app = express.createServer(
-  express.logger(),
-  express.static(__dirname + '/public'),
-  express.bodyParser(),
-  express.cookieParser(),
-  // set this to a secret value to encrypt session cookies
-  express.session({ secret: process.env.SESSION_SECRET || 'secret123' }),
-  require('faceplate').middleware({
+var app = express();
+
+app.configure(function(){
+  app.set('port', process.env.PORT || 3000);
+  app.set('views', __dirname + '/views');
+  //app.set('view engine', 'jade');
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.bodyParser());
+  app.use(express.cookieParser('your secret here'));
+  app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
+  app.use(pageLocals);
+  app.use(require('faceplate').middleware({
     app_id: process.env.FACEBOOK_APP_ID,
     secret: process.env.FACEBOOK_SECRET,
     scope:  'user_likes,user_photos,user_photo_video_tags'
-  })
-);
-
-
-// listen to the PORT given to us in the environment
-var port = process.env.PORT || 3000;
-
-app.listen(port, function() {
-  console.log("Listening on " + port);
+  }));
 });
 
-app.dynamicHelpers({
-  'host': function(req, res) {
-    return req.headers['host'];
-  },
-  'scheme': function(req, res) {
-    req.headers['x-forwarded-proto'] || 'http'
-  },
-  'url': function(req, res) {
-    return function(path) {
-      return app.dynamicViewHelpers.scheme(req, res) + app.dynamicViewHelpers.url_no_scheme(path);
-    }
-  },
-  'url_no_scheme': function(req, res) {
-    return function(path) {
-      return '://' + app.dynamicViewHelpers.host(req, res) + path;
-    }
-  },
+
+var environment = process.env.environment || 'development';
+// development only
+if (environment == 'development') {
+  console.log('In Development mode!');
+}
+
+// production only
+if (environment == 'production') {
+  console.log('In Production mode!');
+  // TODO add in configuration for under production mode.
+}
+
+var server = http.createServer(app);
+server.listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
 });
 
 function render_page(req, res) {
@@ -61,7 +60,6 @@ function handle_facebook_request(req, res) {
 
   // if the user is logged in
   if (req.facebook.token) {
-
     async.parallel([
       function(cb) {
         // query 4 friends and send them to the socket for this socket id
@@ -94,7 +92,6 @@ function handle_facebook_request(req, res) {
     ], function() {
       render_page(req, res);
     });
-
   } else {
     render_page(req, res);
   }
