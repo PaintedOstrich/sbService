@@ -3,6 +3,7 @@ var express = require('express');
 var util    = require('util');
 var http = require('http');
 var pageLocals = require('./middleware/pageLocals');
+var bodyLimiter = require('./middleware/bodyLimiter');
 
 // create an express webserver
 var app = express();
@@ -12,6 +13,7 @@ app.configure(function(){
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.static(__dirname + '/public'));
+  app.use(bodyLimiter);
   app.use(express.bodyParser());
   app.use(express.cookieParser('bdae@gkdl{dd}]fbafet;dsfasdfbxcwerd'));
   app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
