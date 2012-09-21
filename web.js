@@ -13,7 +13,7 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.static(__dirname + '/public'));
   app.use(express.bodyParser());
-  app.use(express.cookieParser('your secret here'));
+  app.use(express.cookieParser('bdae@gkdl{dd}]fbafet;dsfasdfbxcwerd'));
   app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
   app.use(pageLocals);
   app.use(require('faceplate').middleware({
