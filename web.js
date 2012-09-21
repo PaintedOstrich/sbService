@@ -11,7 +11,6 @@ var app = express();
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.use(express.favicon());
-  app.use(express.logger('dev'));
   app.use(express.static(__dirname + '/public'));
   app.use(bodyLimiter);
   app.use(express.bodyParser());
@@ -30,12 +29,13 @@ var environment = process.env.environment || 'development';
 // development only
 if (environment == 'development') {
   console.log('In Development mode!');
+  app.use(express.logger('dev'));
 }
 
 // production only
 if (environment == 'production') {
   console.log('In Production mode!');
-  // TODO add in configuration for under production mode.
+  app.use(express.logger());
 }
 
 var server = http.createServer(app);
