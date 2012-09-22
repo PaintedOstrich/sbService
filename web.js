@@ -52,7 +52,7 @@ app.get('/', function(req, res) {
 app.get('/home', routes.home);
 // Handle all bet related pages.
 app.get('/bet', routes.bet);
-app.get('/bet/:category/:name?', betPages.categories);
+app.get('/bet/:category/:name?', betPages);
 
 
 app.use(routes.notFound);

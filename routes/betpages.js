@@ -3,7 +3,7 @@
  */
 
 // List betting categories
-module.exports.categories = function(req, res) {
+module.exports = function(req, res) {
   var category = req.params.category;
   var name = req.params.name;
   
