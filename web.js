@@ -4,7 +4,7 @@ var util    = require('util');
 var http = require('http');
 var pageLocals = require('./middleware/pageLocals');
 var bodyLimiter = require('./middleware/bodyLimiter');
-var routes = require('./routes/index')
+var routes = require('./routes/index');
 
 // create an express webserver
 var app = express();
@@ -49,6 +49,8 @@ app.get('/', function(req, res) {
   res.redirect('/home');
 });
 app.get('/home', routes.home);
+// Handle all bet related pages.
+app.get('/bet/*', routes.bet);
 app.use(routes.notFound);
 
 // function render_page(req, res) {

@@ -7,6 +7,11 @@ module.exports.home = function(req, res) {
   res.render('home.ejs');
 }
 
+// Render all bet related pages.
+module.exports.bet = function(req, res) {
+  res.render('bet.ejs');
+}
+
 // Used to serve up a 404 not found page.
 module.exports.notFound = function(req, res){
   res.status(404).format({

@@ -16,4 +16,10 @@ describe('Top level page routes', function() {
       expect(routes.home).toBeDefined();
     })
   });
+
+  describe('bet route', function() {
+    it('should be defined', function() {
+      expect(routes.bet).toBeDefined();
+    })
+  });
 });
