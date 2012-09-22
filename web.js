@@ -30,6 +30,7 @@ var environment = process.env.environment || 'development';
 if (environment == 'development') {
   console.log('In Development mode!');
   app.use(express.logger('dev'));
+  app.use(express.errorHandler());
 }
 
 // production only
