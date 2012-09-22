@@ -4,6 +4,7 @@ var util    = require('util');
 var http = require('http');
 var pageLocals = require('./middleware/pageLocals');
 var bodyLimiter = require('./middleware/bodyLimiter');
+var routes = require('./routes/index')
 
 // create an express webserver
 var app = express();
@@ -45,8 +46,10 @@ server.listen(app.get('port'), function(){
 });
 
 app.get('/', function(req, res) {
+  console.log('redirection');
   res.redirect('/home');
 });
+app.use(routes.notFound);
 // app.get('/home')
 
 // function render_page(req, res) {
