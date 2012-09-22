@@ -46,11 +46,10 @@ server.listen(app.get('port'), function(){
 });
 
 app.get('/', function(req, res) {
-  console.log('redirection');
   res.redirect('/home');
 });
+app.get('/home', routes.home);
 app.use(routes.notFound);
-// app.get('/home')
 
 // function render_page(req, res) {
 //   req.facebook.app(function(app) {

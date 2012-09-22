@@ -10,4 +10,10 @@ describe('Top level page routes', function() {
       expect(routes.notFound).toBeDefined();
     });
   });
+
+  describe('home route', function() {
+    it('should be defined', function() {
+      expect(routes.home).toBeDefined();
+    })
+  });
 });

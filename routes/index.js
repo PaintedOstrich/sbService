@@ -1,7 +1,12 @@
 /**
  * Provide routing for top level pages.
  */
- 
+
+// Render home page.
+module.exports.home = function(req, res) {
+  res.render('home.ejs');
+}
+
 // Used to serve up a 404 not found page.
 module.exports.notFound = function(req, res){
   res.status(404).format({
