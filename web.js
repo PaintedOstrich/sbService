@@ -5,6 +5,7 @@ var http = require('http');
 var pageLocals = require('./middleware/pageLocals');
 var bodyLimiter = require('./middleware/bodyLimiter');
 var routes = require('./routes/index');
+var betPages = require('./routes/betpages');
 
 // create an express webserver
 var app = express();
@@ -50,7 +51,10 @@ app.get('/', function(req, res) {
 });
 app.get('/home', routes.home);
 // Handle all bet related pages.
-app.get('/bet/*', routes.bet);
+app.get('/bet', routes.bet);
+app.get('/bet/:category/:name?', betPages.categories);
+
+
 app.use(routes.notFound);
 
 // function render_page(req, res) {
