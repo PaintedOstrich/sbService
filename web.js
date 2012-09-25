@@ -4,14 +4,11 @@ var util    = require('util');
 var http = require('http');
 var pageLocals = require('./middleware/pageLocals');
 var bodyLimiter = require('./middleware/bodyLimiter');
-var routes = require('./routes/index');
-var betPages = require('./routes/betpages');
 
 // create an express webserver
 var app = express();
-
 app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', process.env.PORT || 5000);
   app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
   app.use(express.static(__dirname + '/public'));
   app.use(bodyLimiter);
@@ -43,19 +40,25 @@ if (environment == 'production') {
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
+
+debugger;
+
   console.log("Express server listening on port " + app.get('port'));
 });
 
-app.get('/', function(req, res) {
-  res.redirect('/home');
-});
-app.get('/home', routes.home);
-// Handle all bet related pages.
-app.get('/bet', routes.bet);
-app.get('/bet/:category/:name?', betPages);
 
+// Bootstrap Routing
+require('./masterRoutes')(app);
 
-app.use(routes.notFound);
+// app.get('/', function(req, res) {
+//   res.redirect('/home');
+// });
+// app.get('/home', routes.home);
+// // Handle all bet related pages.
+// app.get('/bet', routes.bet);
+// app.get('/bet/:category/:name?', betPages);
+
+// app.use(routes.notFound);
 
 // function render_page(req, res) {
 //   req.facebook.app(function(app) {
@@ -69,9 +72,9 @@ app.use(routes.notFound);
 //     });
 //   });
 // }
-// 
+
 // function handle_facebook_request(req, res) {
-// 
+
 //   // if the user is logged in
 //   if (req.facebook.token) {
 //     async.parallel([
@@ -110,6 +113,6 @@ app.use(routes.notFound);
 //     render_page(req, res);
 //   }
 // }
-// 
+
 // app.get('/', handle_facebook_request);
 // app.post('/', handle_facebook_request);
