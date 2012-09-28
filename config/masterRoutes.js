@@ -22,7 +22,7 @@ var loadControllers = function(modelPath) {
 ......... console.log(file)
 ......... console.log(file.split('.')[0])
 ......... })*/
-routes.user = _.extend(require('../routes/user/index.js'));
+routes.user = loadControllers(require('../routes/user/index.js'));
                       
 
 routes.friends = loadControllers('./routes/friends');
@@ -37,8 +37,8 @@ module.exports = function(app) {
   //   app.get('/api/' + routeSuffix, routeCommand);
   // }
 
-  app.get('bet/new', routes.bet.new);
-  app.get('user/add', routes.user.index);
+  app.get('/bet/new', routes.bet.new);
+  app.get('/user/add', routes.user.index);
   // routeHelper('bet/accept', routes.bet.index);            
   // routeHelper('bet/counter', routes.bet.counter);
   //app.post('/runs', routes.runs.create);
