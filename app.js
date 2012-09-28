@@ -5,7 +5,7 @@ var http    = require('http');
 var express = require('express');
 
 var app = module.exports = express();
-
+app.environment = process.env.environment || 'development';
 var models = {};
 // models.examples = require('./models/example')(app.mongoose).model;
 
@@ -15,6 +15,5 @@ require('./config/masterRoutes')(app);
 
 
 app.listen(process.env.PORT || 5000, function(){
-	var environment = process.env.environment || 'development';
-	console.log("Listening on " + app.get('port') + ' in "' + environment + '" mode');
+	console.log("Listening on " + app.get('port') + ' in "' + app.environment + '" mode');
 });
