@@ -25,13 +25,14 @@ module.exports = function(app, express){
 
   //env specific config
   // development only
-  if (app.environment == 'development') {
+  app.configure('development', function() {
     app.use(express.logger('dev'));
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-  }
+  });
 
   // production only
-  if (app.environment == 'production') {
+  app.configure('production', function() {
     app.use(express.logger());
-  }
+    app.use(express.errorHandler());
+  })
 };

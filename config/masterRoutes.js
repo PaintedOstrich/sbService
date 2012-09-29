@@ -17,7 +17,7 @@ var _ = require('underscore')
 var fs = require('fs');
 // load our index of method
 
-var customUtil = require('../customUtil');
+var customUtil = require('../customMod/customUtil');
 
 // Loading of all routes following above STRICT NAMING Conventions
 var loadAllControllers = function(app, controlDir, routeExceptions) {
@@ -74,7 +74,7 @@ var boostrapRouting = function(app) {
   return routeExceptions;
 }
 
-// Bootstrap Route Handling
+// Allow interface to route setup
 module.exports = function(app) {
   
   
