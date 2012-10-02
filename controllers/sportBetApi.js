@@ -1,10 +1,11 @@
 //http://api.pickmonitor.com/lines.php?uid=15042&key=36e93
 
+// Usage : s.getBetInfo(s.base)
 var querystring = require('querystring');
-var ut = require('../customMod/customUtil.js');
+var ut = require('../controllers/customUtil.js');
 var restler = require('restler');
 
-var getBetInfo = function(betObj)
+var getBetInfo = function(betObj, cb)
 {
 	var request = restler.get(betObj.getUrl());
 
@@ -15,7 +16,7 @@ var getBetInfo = function(betObj)
     });
 
     request.on('success', function(data) {
-      console.log(data);
+      cb(data);
     });
 }
 
