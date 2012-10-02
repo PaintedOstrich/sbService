@@ -8,3 +8,10 @@ if(!Array.prototype.indexOf) {
         return -1;
     };
 }
+
+var numberOfElements = function(obj){
+	var count = 0;
+	for (k in obj) if (obj.hasOwnProperty(k)) count++;
+	return count;
+}
+exports.numberOfElements = numberOfElements;
