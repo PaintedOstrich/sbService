@@ -2,12 +2,15 @@
 
 // Usage : s.getBetInfo(s.base)
 var querystring = require('querystring');
-var ut = require('../controllers/customUtil.js');
+var ut = require('../customUtil.js');
 var restler = require('restler');
+var xml2js = require('xml2js');
 
 var getBetInfo = function(betObj, cb)
 {
-	var request = restler.get(betObj.getUrl());
+	var request = restler.get(betObj.getUrl(), {
+		// parser:restler.parsers.xml,
+	});
 
     request.on('fail', function(data) {
       var result = JSON.parse(data);
@@ -16,7 +19,7 @@ var getBetInfo = function(betObj, cb)
     });
 
     request.on('success', function(data) {
-      cb(data);
+      cb(data)
     });
 }
 

@@ -9,7 +9,8 @@
     "ejs":       "0.8.x",
     "express":   "3.0.x",
     "faceplate": "0.0.4",
-    "jasmine-node": "1.0.x"
+    "xml2js": "0.2.0",
+    "restler": "2.0.1",
   },
 
   "engines": {
