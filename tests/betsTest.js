@@ -16,7 +16,8 @@ var BetModel = require('../models/BetModel');
 
 var sportBetApi = require('../controllers/sportBetApi');
 
-var ut = require('../customUtil');
+var ut = require('../customUtil'),
+	util = require('util');
 
 var obj={
 	getUrl: function(){
@@ -36,9 +37,10 @@ vows.describe('Test Bet Example API').addBatch({
         	}
         	else
         	{
-        		console.log(ut.numberOfElements(data["lines"]["game"]));
-        		assert.equal(util.numberOfElements(data["lines"]["game"],34); 
+        		var games = data["lines"]["game"];
+        		assert.equal(ut.numberOfElements(games),34); 
         		// console.log(data["lines"]);
+        		console.log(util.inspect(games, true, 10));
         	}
         }),
 
