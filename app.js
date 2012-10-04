@@ -13,6 +13,15 @@ var models = {};
 require('./config/appConfig')(app, express);
 require('./config/masterRoutes')(app);
 
+// start database models (mongodb and redis)
+// require(.)
+
+/*
+ * Start node Cron 
+ */
+// require('./config/cronSetup')(app);
+
+var red = require('./models/BetRedis.js');
 
 app.listen(process.env.PORT || 5000, function(){
 	console.log("Listening on " + app.get('port') + ' in "' + app.environment + '" mode');
