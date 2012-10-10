@@ -16,7 +16,7 @@ require('./config/database')(__dirname + '/models/');
 require('./config/settings')(app);
 
 // // Routing setup
-require('./config/routes')(__dirname + '/controllers/', app);
+require('./config/routes')(__dirname + '/routes/', app);
 
 app.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

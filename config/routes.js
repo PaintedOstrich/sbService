@@ -5,11 +5,11 @@
 var fs = require('fs');
 
 // Load all of the controllers
-var loadControllers = function(controllerPath, app) {
+var loadControllers = function(routePath, app) {
 	try
 	{
-		fs.readdirSync(controllerPath).forEach(function(file) {
-      		require(controllerPath + file)(app);
+		fs.readdirSync(routePath).forEach(function(file) {
+      		require(routePath + file)(app);
     	});
 	}
 	catch(err)
