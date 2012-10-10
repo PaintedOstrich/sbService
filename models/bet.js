@@ -51,7 +51,7 @@ var makeBet = function(betInfo, cb)
 {
 	betInfo.called = false;
 	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId)
-	setMultiHashSet(hkey, betInfo, function(err)
+	setMultiHashSetItems(hkey, betInfo, function(err)
 	{
 		if (err) cb(err)
 		addBetForUser(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
@@ -59,6 +59,20 @@ var makeBet = function(betInfo, cb)
 			if (err) cb(err);
 			cb();
 		});
+	})
+}
+// gets all bets for each user
+var getUserBets = function(uid, cb)
+{
+	var key = getUserBetKey(uid);
+	redClient.smembers(key, function(err, betKeys)
+	{
+		if (err) cb(err);
+		console.log(betKeys)
+		getMultiHashSets(betKeys, function(err, betInfoArr)
+		{
+			cb(err, betInfoArr)
+		})
 	})
 }
 
@@ -81,7 +95,7 @@ var addBetForUser = function(betKey, initFBId, callFBId, cb)
 }
 
 // iterates through a number of object properties and sets them
-var setMultiHashSet = function(hkey, namesAndValues, cb)
+var setMultiHashSetItems = function(hkey, namesAndValues, cb)
 {
 	console.log("hkey:" +hkey);
 	var finishedCount = 0;
@@ -89,20 +103,50 @@ var setMultiHashSet = function(hkey, namesAndValues, cb)
 	for (var keyName in namesAndValues)
 	{
 		redClient.hset(hkey, keyName, namesAndValues[keyName], function(err)
+		{
+			finishedCount++;
+			if (err) cb(err);
+			if (finishedCount == totalCount)
+			{	
+				cb()
+			}
+		});
+	}
+}
+
+// iterate through a list of hash keys and get all values for each
+var getMultiHashSets = function(hkeys, cb)
+{
+	console.log("hkeys length:" +hkeys.length);
+	var finishedCount = 0;
+	var totalCount = hkeys.length;
+	var allValues = {};
+	for (var index in hkeys)
+	{
+		var betId = hkeys[index];
+		redClient.hgetall(betId, function(betId)
+		{
+			// pass callback using closure to key unique betid in scope per call
+			return function(err, values)
 			{
-				finishedCount++;
 				if (err) cb(err);
+				finishedCount++;
+
+				allValues[betId] = values;
 				if (finishedCount == totalCount)
 				{	
-					cb()
+					cb(null, allValues)
 				}
-			});
+			};
+		}(betId));
 	}
 }
 
 module.exports = 
 {
 	makeBet: makeBet,
+	getUserBets: getUserBets,
+
 }
 
 // get user 

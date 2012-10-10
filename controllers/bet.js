@@ -8,7 +8,7 @@
  var betModel = require('../models/bet')
 
 	
-var makeBet = function(req, res, query)
+var makeBet = function(res, query)
 {
 	var requiredParams = ["gameId", "initFBId", "callFBId", "betAmount", "type"];
 	if(query.type === "straight")
@@ -77,8 +77,22 @@ var checkParams = function(checkArray, query)
 	return true;
 }
 
+// Retrieve all user bets
+var getUserBets = function(res, uid)
+{
+	betModel.getUserBets(uid, function(err, data)
+	{
+		if (err) res.send(resMes.createErrorMessage(err))
+		else
+		{
+			res.send(data)
+		}
+	})
+}
+
  
 module.exports =
 {
 	makeBet: makeBet,
+	getUserBets: getUserBets,
 } 
