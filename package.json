@@ -1,12 +1,21 @@
 {
-  "name": "application-name",
+  "name":    "SportsBetService",
   "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node app"
-  },
+
+  "description": "Sport Betting Web App",
+
   "dependencies": {
-    "express": "3.0.0rc4",
-    "jade": "*"
+    "async":     "0.1.18",
+    "ejs":       "0.8.x",
+    "express":   "3.0.x",
+    "faceplate": "0.0.4",
+    "xml2js": "0.2.0",
+    "restler": "2.0.1",
+    "underscore": "1.4.2"
+  },
+
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
   }
 }
