@@ -11,7 +11,8 @@
     "faceplate": "0.0.4",
     "xml2js": "0.2.0",
     "restler": "2.0.1",
-    "underscore": "1.4.2"
+    "underscore": "1.4.2",
+    "redis" : "0.8.1"
   },
 
   "engines": {
