@@ -1,12 +1,12 @@
 
 /*
- * GET home page.
+ * Bet Response logic
  */
  var util = require('util')
  
  var resMes = require('../user_modules/responseMessages')
  var betModel = require('../models/bet')
-
+var cUtil = require('../user_modules/cUtil');
 	
 var makeBet = function(res, query)
 {
@@ -15,7 +15,7 @@ var makeBet = function(res, query)
 	{
 		// process straight bet
 		requiredParams.push("initTeamBet")
-		if(!checkParams(requiredParams, query))
+		if(!checkParams(requiredParams, query, res))
 		{
 			return;
 		}
@@ -24,7 +24,7 @@ var makeBet = function(res, query)
 	{
 		// process bet on spread
 		requiredParams.push("spreadTeam1", "spreadTeam2", "initTeamBet")
-		if(!checkParams(requiredParams, query))
+		if(!checkParams(requiredParams, query, res))
 		{
 			return;
 		}
@@ -33,6 +33,7 @@ var makeBet = function(res, query)
 	{
 		// process points on game
 		requiredParams.push("pointsOver", "pointsUnder", "initPointsBet")
+		if(!checkParams(requiredParams, query, res))
 		{
 			return;
 		}
@@ -41,7 +42,7 @@ var makeBet = function(res, query)
 	{
 		// process points on money
 		requiredParams.push("moneyTeam1", "moneyTeam2", "moneyDrawLine")
-		if(!checkParams(requiredParams, query))
+		if(!checkParams(requiredParams, query, res))
 		{
 			return;
 		}
@@ -62,7 +63,7 @@ var makeBet = function(res, query)
 	})   	
 }
 // Function verifies that api has all parameters
-var checkParams = function(checkArray, query)
+var checkParams = function(checkArray, query, res)
 {
 	for (i = 0; i< checkArray.length; i++)
 	{
@@ -80,12 +81,20 @@ var checkParams = function(checkArray, query)
 // Retrieve all user bets
 var getUserBets = function(res, uid)
 {
+	// make sure uid is all numbers
+	if (!cUtil.isOnlyNumber(uid))
+	{
+		res.send(resMes.createErrorMessage(uid + " is not a valid uid"))
+		return;
+	}
+
 	betModel.getUserBets(uid, function(err, data)
 	{
 		if (err) res.send(resMes.createErrorMessage(err))
 		else
 		{
 			res.send(data)
+			return;
 		}
 	})
 }

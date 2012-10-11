@@ -1,12 +1,11 @@
 
 /*
- * GET home page.
+ * Bet routing
  */
  var url = require('url');
  var util = require('util')
  
  var resMes = require('../user_modules/responseMessages')
- var betModel = require('../models/bet')
 
  var betController = require('../controllers/bet')
 

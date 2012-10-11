@@ -3,4 +3,15 @@ var getNumElements = function(obj){
 	for (k in obj) if (obj.hasOwnProperty(k)) count++;
 	return count;
 }
-exports.getNumElements = getNumElements;
+
+var notNumbers = new RegExp("^\\d{1,45}$");
+
+var isOnlyNumber = function(str)
+{
+    return (notNumbers.test(str))
+}
+module.exports = 
+{
+	getNumElements : getNumElements,
+	isOnlyNumber : isOnlyNumber,
+}
