@@ -30,6 +30,13 @@ var getMultiHashSets = function(hkeys, cb)
 	console.log("hkeys length:" +hkeys.length);
 	var finishedCount = 0;
 	var totalCount = hkeys.length;
+
+	// if no keys, return
+	if (totalCount == 0)
+	{
+		console.log("here")
+		cb();
+	}
 	var allValues = {};
 	for (var index in hkeys)
 	{

@@ -10,6 +10,8 @@ var xml2js = require('xml2js');
 var async = require('async');
 var util = require('util');
 
+var gameModel = require('../models/game')
+
 var getBetInfo = function(betObj, shouldDoFullUpdate, cb)
 {
 	var request = restler.get(betObj.getUrl(shouldDoFullUpdate));
