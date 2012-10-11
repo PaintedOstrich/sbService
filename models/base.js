@@ -1,11 +1,8 @@
 
 // BaseModel for redis to accomplish bulk tasks
 var cUtil = require('../user_modules/cUtil');
-var redis = require('redis');
-var redis_port = process.env.REDIS_PORT || 6379;
-var redis_uri = process.env.REDIS_URI  || '127.0.0.1';
-var redClient = redis.createClient(redis_port, redis_uri);
 
+var redClient = require('../config/redisConfig')()
 
 // iterates through a number of object properties and sets them
 var setMultiHashSetItems = function(hkey, namesAndValues, cb)
