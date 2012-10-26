@@ -17,6 +17,12 @@ var bet = function(app) {
 		
 		betController.makeBet(res, query);
     });
+    app.post('/api/bet', function(req, res) {
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        
+        betController.makeBet(res, query);
+    });
 
      app.get('/api/bet/user/:uid', function(req, res) {
     	var url_parts = url.parse(req.url, true);

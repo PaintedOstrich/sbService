@@ -15,7 +15,7 @@ var gameModel = require('../models/game')
 var getBetInfo = function(betObj, shouldDoFullUpdate, cb)
 {
 	var request = restler.get(betObj.getUrl(shouldDoFullUpdate));
-	// console.log(betObj.getUrl(shouldDoFullUpdate));
+	console.log(betObj.getUrl(shouldDoFullUpdate));
 
     request.on('fail', function(data) {
       cb();
