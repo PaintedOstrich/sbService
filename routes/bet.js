@@ -4,8 +4,6 @@
  */
  var url = require('url');
  var util = require('util')
- 
- var resMes = require('../user_modules/responseMessages')
 
  var betController = require('../controllers/bet')
 

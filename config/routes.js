@@ -14,7 +14,7 @@ var loadControllers = function(routePath, app) {
 			}
       		catch(err)
 			{
-				console.log("error intializing " + file + " : routes: " + err)
+				console.log("error intializing " + file + " : due to error: " + err)
 			}
     	});
   };

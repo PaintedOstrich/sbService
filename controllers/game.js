@@ -20,7 +20,7 @@ var getGames = function(res, sport)
       if (err) res.send(resMes.createErrorMessage(err));
       else
       {
-        res.send(resMes.createSuccessMessage(val))
+        res.send(resMes.createDataMessage(val))
       }
     })
   }

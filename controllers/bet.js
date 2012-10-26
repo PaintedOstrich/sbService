@@ -6,7 +6,7 @@
  
  var resMes = require('../user_modules/responseMessages')
  var betModel = require('../models/bet')
-var cUtil = require('../user_modules/cUtil');
+ var cUtil = require('../user_modules/cUtil');
 	
 var makeBet = function(res, query)
 {
@@ -93,7 +93,7 @@ var getUserBets = function(res, uid)
 		if (err) res.send(resMes.createErrorMessage(err))
 		else
 		{
-			res.send(data)
+			res.send(resMes.createDataMessage(data));
 			return;
 		}
 	})

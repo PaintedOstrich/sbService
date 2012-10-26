@@ -37,6 +37,41 @@ var getMultiHashSets = function(hkeys, cb)
 		console.log("here")
 		cb();
 	}
+	var allValues = [];
+	for (var index in hkeys)
+	{
+		var id = hkeys[index];
+		redClient.hgetall(id, function(err, values)
+		{
+			if (err) cb(err);
+			debugger;
+			allValues[finishedCount] = values;
+			finishedCount++;
+
+			if (finishedCount == totalCount)
+			{	
+				debugger;
+				cb(null, allValues)
+			}
+		});
+		
+	}
+}
+
+// iterate through a list of hash keys and get all values for each
+// rather than returning an array, returns an object with id properties for each value
+var getMultiHashSetsAsObject = function(hkeys, cb)
+{
+	console.log("hkeys length:" +hkeys.length);
+	var finishedCount = 0;
+	var totalCount = hkeys.length;
+
+	// if no keys, return
+	if (totalCount == 0)
+	{
+		console.log("here")
+		cb();
+	}
 	var allValues = {};
 	for (var index in hkeys)
 	{

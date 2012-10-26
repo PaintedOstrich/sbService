@@ -11,10 +11,10 @@ var createSuccessMessage = function(suc)
 	appres.success = typeof suc !== "undefined" ? suc : "";
 	return appres;
 }
-var creaateDataMessage = function(data)
+var createDataMessage = function(data)
 {
 	var appres = {};
-	appres.data = typeof suc !== "undefined" ? data : "";
+	appres.data = typeof data !== "undefined" ? data : "";
 	return appres;
 }
 
