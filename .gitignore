@@ -1,0 +1,4 @@
+# ignore views and node_modules for now
+node_modules/*
+views/*
+public/*
