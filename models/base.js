@@ -44,13 +44,11 @@ var getMultiHashSets = function(hkeys, cb)
 		redClient.hgetall(id, function(err, values)
 		{
 			if (err) cb(err);
-			debugger;
 			allValues[finishedCount] = values;
 			finishedCount++;
 
 			if (finishedCount == totalCount)
 			{	
-				debugger;
 				cb(null, allValues)
 			}
 		});

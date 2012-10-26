@@ -54,10 +54,20 @@ var makeBet = function(res, query)
 	}
 
 	// enter bet into db
-	betModel.makeBet(query, function(err)
+	betModel.makeBet(query, function(err, ad)
 	{
 		debugger;
-		if (err) res.send(resMes.createErrorMessage(err))
+		if (err)
+		{
+			res.send(resMes.createErrorMessage(err))
+			return;
+		} 
+		else if(ad)
+		{
+			res.send(ad)
+			return;
+		}
+
 		res.send(resMes.createSuccessMessage())	
 		return;
 	})   	

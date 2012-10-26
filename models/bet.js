@@ -5,7 +5,12 @@ var redClient = require('../config/redisConfig')()
 
 var cUtil = require('../user_modules/cUtil');
 var base = require('./base');
+var games = require('./game');
+var user = require('./user');
 /* Beginning of Redis Wrapper for Bets */
+
+/** module variables **/
+
 
 /**** key creation ****/
 // generates a unique key for each bet
@@ -29,17 +34,66 @@ var getUserBetKey = function(gameId, fbid)
 var makeBet = function(betInfo, cb)
 {
 	betInfo.called = false;
-	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId)
-	base.setMultiHashSetItems(hkey, betInfo, function(err)
+	betInfo.time = new Date()
+	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId);
+
+	//make sure bet amount is greater than 0 otherwise return
+	if (betInfo.betAmount <= 0)
 	{
-		if (err) cb(err)
-		addBetForUser(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+		cb(err = {reason: 'cannot bet zero or less'});
+	}
+
+	games.getGameInfo(betInfo.gameId, function(err, values)
+	{
+		// error handling if game doesn't exist
+		err && cb(err);
+		
+		if (typeof values === "undefined")
 		{
-			if (err) cb(err);
-			cb();
-		});
+			cb(err = {reason:'gamenotexist'});
+			return;	
+		} 
+
+		// make sure odss are the same
+		if (!checkBetInfo(betInfo, values))
+		{
+			err = 
+			{
+				reason: 'outofdate',
+				data : values
+			}
+
+			cb(err)
+		}
+
+		user.getUserMoney(betInfo.initFBId, function(err, value)
+		{
+			err && cb(err);
+
+			if (value >= betInfo.betAmount)
+			{
+				// user has enough money to make bet
+				base.setMultiHashSetItems(hkey, betInfo, function(err)
+				{
+					if (err) cb(err)
+
+					// add to user list of bets
+					addBetForUser(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+					{
+						if (err) cb(err);
+						cb();
+					});
+				})
+			}
+			else
+			{
+				// user must watch ad then rebet
+				cb(ad = {amountNeeded: (betInfo.betAmount - value)})
+			}
+		})
 	})
 }
+
 // gets all bets for each user
 var getUserBets = function(uid, cb)
 {
@@ -72,6 +126,42 @@ var addBetForUser = function(betKey, initFBId, callFBId, cb)
 	})
 }
 
+// verifies that correct type of bet submitted for user
+// not changing of odds
+var checkBetInfo = function(betInfo, gameInfo)
+{
+	checkParams = [];
+	if(betInfo.type === "straight")
+	{
+
+	}
+	else if(betInfo.type === "spread")
+	{
+		// process bet on spread
+		checkParams.push("spreadTeam1", "spreadTeam2", "initTeamBet")
+		
+	}
+	else if(betInfo.type === "score")
+	{
+		// process points on game
+		checkParams.push("pointsOver", "pointsUnder", "initPointsBet")
+	}
+	else if(betInfo.type === "money")
+	{
+		// process points on money
+		checkParams.push("moneyTeam1", "moneyTeam2", "moneyDrawLine")
+	}
+
+	for (param in checkParams)
+	{
+		if (betInfo[param] != gameInfo[param])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 
 
 module.exports = 

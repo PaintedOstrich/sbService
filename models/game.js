@@ -42,8 +42,6 @@ var addUpComingGames = function(gameIds)
 
 }
 
-// 
-
 // returns an object with all bet info for a given game
 var getGameInfo = function (gameId, cb)
 {
