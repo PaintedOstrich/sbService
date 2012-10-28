@@ -5,7 +5,7 @@
 var fs = require('fs');
 
 // Load all of the controllers
-var loadControllers = function(routePath, app) {
+var loadRoutes = function(routePath, app) {
 
 		fs.readdirSync(routePath).forEach(function(file) {
 			try
@@ -19,4 +19,4 @@ var loadControllers = function(routePath, app) {
     	});
   };
 
-module.exports = loadControllers;
+module.exports = loadRoutes;
