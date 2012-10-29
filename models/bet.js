@@ -7,6 +7,7 @@ var cUtil = require('../user_modules/cUtil');
 var base = require('./base');
 var games = require('./game');
 var user = require('./user');
+var betStats = require('./betStats');
 /* Beginning of Redis Wrapper for Bets */
 
 /** module variables **/
@@ -43,55 +44,113 @@ var makeBet = function(betInfo, cb)
 		cb(err = {reason: 'cannot bet zero or less'});
 	}
 
-	games.getGameInfo(betInfo.gameId, function(err, values)
+	redClient.hlen(hkey, function(err, value)
 	{
-		// error handling if game doesn't exist
-		err && cb(err);
-		
-		if (typeof values === "undefined")
+		if (parseInt(value) != 0)
 		{
-			cb(err = {reason:'gamenotexist'});
-			return;	
-		} 
-
-		// make sure odss are the same
-		if (!checkBetInfo(betInfo, values))
-		{
-			err = 
-			{
-				reason: 'outofdate',
-				data : values
-			}
-
-			cb(err)
+			cb({"err": "bet already made"})
 		}
-
-		user.getUserMoney(betInfo.initFBId, function(err, value)
+		else
 		{
-			err && cb(err);
-
-			if (value >= betInfo.betAmount)
+			games.getGameInfo(betInfo.gameId, function(err, values)
 			{
-				// user has enough money to make bet
-				base.setMultiHashSetItems(hkey, betInfo, function(err)
+				// error handling if game doesn't exist
+				err && cb(err);
+				
+				if (typeof values === "undefined")
 				{
-					if (err) cb(err)
+					cb(err = {reason:'gamenotexist'});
+					return;	
+				} 
 
-					// add to user list of bets
-					addBetForUser(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+				// make sure odss are the same
+				if (!checkBetInfo(betInfo, values))
+				{
+					err = 
 					{
-						if (err) cb(err);
-						cb();
-					});
+						reason: 'outofdate',
+						data : values
+					}
+
+					cb(err)
+				}
+
+				user.getUserMoney(betInfo.initFBId, function(err, value)
+				{
+					err && cb(err);
+
+					if (value >= betInfo.betAmount)
+					{
+						// user has enough money to make bet
+						base.setMultiHashSetItems(hkey, betInfo, function(err)
+						{
+							if (err) cb(err)
+
+							// add to user list of bets
+							addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+							{
+								if (err) cb(err);
+
+								user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
+								{
+									err && cb(err)
+
+									betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
+								})
+							});
+						})
+					}
+					else
+					{
+						// user must watch ad then rebet
+						cb(ad = {amountNeeded: (betInfo.betAmount - value)})
+					}
 				})
-			}
-			else
-			{
-				// user must watch ad then rebet
-				cb(ad = {amountNeeded: (betInfo.betAmount - value)})
-			}
-		})
+			})
+		}
 	})
+}
+
+var confirmBet = function(gameId, initFBId, callFBId, cb)
+{
+	var betKey = getBetKey(gameId, initFBId, callFBId);
+	redClient.hget(betKey, 'called', function(err, value)
+	{
+		err && cb(err)
+
+		if(value && value === "false")
+		{
+			redClient.hget(betKey, 'amount', function(err, betAmount)
+			{
+				err && cb(err);
+
+				user.getUserMoney(betInfo.initFBId, function(err, userMoney)
+				{
+					err && cb(err);
+
+					if (parseInt(userMoney) >= parseInt(betAmount))
+					{
+						redClient.hset(betKey, 'called', 'true', function(err)
+						{
+							err && cb (err);
+							user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
+							{
+								err && cb(err)
+
+								cb();
+							})
+						});
+					}
+				
+				})
+			})	
+		}
+		else
+		{
+			cb({err:"bet already called or doesnt exist"})
+		}
+	})
+
 }
 
 // gets all bets for each user
@@ -109,7 +168,7 @@ var getUserBets = function(uid, cb)
 }
 
 // adds a bet to each user
-var addBetForUser = function(betKey, initFBId, callFBId, cb)
+var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 {
 	var initKey = getUserBetKey(initFBId);
 	var callKey = getUserBetKey(callFBId);

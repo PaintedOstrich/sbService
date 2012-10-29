@@ -1,0 +1,12 @@
+API Structure
+
+web.js is app entry point. 
+
+Routes are autoloaded which contain references to all controllers
+
+Routes are used to declare request handling and mapping to appropriate controllers
+Controllers handle all logic dealing with the response
+
+Models handle the actual data retrieval.  Right now dependent functionality upon inserting data (like if a user has enough money to make a bet) is built into the model later.  If a user didn't have enough money.  This should bubble up to the controller, which can then decide to execute a separate action (like temp store the data)
+
+Haven't quite figured out the best division between model and controller for all cases, so this may change slightly

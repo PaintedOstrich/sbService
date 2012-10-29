@@ -9,7 +9,7 @@
  var gameModel = require('../models/game')
  var cUtil = require('../user_modules/cUtil');
   
-var gameModel = require('../models/game')
+var gameModel = require('../models/game');
 
 var getGames = function(res, sport)
 {
@@ -25,8 +25,6 @@ var getGames = function(res, sport)
     })
   }
 }
-
-
 
 module.exports = 
 {

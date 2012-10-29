@@ -8,6 +8,7 @@
  var resMes = require('../user_modules/responseMessages')
 
  var pickmonapi = require('../controllers/pickmonapi')
+ var user = require('../models/user');
 
 var update = function(app) {    
     // return all games for all sports
@@ -20,6 +21,17 @@ var update = function(app) {
 
 		pickmonapi.updateAllGames("NFL");
     });
+
+    // return all games for all sports
+    // param getTeamNames=1 -> return teamId-> teamName mapping
+    app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
+    	user.updateUserMoney(req.params.userid, req.params.amount, function(err, result)
+    	{
+    		err && res.send(err);
+    		res.send(result);
+    	})
+    });
 }
+
 
 module.exports = update;
