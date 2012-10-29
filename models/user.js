@@ -11,17 +11,16 @@ var getUserKey = function(userId)
 }
 
 // updates user money to previous amount + - updateAmount
-var updateUserMoney = function(userId, updateAmount, cb)
+var updateUserBalance = function(userId, updateAmount, cb)
 {
-	getUserMoney(userId, function(err, value)
+	getUserBalance(userId, function(err, value)
 	{
 		err && cb(err);
-		debugger;
 		if (typeof parseInt(updateAmount)=== "NaN")
 		{
 			cb({error:"passed NaN value to update user money ::" + value})
 		}
-		else if (value !== "NaN" && typeof parseInt(value) !== "NaN")
+		else if (value != null && value != "NaN")
 		{
 			var newAmount = parseInt(updateAmount)+parseInt(value);
 		}
@@ -30,7 +29,7 @@ var updateUserMoney = function(userId, updateAmount, cb)
 			var newAmount = parseInt(updateAmount);
 		}
 		
-		var update = {money: newAmount};
+		var update = {'balance': newAmount};
 		base.setMultiHashSetItems(getUserKey(userId), update, function(err)
 		{
 			if (err) cb (err);
@@ -40,9 +39,9 @@ var updateUserMoney = function(userId, updateAmount, cb)
 	})
 }
 
-var getUserMoney = function(userId, cb)
+var getUserBalance = function(userId, cb)
 {
-	redClient.hget(getUserKey(userId), 'money', function(err, value)
+	redClient.hget(getUserKey(userId), 'balance', function(err, value)
 	{
 		err && cb(err);
 
@@ -54,10 +53,10 @@ var getUserMoney = function(userId, cb)
 var getUserNames = function(userIds, cb)
 {
 	fields = ["fullname"];
-	base.getMultiHashSetsAsObjectForFields(userIds, getUserKey, fields, function(err, values)
+	base.getMultiHashSetsAsObject(userIds, getUserKey, fields, function(err, values)
 	{
 		err && cb(err);
-		cb(values);
+		cb(null, values);
 	})
 }
 
@@ -73,6 +72,6 @@ var getUserName = function(userId, cb)
 module.exports = 
 {
 	getUserNames : getUserNames,
-	getUserMoney : getUserMoney,
-	updateUserMoney : updateUserMoney
+	getUserBalance : getUserBalance,
+	updateUserMoney : updateUserBalance,
 }

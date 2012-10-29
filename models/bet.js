@@ -57,7 +57,7 @@ var makeBet = function(betInfo, cb)
 				// error handling if game doesn't exist
 				err && cb(err);
 				
-				if (typeof values === "undefined")
+				if (values == null)
 				{
 					cb(err = {reason:'gamenotexist'});
 					return;	
@@ -75,11 +75,11 @@ var makeBet = function(betInfo, cb)
 					cb(err)
 				}
 
-				user.getUserMoney(betInfo.initFBId, function(err, value)
+				user.getUserBalance(betInfo.initFBId, function(err, userMoney)
 				{
+					var userMoney = parseInt(userMoney);
 					err && cb(err);
-
-					if (value >= betInfo.betAmount)
+					if (userMoney >= parseInt(betInfo.betAmount))
 					{
 						// user has enough money to make bet
 						base.setMultiHashSetItems(hkey, betInfo, function(err)
@@ -94,7 +94,6 @@ var makeBet = function(betInfo, cb)
 								user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
 								{
 									err && cb(err)
-
 									betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
 								})
 							});
@@ -114,6 +113,8 @@ var makeBet = function(betInfo, cb)
 var confirmBet = function(gameId, initFBId, callFBId, cb)
 {
 	var betKey = getBetKey(gameId, initFBId, callFBId);
+
+	// also checks if bet exists or this field will not be present
 	redClient.hget(betKey, 'called', function(err, value)
 	{
 		err && cb(err)
@@ -124,7 +125,7 @@ var confirmBet = function(gameId, initFBId, callFBId, cb)
 			{
 				err && cb(err);
 
-				user.getUserMoney(betInfo.initFBId, function(err, userMoney)
+				user.getUserBalance(betInfo.initFBId, function(err, userMoney)
 				{
 					err && cb(err);
 
@@ -140,6 +141,11 @@ var confirmBet = function(gameId, initFBId, callFBId, cb)
 								cb();
 							})
 						});
+					}
+					else
+					{
+						// user must watch ad then rebet
+						cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
 					}
 				
 				})

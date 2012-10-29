@@ -30,7 +30,7 @@ var sendError = function(res, errorCodeObject)
 
 module.exports = 
 {
-	sendError: sendError,
+	send: sendError,
 	errorCodes: errorCodes,
 }
 

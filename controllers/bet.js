@@ -60,16 +60,13 @@ var makeBet = function(res, query)
 		if (err)
 		{
 			res.send(resMes.createErrorMessage(err))
-			return;
 		} 
 		else if(ad)
 		{
 			res.send(ad)
-			return;
 		}
 
 		res.send(resMes.createSuccessMessage())	
-		return;
 	})   	
 }
 // Function verifies that api has all parameters

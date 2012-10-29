@@ -54,12 +54,30 @@ var getMultiHashSets = function(hkeys, cb)
 	}
 }
 
-// FIXME NEED TO CONSOLIDATE BOTTOM METHODS
-
-// iterate through a list of hash keys and get all values for each
-// rather than returning an array, returns an object with id properties for each value
-var getMultiHashSetsAsObject = function(keys, getHashKeyFromKey, cb)
+/* iterate through a list of hash keys and get all values for each
+ * rather than returning an array, returns an object with id properties for each value
+ * @params: fields = array of fields
+ * usage: getMultiHashSetsAsObject(keys, hashFn, fields, cb) 
+ *		all Fields: getMultiHashSetsAsObject(keys, hashFn, cb) 
+ *
+ *	returns: 
+ 		data
+ 		{
+			id:
+			{
+				fields...
+			},
+			...
+ 		}
+ */
+var getMultiHashSetsAsObject = function(keys, getHashKeyFromKey, fields, cb)
 {
+	var getFields = true;
+    if (typeof fields == 'function') {
+     	cb = fields;
+     	getFields = false;
+    }
+
 	var finishedCount = 0;
 	var totalCount = keys.length;
 
@@ -74,71 +92,98 @@ var getMultiHashSetsAsObject = function(keys, getHashKeyFromKey, cb)
 	{
 		var id = keys[index];
 		var hkey = getHashKeyFromKey(id);
-		redClient.hgetall(hkey, function(id)
+		if(getFields)
 		{
-			// pass callback using closure to key unique betid in scope per call
-			return function(err, values)
+			redClient.hmget(hkey, fields, function(id)
 			{
-				if (err) cb(err);
-				finishedCount++;
+				// pass callback using closure to key unique betid in scope per call
+				return function(err, values)
+				{
+					if (err) cb(err);
+					finishedCount++;
+					
+					// add items as children of object
+					allValues[id] = {};
+					for (var i = 0; i < fields.length; i++)
+					{
+						allValues[id][fields[i]] = values[i];	
+					}
+					
+					if (finishedCount == totalCount)
+					{	
+						cb(null, allValues)
+					}
+				};
+			}(id));
+		}
+		else
+		{
+			redClient.hgetall(hkey, function(id)
+			{
+				// pass callback using closure to key unique betid in scope per call
+				return function(err, values)
+				{
+					if (err) cb(err);
+					finishedCount++;
 
-				allValues[id] = values;
-				if (finishedCount == totalCount)
-				{	
-					cb(null, allValues)
-				}
-			};
-		}(id));
+					allValues[id] = values;
+					if (finishedCount == totalCount)
+					{	
+						cb(null, allValues)
+					}
+				};
+			}(id));
+		}
 	}
 }
 
 // iterate through a list of hash keys and get all values for each
 // rather than returning an array, returns an object with id properties for each value
 // may return null values for each field
-var getMultiHashSetsAsObjectForFields = function(keys, getHashKeyFromKey, fields, cb)
-{
-	var finishedCount = 0;
-	var totalCount = keys.length;
+// var getMultiHashSetsAsObjectForFields = function(keys, getHashKeyFromKey, fields, cb)
+// {
+// 	var finishedCount = 0;
+// 	var totalCount = keys.length;
 
-	// if no keys, return
-	if (totalCount == 0)
-	{
-		cb();
-	}
+// 	// if no keys, return
+// 	if (totalCount == 0)
+// 	{
+// 		cb();
+// 	}
 
-	var allValues = {};
-	for (var index in keys)
-	{
-		var id = keys[index];
-		var hkey = getHashKeyFromKey(id);
-		redClient.hmget(hkey, fields, function(id)
-		{
-			// pass callback using closure to key unique betid in scope per call
-			return function(err, values)
-			{
-				if (err) cb(err);
-				finishedCount++;
-				debugger;
+// 	var allValues = {};
+// 	for (var index in keys)
+// 	{
+// 		var id = keys[index];
+// 		var hkey = getHashKeyFromKey(id);
+// 		redClient.hmget(hkey, fields, function(id)
+// 		{
+// 			// pass callback using closure to key unique betid in scope per call
+// 			return function(err, values)
+// 			{
+// 				if (err) cb(err);
+// 				finishedCount++;
+// 				// debugger;
 				
-				// add items as children of object
-				allValues[id] = {};
-				for (var i = 0; i < fields.length; i++)
-				{
-					allValues[id][fields[i]] = values[i];	
-				}
+// 				// add items as children of object
+// 				allValues[id] = {};
+// 				for (var i = 0; i < fields.length; i++)
+// 				{
+// 					allValues[id][fields[i]] = values[i];	
+// 				}
 				
-				if (finishedCount == totalCount)
-				{	
-					cb(null, allValues)
-				}
-			};
-		}(id));
-	}
-}
+// 				if (finishedCount == totalCount)
+// 				{	
+// 					cb(null, allValues)
+// 				}
+// 			};
+// 		}(id));
+// 	}
+// }
 
 module.exports =
 {
-	getMultiHashSetsAsObjectForFields : getMultiHashSetsAsObjectForFields,
+	getMultiHashSetsAsObject : getMultiHashSetsAsObject,
 	getMultiHashSets : getMultiHashSets, 
 	setMultiHashSetItems : setMultiHashSetItems
 }

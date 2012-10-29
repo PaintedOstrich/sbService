@@ -97,11 +97,17 @@ var getGamesForSport = function(sport, cb)
 	})
 }
 
+var getTeamIdsFromGame = function(gameId, cb)
+{
+	
+}
+
 module.exports = 
 {
 	getTeamNames : getTeamNames,
 	setGameInfo : setGameInfo,
 	getGameInfo : getGameInfo,
 	getGamesForSport : getGamesForSport,
+	getTeamIdsFromGame : getTeamIdsFromGame
 
 }

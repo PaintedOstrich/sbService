@@ -7,6 +7,7 @@ var redClient = require('../config/redisConfig')()
 var cUtil = require('../user_modules/cUtil');
 var user = require('./user');
 var base = require('./base');
+var gameController = require('../controllers/game');
 
 var recentBetsAllKey = 'recentbets|all';
 var totalRecentStored = 20;
@@ -16,34 +17,40 @@ var setRecentBet = function(gameId, userId1, userId2, amount, cb)
 {
 	user.getUserNames([userId1, userId2], function(err, data)
 	{
-		if (err) console.log(err)
+		if (err) throw err;
 		else
 		{
 			var userName1 = data[userId1].fullname
 			var userName2 = data[userId1].fullname
-			var data = 
-			{
-				userName1:userName1,
-				userName2:userName2,
-				team1Name:team1Name,
-				team2Name:team2Name,
-				amount:amount,
-			}
 
-			redClient.hincrby(recentBetsAllKey+'lru', 1, function(err, num)
+			gameController.getTeamNamesFromGameId(gameId, function(err, data)
 			{
-				if (parseInt(num) > totalRecentStored)
+				err && throw err;
+				
+				var data = 
 				{
-					redClient.set(recentBetsAllKey, 'lru', 1, function(err)
+					userName1:userName1,
+					userName2:userName2,
+					team1Name:team1Name || 'anonymous',
+					team2Name:team2Name || 'anonymous',
+					amount:amount,
+				}
+
+				redClient.hincrby(recentBetsAllKey+'lru', 1, function(err, num)
+				{
+					if (parseInt(num) > totalRecentStored)
 					{
-						base.setMultiHashSetItems(recentBetsAllKey+'1', data, cb)
-					});
-				}
-				else
-				{
-					base.setMultiHashSetItems(recentBetsAllKey+num, data, cb)
-				}
-			})
+						redClient.set(recentBetsAllKey, 'lru', 1, function(err)
+						{
+							base.setMultiHashSetItems(recentBetsAllKey+'1', data, cb)
+						});
+					}
+					else
+					{
+						base.setMultiHashSetItems(recentBetsAllKey+num, data, cb)
+					}
+				})
+			}}
 		}
 	})
 }
