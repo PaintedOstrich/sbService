@@ -6,6 +6,7 @@
  var util = require('util')
  
  var resMes = require('../user_modules/responseMessages')
+ var errorHandler = require('../user_modules/errorHandler');
 
  var pickmonapi = require('../controllers/pickmonapi')
  var user = require('../models/user');
@@ -30,6 +31,10 @@ var update = function(app) {
     		err && res.send(err);
     		res.send(result);
     	})
+    });
+
+     app.get('/api/teststatus', function(req, res) {
+       errorHandler.sendError(res, errorHandler.errorCodes.watchAdCode);
     });
 }
 
