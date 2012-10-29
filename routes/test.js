@@ -19,7 +19,7 @@ var update = function(app) {
 	
 		var getTeamNames = query.getTeamNames == 1 ? true : false;
 
-		pickmonapi.updateAllGames("NFL");
+		pickmonapi.updateAllGames("NFL", res);
     });
 
     // return all games for all sports

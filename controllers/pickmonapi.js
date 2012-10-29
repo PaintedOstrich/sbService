@@ -63,6 +63,7 @@ var parseGames = function(result) {
 					gamesArr = result['lines']['game'];
 					async.forEach(gamesArr, parseGame, function(err){
 						if(err)console.log(err)
+
 					});
       			}
     		});
@@ -158,11 +159,9 @@ var PickMonitorGame = function(item) {
 		// console.log(dataArr);
 		// remove id before passing all fields
 		var gameId = dataArr['id'];
-		debugger;
 		gameModel.setGameInfo(dataArr['id'], dataArr, function(err)
 		{
 			if (err) console.log(err)
-			else console.log("update complete")
 		})
 
 	}
@@ -304,7 +303,7 @@ var checkForUpdates = function()
 
 }
 
-var updateAllGames = function(sportName)
+var updateAllGames = function(sportName, res)
 {
 	if (sportName === "ALL")
 	{
@@ -324,6 +323,7 @@ var updateAllGames = function(sportName)
 			console.log("Err: did not pass valid sport name to update api")
 		}
 	}
+	res.send('ok')
 	
 }
 

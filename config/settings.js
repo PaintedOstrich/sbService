@@ -4,12 +4,10 @@ var bodyLimiter = require('../middleware/bodyLimiter')
 
 // Set Headers For Cross Domain Browser Requests
 var setCrossBrowserHeaders = function(req,res,next) 
-{
-	if (req)
-	{ 
-		res.header("Access-Control-Allow-Origin",req.header('origin')); 
-		res.header("Access-Control-Allow-Headers", "X-Requested-With"); 
-	}
+{	
+	// res.header("Access-Control-Allow-Origin",req.header('origin')); 
+	res.header("Access-Control-Allow-Origin",'*'); 
+	res.header("Access-Control-Allow-Headers", "X-Requested-With"); 
 
 	next();
 };
@@ -24,7 +22,10 @@ var configureSettings = function(app)
 	app.use(express.cookieParser('bdae@gkdl{dd}]fb132afet;dsfasdfbxcwerd'));
 	app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
 	app.use(express.methodOverride());
+
+	// cross browser enabling
 	app.use(setCrossBrowserHeaders);
+
     app.use(app.router);
 
 	//env specific config
