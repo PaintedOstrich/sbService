@@ -60,6 +60,8 @@ var getMultiHashSets = function(hkeys, fields, cb)
 				{
 					if(values[i]) allValues[finishedCount][fields[i]] = values[i];
 				}
+
+				// check if entry was null for all values, if so remove and adjust finished and total count, so that it will be overwritten
 				
 				if (finishedCount == totalCount)
 				{	
@@ -73,8 +75,15 @@ var getMultiHashSets = function(hkeys, fields, cb)
 			redClient.hgetall(id, function(err, values)
 			{
 				if (err) cb(err);
-				allValues[finishedCount] = values;
-				finishedCount++;
+				if (values)
+				{
+					allValues[finishedCount] = values;
+					finishedCount++;
+				}
+				else
+				{
+					totalCount--;
+				}
 
 				if (finishedCount == totalCount)
 				{	
