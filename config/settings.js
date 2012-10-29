@@ -24,7 +24,7 @@ var configureSettings = function(app)
 	app.use(express.cookieParser('bdae@gkdl{dd}]fb132afet;dsfasdfbxcwerd'));
 	app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
 	app.use(express.methodOverride());
-	// app.use(setCrossBrowserHeaders);
+	app.use(setCrossBrowserHeaders);
     app.use(app.router);
 
 	//env specific config
