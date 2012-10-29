@@ -69,9 +69,9 @@ var makeBet = function(betInfo, cb)
 
 		user.getUserBalance(betInfo.initFBId, function(err, userMoney)
 		{
-			var userMoney = parseInt(userMoney);
+			var userMoney = parseFloat(userMoney);
 			err && cb(err);
-			if (userMoney >= parseInt(betInfo.betAmount))
+			if (userMoney >= parseFloat(betInfo.betAmount))
 			{
 				// user has enough money to make bet
 				base.setMultiHashSetItems(hkey, betInfo, function(err)
@@ -83,7 +83,7 @@ var makeBet = function(betInfo, cb)
 					{
 						if (err) cb(err);
 
-						user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
+						user.updateUserMoney(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
 						{
 							err && cb(err)
 							betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
@@ -120,12 +120,12 @@ var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
 				{
 					err && cb(err);
 
-					if (parseInt(userMoney) >= parseInt(betAmount))
+					if (parseFloat(userMoney) >= parseFloat(betAmount))
 					{
 						redClient.hset(betKey, 'called', 'true', function(err)
 						{
 							err && cb (err);
-							user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
+							user.updateUserMoney(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
 							{
 								err && cb(err)
 

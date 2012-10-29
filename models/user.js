@@ -16,17 +16,17 @@ var updateUserBalance = function(userId, updateAmount, cb)
 	getUserBalance(userId, function(err, value)
 	{
 		err && cb(err);
-		if (typeof parseInt(updateAmount)=== "NaN")
+		if (typeof parseFloat(updateAmount)=== "NaN")
 		{
 			cb({error:"passed NaN value to update user money ::" + value})
 		}
 		else if (value != null && value != "NaN")
 		{
-			var newAmount = parseInt(updateAmount)+parseInt(value);
+			var newAmount = parseFloat(updateAmount)+parseFloat(value);
 		}
 		else 
 		{
-			var newAmount = parseInt(updateAmount);
+			var newAmount = parseFloat(updateAmount);
 		}
 		
 		var update = {'balance': newAmount};
