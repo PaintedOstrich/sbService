@@ -97,9 +97,10 @@ var getGamesForSport = function(sport, cb)
 	})
 }
 
-var getTeamIdsFromGame = function(gameId, cb)
+var getTeamNamesFromGame = function(gameId, cb)
 {
-	
+	var fields = ["team1", "team2"];
+	base.getMultiHashSets(getGameKey(gameId), fields, cb);
 }
 
 module.exports = 
@@ -108,6 +109,5 @@ module.exports =
 	setGameInfo : setGameInfo,
 	getGameInfo : getGameInfo,
 	getGamesForSport : getGamesForSport,
-	getTeamIdsFromGame : getTeamIdsFromGame
-
+	getTeamNamesFromGame : getTeamNamesFromGame
 }

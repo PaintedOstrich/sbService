@@ -25,9 +25,14 @@ var setMultiHashSetItems = function(hkey, namesAndValues, cb)
 }
 
 // iterate through a list of hash keys and get all values for each
-var getMultiHashSets = function(hkeys, cb)
+var getMultiHashSets = function(hkeys, fields, cb)
 {
-	console.log("hkeys length:" +hkeys.length);
+	var getFields = true;
+    if (typeof fields == 'function') {
+     	cb = fields;
+     	getFields = false;
+    }
+
 	var finishedCount = 0;
 	var totalCount = hkeys.length;
 
@@ -40,17 +45,43 @@ var getMultiHashSets = function(hkeys, cb)
 	for (var index in hkeys)
 	{
 		var id = hkeys[index];
-		redClient.hgetall(id, function(err, values)
-		{
-			if (err) cb(err);
-			allValues[finishedCount] = values;
-			finishedCount++;
 
-			if (finishedCount == totalCount)
-			{	
-				cb(null, allValues)
-			}
-		});
+		if (getFields)
+		{
+			redClient.hmget(id, fields, function(err, values)
+			{
+				if (err) cb(err);
+			
+				// add items as object in array
+				allValues[finishedCount] = {};
+				finishedCount++;
+
+				for (var i = 0; i < fields.length; i++)
+				{
+					if(values[i]) allValues[finishedCount][fields[i]] = values[i];
+				}
+				
+				if (finishedCount == totalCount)
+				{	
+					cb(null, allValues)
+				}
+			});			
+		}
+		else
+		{
+			// get all values
+			redClient.hgetall(id, function(err, values)
+			{
+				if (err) cb(err);
+				allValues[finishedCount] = values;
+				finishedCount++;
+
+				if (finishedCount == totalCount)
+				{	
+					cb(null, allValues)
+				}
+			});
+		}	
 	}
 }
 

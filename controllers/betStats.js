@@ -1,12 +1,15 @@
 
 var betStatsModel = require('../models/betStats');
 var resMes = require('../user_modules/responseMessages')
+var errorHandler = require('../user_modules/errorHandler')
 
 var getRecentBets = function(res)
 {
-	betStatsModel.getRecentBets(function(data)
+	betStatsModel.getRecentBets(function(err, data)
 	{
-		res.send(resMes.createDataMessage());
+		debugger;
+		err && errorHandler.send(res, err);
+		res.send(data);
 	})
 }
 

@@ -8,7 +8,7 @@ var createErrorMessage = function(err)
 var createSuccessMessage = function(suc)
 {
 	var appres = {};
-	appres.success = typeof suc !== "undefined" ? suc : "";
+	appres.success = typeof suc !== "undefined" ? suc : true;
 	return appres;
 }
 var createDataMessage = function(data)

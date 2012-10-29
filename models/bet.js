@@ -16,15 +16,14 @@ var betStats = require('./betStats');
 /**** key creation ****/
 // generates a unique key for each bet
 // based upon game Id, user ids, and time
-var getBetKey = function(gameId, initFBId, callFBId)
+var getBetKey = function(gameId, initFBId, callFBId, timeKey)
 {
-	var date = new Date()
-	var betKey = 'bet|' + gameId + '|' + initFBId + '|' + callFBId + '|' + date.getTime();
+	var betKey = 'bet|' + gameId + '|' + initFBId + '|' + callFBId + '|' + timeKey;;
 	return betKey;
 }
 
 // gets bets for a given user
-var getUserBetKey = function(gameId, fbid)
+var getUserBetKey = function(fbid)
 {
 	return 'bets|user|' + fbid;
 }
@@ -32,11 +31,12 @@ var getUserBetKey = function(gameId, fbid)
 /* Main db functions */
 // takes in a betInfo object (validated in api) and stores it
 // also adds key to each of users sets of games bet on 
+// each bet unique since bet key includes timestamp
 var makeBet = function(betInfo, cb)
 {
 	betInfo.called = false;
-	betInfo.time = new Date()
-	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId);
+	betInfo.timeKey = new Date().getTime();
+	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.timeKey);
 
 	//make sure bet amount is greater than 0 otherwise return
 	if (betInfo.betAmount <= 0)
@@ -44,75 +44,66 @@ var makeBet = function(betInfo, cb)
 		cb(err = {reason: 'cannot bet zero or less'});
 	}
 
-	redClient.hlen(hkey, function(err, value)
+	games.getGameInfo(betInfo.gameId, function(err, values)
 	{
-		if (parseInt(value) != 0)
+		// error handling if game doesn't exist
+		err && cb(err);
+		
+		if (values == null)
 		{
-			cb({"err": "bet already made"})
-		}
-		else
+			cb(err = {reason:'gamenotexist'});
+			return;	
+		} 
+
+		// make sure odss are the same
+		if (!checkBetInfo(betInfo, values))
 		{
-			games.getGameInfo(betInfo.gameId, function(err, values)
+			err = 
 			{
-				// error handling if game doesn't exist
-				err && cb(err);
-				
-				if (values == null)
-				{
-					cb(err = {reason:'gamenotexist'});
-					return;	
-				} 
+				reason: 'outofdate',
+				data : values
+			}
 
-				// make sure odss are the same
-				if (!checkBetInfo(betInfo, values))
-				{
-					err = 
-					{
-						reason: 'outofdate',
-						data : values
-					}
-
-					cb(err)
-				}
-
-				user.getUserBalance(betInfo.initFBId, function(err, userMoney)
-				{
-					var userMoney = parseInt(userMoney);
-					err && cb(err);
-					if (userMoney >= parseInt(betInfo.betAmount))
-					{
-						// user has enough money to make bet
-						base.setMultiHashSetItems(hkey, betInfo, function(err)
-						{
-							if (err) cb(err)
-
-							// add to user list of bets
-							addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
-							{
-								if (err) cb(err);
-
-								user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
-								{
-									err && cb(err)
-									betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
-								})
-							});
-						})
-					}
-					else
-					{
-						// user must watch ad then rebet
-						cb(ad = {amountNeeded: (betInfo.betAmount - value)})
-					}
-				})
-			})
+			cb(err)
 		}
+
+		user.getUserBalance(betInfo.initFBId, function(err, userMoney)
+		{
+			var userMoney = parseInt(userMoney);
+			err && cb(err);
+			if (userMoney >= parseInt(betInfo.betAmount))
+			{
+				// user has enough money to make bet
+				base.setMultiHashSetItems(hkey, betInfo, function(err)
+				{
+					if (err) cb(err)
+
+					// add to user list of bets
+					addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+					{
+						if (err) cb(err);
+
+						user.updateUserMoney(betInfo.initFBId, -parseInt(betInfo.betAmount), function(err, updatedMoney)
+						{
+							err && cb(err)
+							betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
+						})
+					});
+				})
+			}
+			else
+			{
+				// user must watch ad then rebet
+				cb(ad = {amountNeeded: (betInfo.betAmount - value)})
+			}
+		})
 	})
 }
 
-var confirmBet = function(gameId, initFBId, callFBId, cb)
+var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
 {
-	var betKey = getBetKey(gameId, initFBId, callFBId);
+	// recreate bet key
+	var betKey = getBetKey(gameId, initFBId, callFBId, timeKey);
 
 	// also checks if bet exists or this field will not be present
 	redClient.hget(betKey, 'called', function(err, value)
@@ -182,10 +173,10 @@ var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 	// add both and then call back
 	redClient.sadd(initKey, betKey, function(err)
 	{
-		if (err) cb(err)
-		redClient.sadd(callFBId, betKey, function(err)
+		if (err) throw err;
+		redClient.sadd(callKey, betKey, function(err)
 		{
-			if(err) cb(err)
+			if(err) throw err;
 			cb()
 		})
 	})
