@@ -100,7 +100,7 @@ var getGamesForSport = function(sport, cb)
 var getTeamNamesFromGame = function(gameId, cb)
 {
 	var fields = ["team1", "team2"];
-	base.getMultiHashSets(getGameKey(gameId), fields, cb);
+	base.getMultiHashSets([getGameKey(gameId)], fields, cb);
 }
 
 module.exports = 

@@ -56,7 +56,6 @@ var makeBet = function(res, query)
 	// enter bet into db
 	betModel.makeBet(query, function(err, ad)
 	{
-		debugger;
 		if (err)
 		{
 			res.send(resMes.createErrorMessage(err))

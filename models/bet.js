@@ -8,6 +8,7 @@ var base = require('./base');
 var games = require('./game');
 var user = require('./user');
 var betStats = require('./betStats');
+var errorHandler = require('../user_modules/errorHandler')
 /* Beginning of Redis Wrapper for Bets */
 
 /** module variables **/
@@ -51,8 +52,7 @@ var makeBet = function(betInfo, cb)
 		
 		if (values == null)
 		{
-			cb(err = {reason:'gamenotexist'});
-			return;	
+			throw errorHandler.errorCodes.gameDoesNotExist;
 		} 
 
 		// make sure odss are the same
@@ -94,7 +94,7 @@ var makeBet = function(betInfo, cb)
 			else
 			{
 				// user must watch ad then rebet
-				cb(ad = {amountNeeded: (betInfo.betAmount - value)})
+				cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
 			}
 		})
 	})

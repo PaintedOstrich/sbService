@@ -14,7 +14,12 @@ var errorCodes =
   {
   	// User doesn't have sufficient funds and needs to watch an advertisement
   	reason:'insufficientFunds'
-  }
+  },
+  'gameDoesNotExist':
+  {
+  	// Game being accessed does not exist
+  	reason:'gameDoesNotExist'
+  },
 }
 
 // formats and sends err message

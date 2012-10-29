@@ -7,7 +7,6 @@ var getRecentBets = function(res)
 {
 	betStatsModel.getRecentBets(function(err, data)
 	{
-		debugger;
 		err && errorHandler.send(res, err);
 		res.send(data);
 	})

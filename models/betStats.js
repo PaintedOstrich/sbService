@@ -25,6 +25,7 @@ var setRecentBet = function(gameId, userId1, userId2, amount, cb)
 
 			gameModel.getTeamNamesFromGame(gameId, function(err, data)
 			{
+				debugger;
 				if(err) throw err;
 				
 				var team1Name = data[0].team1;
@@ -68,7 +69,6 @@ var getRecentBets = function(cb)
 		hkeys.push(recentBetsAllKey+i);
 	}	
 
-	debugger;
 	base.getMultiHashSets(hkeys,cb);
 }
 
