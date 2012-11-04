@@ -34,7 +34,7 @@ var updateUserBalance = function(userId, updateAmount, cb)
 		{
 			if (err) cb (err);
 
-			cb(null, success = {"money" : newAmount});
+			cb(null, {'balance' : newAmount});
 		})
 	})
 }
@@ -69,9 +69,19 @@ var getUserName = function(userId, cb)
 	})
 }
 
+var userExists = function(userId, cb)
+{
+	redClient.hlen(getUserKey(userId), function(err, numFields)
+	{
+		err && cb(err)
+		cb(null, numFields > 0)
+	})
+}
+
 module.exports = 
 {
 	getUserNames : getUserNames,
 	getUserBalance : getUserBalance,
-	updateUserMoney : updateUserBalance,
+	updateUserBalance : updateUserBalance,
+	userExists : userExists,
 }

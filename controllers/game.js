@@ -11,18 +11,15 @@
   
 var gameModel = require('../models/game');
 
-var getGames = function(res, sport)
+var getGames = function(sport, cb)
 {
-  if (sport)
+  try
   {
-    gameModel.getGamesForSport(sport,function(err, val)
-    {
-      if (err) res.send(resMes.createErrorMessage(err));
-      else
-      {
-        res.send(val)
-      }
-    })
+     gameModel.getGamesForSport(sport,cb)
+  }
+  catch(err)
+  {
+    cb(err)
   }
 }
 

@@ -9,7 +9,8 @@
  var errorHandler = require('../user_modules/errorHandler');
 
  var pickmonapi = require('../controllers/pickmonapi')
- var user = require('../models/user');
+ var userController = require('../controllers/user')
+ var userModel = require('../models/user');
 
 var update = function(app) {    
     // return all games for all sports
@@ -26,15 +27,28 @@ var update = function(app) {
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
-    	user.updateUserMoney(req.params.userid, req.params.amount, function(err, result)
+    	userModel.updateUserMoney(req.params.userid, req.params.amount, function(err, result)
     	{
     		err && res.send(err);
     		res.send(result);
     	})
     });
 
-     app.get('/api/teststatus', function(req, res) {
-       errorHandler.sendError(res, errorHandler.errorCodes.watchAdCode);
+   app.get('/api/inituser', function(req, res) {
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        userController.initUser(query.fbid, query.name, query.money, function(err, data)
+        {
+            if (err)
+            {
+                errorHandler.send(res, err)  
+            } 
+            else
+            {
+                res.send(data); 
+            }
+            
+        });
     });
 }
 

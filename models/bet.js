@@ -13,7 +13,6 @@ var errorHandler = require('../user_modules/errorHandler')
 
 /** module variables **/
 
-
 /**** key creation ****/
 // generates a unique key for each bet
 // based upon game Id, user ids, and time
@@ -50,9 +49,9 @@ var makeBet = function(betInfo, cb)
 		// error handling if game doesn't exist
 		err && cb(err);
 		
-		if (values == null)
+		if (values != null)
 		{
-			throw errorHandler.errorCodes.gameDoesNotExist;
+			cb(errorHandler.errorCodes.gameDoesNotExist);
 		} 
 
 		// make sure odss are the same
@@ -83,7 +82,7 @@ var makeBet = function(betInfo, cb)
 					{
 						if (err) cb(err);
 
-						user.updateUserMoney(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
+						user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
 						{
 							err && cb(err)
 							betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
@@ -125,7 +124,7 @@ var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
 						redClient.hset(betKey, 'called', 'true', function(err)
 						{
 							err && cb (err);
-							user.updateUserMoney(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
+							user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
 							{
 								err && cb(err)
 
@@ -173,10 +172,10 @@ var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 	// add both and then call back
 	redClient.sadd(initKey, betKey, function(err)
 	{
-		if (err) throw err;
+		if (err) cb(err);
 		redClient.sadd(callKey, betKey, function(err)
 		{
-			if(err) throw err;
+			if(err) cb(err);
 			cb()
 		})
 	})
@@ -208,9 +207,9 @@ var checkBetInfo = function(betInfo, gameInfo)
 		checkParams.push("moneyTeam1", "moneyTeam2", "moneyDrawLine")
 	}
 
-	for (param in checkParams)
+	for (var i=0; i < checkParams.length; i++)
 	{
-		if (betInfo[param] != gameInfo[param])
+		if (betInfo[i] != gameInfo[i])
 		{
 			return false;
 		}

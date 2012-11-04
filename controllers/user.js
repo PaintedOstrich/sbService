@@ -18,7 +18,41 @@ var getUserBalance = function(res, userid)
 	})
 }
 
+var initUser = function(uid, name, balance, cb)
+{
+	try 
+	{
+		user.userExists(uid, function(err, doesExist)
+		{
+			if (err) cb(err);
+			user.updateUserBalance(uid, balance, function(err, data)
+			{				
+				if (balance != data.balance)
+				{
+					cb(errorHandler.errorCodes.updateBalanceError);
+				}
+				else
+				{
+					var data = 
+					{
+						uid:uid,
+						name:name,
+						balance: data.balance,
+					}
+					
+					cb(null, data)
+				}
+			})
+		})
+	}
+	catch (err)
+	{
+		cb(err)
+	}
+}
+
 module.exports = 
 {
 	getUserBalance:getUserBalance,	
+	initUser: initUser,
 }

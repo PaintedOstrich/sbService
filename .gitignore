@@ -2,3 +2,4 @@
 node_modules/*
 views/*
 public/*
+dump.rdb

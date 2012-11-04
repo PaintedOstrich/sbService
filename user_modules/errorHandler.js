@@ -20,17 +20,22 @@ var errorCodes =
   	// Game being accessed does not exist
   	reason:'gameDoesNotExist'
   },
+  // set debug error different than production error details
+  'updateBalanceError':
+  {
+	reason:'updateBalanceError'
+  },	
 }
 
 // formats and sends err message
 var sendError = function(res, errorCodeObject)
-{
-	var err = 
+{	
+	var error = 
 	{
 		err: errorCodeObject
 	}
 
-	res.send(err);
+	res.send(error);
 }
 
 module.exports = 
