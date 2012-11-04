@@ -25,6 +25,11 @@ var errorCodes =
   {
 	reason:'updateBalanceError'
   },	
+  // missingParamaters
+  'missingParamaters':
+  {
+  reason:'missingParamaters'
+  },  
 }
 
 // formats and sends err message

@@ -7,6 +7,8 @@
  var resMes = require('../user_modules/responseMessages')
  var betModel = require('../models/bet')
  var cUtil = require('../user_modules/cUtil');
+
+ var errorHandler = require('../user_modules/errorHandler');
 	
 var makeBet = function(res, query)
 {
@@ -82,6 +84,19 @@ var checkParams = function(checkArray, query, res)
 	}
 
 	return true;
+}
+
+// Calls a user bet
+var callBet = function(gameId, initFBId, callFBId, betTag, cb)
+{
+	if (!gameId || !initFBId || !callFBId || !betTag)
+	{
+		cb(errorHandler.missingParameters);
+	}
+	else
+	{
+		
+	}
 }
 
 // Retrieve all user bets

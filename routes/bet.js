@@ -7,6 +7,7 @@
 
  var betController = require('../controllers/bet')
  var betStatsController = require('../controllers/betStats');
+ var errorHandler = require('../user_modules/errorHandler')
 
 var bet = function(app) {
     // Place a User Bet
@@ -17,6 +18,21 @@ var bet = function(app) {
 		betController.makeBet(res, query);
     });
 
+    // Call a bet (Accept)
+    app.get('/api/bet/call', function(req, res) {
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        
+        betController.callBet(query.params.gameId, query.params.initFBId, query.params.callFBId, query.params.betTag, function(err,data)
+        {
+            if (err) errorHandler.send(err)
+            else
+            {
+                res.send(data)
+            }
+
+        });
+    });
     // FIXME need to change from get to post
     // app.post('/api/bet', function(req, res) {
     //     var url_parts = url.parse(req.url, true);
