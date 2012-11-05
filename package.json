@@ -12,7 +12,9 @@
     "xml2js": "0.2.0",
     "restler": "2.0.1",
     "underscore": "1.4.2",
-    "redis" : "0.8.1"
+    "redis" : "0.8.1",
+    "cron" : "1.0.0",
+    "time" : "0.8.3"
   },
 
   "engines": {

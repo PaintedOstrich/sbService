@@ -15,7 +15,7 @@ var gameModel = require('../models/game')
 var getBetInfo = function(betObj, shouldDoFullUpdate, cb)
 {
 	var request = restler.get(betObj.getUrl(shouldDoFullUpdate));
-	console.log(betObj.getUrl(shouldDoFullUpdate));
+	console.log(betObj.getUrl(shouldDoFullUpdate, false));
 
     request.on('fail', function(data) {
       cb();
@@ -254,11 +254,20 @@ var sportBetApi = {
 	{
 		full_call:'1'
 	},
+	doGradedGames:
+	{
+		graded:'1'
+	},
 
-	getUrl : function (doFullCall)
+	getUrl : function (doFullCall, doGradedGames)
 	{
 		var url= this.basePath+querystring.stringify(this.credentials);
-		if (doFullCall ==true)
+		if (doFullCall)
+		{
+			url += '&' + querystring.stringify(this.doFullUpdate);
+		}
+
+		if (doGradedGames)
 		{
 			url += '&' + querystring.stringify(this.doFullUpdate);
 		}
@@ -269,11 +278,7 @@ var sportBetApi = {
 		}
 
 		return url;
-	},
-	getGames : function()
-	{
-
-	},
+	}
 };
 
 var NFL = Object.create(sportBetApi);

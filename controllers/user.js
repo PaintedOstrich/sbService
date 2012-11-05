@@ -93,7 +93,7 @@ var getUserBets = function(uid, filter, cb)
 	}
 }
 
-// past/current/userAccept/pendingAccept
+// Filters data into four different types past/current/userAccept/pendingAccept
 var filterResults = function(filterType, uid, data)
 {
 	var results = [];   
