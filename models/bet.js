@@ -38,65 +38,78 @@ var makeBet = function(betInfo, cb)
 	betInfo.timeKey = new Date().getTime();
 	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.timeKey);
 
-	//make sure bet amount is greater than 0 otherwise return
-	if (betInfo.betAmount <= 0)
+	try	
 	{
-		cb(err = {reason: 'cannot bet zero or less'});
-	}
-
-	games.getGameInfo(betInfo.gameId, function(err, values)
-	{
-		// error handling if game doesn't exist
-		err && cb(err);
-		
-		if (values != null)
+		//make sure bet amount is greater than 0 otherwise return
+		if (betInfo.betAmount <= 0)
 		{
-			cb(errorHandler.errorCodes.gameDoesNotExist);
-		} 
-
-		// make sure odss are the same
-		if (!checkBetInfo(betInfo, values))
-		{
-			err = 
-			{
-				reason: 'outofdate',
-				data : values
-			}
-
-			cb(err)
+			cb(errorHandler.errorCodes.betZeroOrNegative);
 		}
-
-		user.getUserBalance(betInfo.initFBId, function(err, userMoney)
+		else
 		{
-			var userMoney = parseFloat(userMoney);
-			err && cb(err);
-			if (userMoney >= parseFloat(betInfo.betAmount))
+			games.getGameInfo(betInfo.gameId, function(err, gameInfo)
 			{
-				// user has enough money to make bet
-				base.setMultiHashSetItems(hkey, betInfo, function(err)
+				// error handling if game doesn't exist
+				if(err) throw err;
+				
+				if (gameInfo == null)
 				{
-					if (err) cb(err)
-
-					// add to user list of bets
-					addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+					cb(errorHandler.errorCodes.gameDoesNotExist);
+				} 
+				// make sure odss are the same
+				else if (!checkBetInfo(betInfo, gameInfo))
+				{
+					err = 
 					{
-						if (err) cb(err);
+						reason: 'outofdate',
+						data : gameInfo
+					}
 
-						user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
+					cb(err);
+				}
+				else
+				{
+					user.getUserBalance(betInfo.initFBId, function(err, userMoney)
+					{
+						var userMoney = parseFloat(userMoney);
+						if(err) throw err;
+						else if (userMoney >= parseFloat(betInfo.betAmount))
 						{
-							err && cb(err)
-							betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)
-						})
-					});
-				})
-			}
-			else
-			{
-				// user must watch ad then rebet
-				cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
-			}
-		})
-	})
+							// user has enough money to make bet
+							base.setMultiHashSetItems(hkey, betInfo, function(err)
+							{
+								if (err) throw err;
+
+								// add to user list of bets
+								addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
+								{
+									if (err) throw err;
+
+									user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
+									{
+										if(err) throw err;
+										else
+										{
+											betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)	
+										}
+									})
+								});
+							})
+						}
+						else
+						{
+							// user must watch ad then rebet
+							cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
+						}
+					})
+				}
+			})
+		}
+	}
+	catch(err)
+	{
+		cb(err);
+	}
 }
 
 var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
@@ -104,50 +117,56 @@ var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 	// recreate bet key
 	var betKey = getBetKey(gameId, initFBId, callFBId, timeKey);
 
-	// also checks if bet exists or this field will not be present
-	redClient.hget(betKey, 'called', function(err, value)
+	try
 	{
-		err && cb(err)
-
-		if(value && value === "false")
+		// also checks if bet exists or this field will not be present
+		redClient.hget(betKey, 'called', function(err, value)
 		{
-			redClient.hget(betKey, 'betAmount', function(err, betAmount)
+			if (err) throw err;
+
+			if(value && value === "false")
 			{
-				err && cb(err);
-
-				user.getUserBalance(callFBId, function(err, userMoney)
+				redClient.hget(betKey, 'betAmount', function(err, betAmount)
 				{
-					err && cb(err);
+					if (err) throw err;
 
-					debugger;
-					if (parseFloat(userMoney) >= parseFloat(betAmount))
+					user.getUserBalance(callFBId, function(err, userMoney)
 					{
-						redClient.hset(betKey, 'called', 'true', function(err)
+						if (err) throw err;
+
+						debugger;
+						if (parseFloat(userMoney) >= parseFloat(betAmount))
 						{
-							err && cb (err);
-							user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
+							redClient.hset(betKey, 'called', 'true', function(err)
 							{
-								err && cb(err)
+								if (err) throw err;
+								user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
+								{
+									if (err) throw err;
 
-								cb();
-							})
-						});
-					}
-					else
-					{
-						// user must watch ad then rebet
-						cb(ad = {amountNeeded: (betAmount - userMoney)})
-					}
-				
-				})
-			})	
-		}
-		else
-		{
-			cb({err:"bet already called or doesnt exist"})
-		}
-	})
-
+									cb();
+								})
+							});
+						}
+						else
+						{
+							// user must watch ad then rebet
+							cb(ad = {amountNeeded: (betAmount - userMoney)})
+						}
+					
+					})
+				})	
+			}
+			else
+			{
+				cb({err:"bet already called or doesnt exist"})
+			}
+		})
+	}
+	catch(err)
+	{
+		cb(err)
+	}
 }
 
 // gets all bets for each user
@@ -190,24 +209,25 @@ var checkBetInfo = function(betInfo, gameInfo)
 	if(betInfo.type === "spread")
 	{
 		// process bet on spread
-		checkParams.push("spreadTeam1", "spreadTeam2", "initTeamBet")
+		checkParams.push("spreadTeam1", "spreadTeam2")
 		
 	}
 	else if(betInfo.type === "score")
 	{
 		// process points on game
-		checkParams.push("pointsOver", "pointsUnder", "initPointsBet")
+		checkParams.push("pointsOver", "pointsUnder")
 	}
 	else if(betInfo.type === "money")
 	{
 		// process points on money
-		checkParams.push("moneyTeam1", "moneyTeam2", "moneyDrawLine")
+		checkParams.push("moneyTeam1", "moneyTeam2", "moneyDraw")
 	}
 
 	for (var i=0; i < checkParams.length; i++)
 	{
-		if (betInfo[i] != gameInfo[i])
+		if (betInfo[checkParams[i]] != gameInfo[checkParams[i]])
 		{
+			debugger;
 			return false;
 		}
 	}

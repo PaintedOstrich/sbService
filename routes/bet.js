@@ -8,6 +8,7 @@
  var betController = require('../controllers/bet')
  var betStatsController = require('../controllers/betStats');
  var errorHandler = require('../user_modules/errorHandler')
+ var resMes = require('../user_modules/responseMessages')
 
 var bet = function(app) {
     // Place a User Bet
@@ -28,7 +29,7 @@ var bet = function(app) {
             if (err) errorHandler.send(res,err)
             else
             {
-                res.send(data)
+                res.send(resMes.createSuccessMessage())
             }
 
         });

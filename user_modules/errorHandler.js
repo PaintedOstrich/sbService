@@ -35,6 +35,10 @@ var errorCodes =
   {
      reason:'invalidSignedRequest'
   },  
+  'betZeroOrNegative':
+  {
+    reason:'betZeroOrNegative'
+  },
 }
 
 // formats and sends err message

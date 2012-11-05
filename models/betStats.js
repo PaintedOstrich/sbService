@@ -25,7 +25,6 @@ var setRecentBet = function(gameId, userId1, userId2, amount, cb)
 
 			gameModel.getTeamNamesFromGame(gameId, function(err, data)
 			{
-				debugger;
 				if(err) throw err;
 				
 				var team1Name = data[0].team1;
