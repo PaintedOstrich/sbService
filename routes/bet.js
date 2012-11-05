@@ -31,7 +31,6 @@ var bet = function(app) {
             {
                 res.send(resMes.createSuccessMessage())
             }
-
         });
     });
     // FIXME need to change from get to post

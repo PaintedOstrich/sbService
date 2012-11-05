@@ -6,6 +6,7 @@ var redClient = require('../config/redisConfig')()
 var cUtil = require('../user_modules/cUtil');
 var base = require('./base');
 var games = require('./game');
+var keys = require('./keys');
 var user = require('./user');
 var betStats = require('./betStats');
 var errorHandler = require('../user_modules/errorHandler')
@@ -22,12 +23,6 @@ var getBetKey = function(gameId, initFBId, callFBId, timeKey)
 	return betKey;
 }
 
-// gets bets for a given user
-var getUserBetKey = function(fbid)
-{
-	return 'bets|user|' + fbid;
-}
-
 /* Main db functions */
 // takes in a betInfo object (validated in api) and stores it
 // also adds key to each of users sets of games bet on 
@@ -35,6 +30,7 @@ var getUserBetKey = function(fbid)
 var makeBet = function(betInfo, cb)
 {
 	betInfo.called = false;
+	betInfo.ended = false;
 	betInfo.timeKey = new Date().getTime();
 	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.timeKey);
 
@@ -134,7 +130,6 @@ var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 					{
 						if (err) throw err;
 
-						debugger;
 						if (parseFloat(userMoney) >= parseFloat(betAmount))
 						{
 							redClient.hset(betKey, 'called', 'true', function(err)
@@ -169,25 +164,11 @@ var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 	}
 }
 
-// gets all bets for each user
-var getUserBets = function(uid, cb)
-{
-	var key = getUserBetKey(uid);
-	redClient.smembers(key, function(err, betKeys)
-	{
-		if (err) cb(err);
-		base.getMultiHashSets(betKeys, function(err, betInfoArr)
-		{
-			cb(err, betInfoArr)
-		})
-	})
-}
-
 // adds a bet to each user
 var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 {
-	var initKey = getUserBetKey(initFBId);
-	var callKey = getUserBetKey(callFBId);
+	var initKey = keys.getUserBetKey(initFBId);
+	var callKey = keys.getUserBetKey(callFBId);
 
 	// add both and then call back
 	redClient.sadd(initKey, betKey, function(err)
@@ -227,7 +208,6 @@ var checkBetInfo = function(betInfo, gameInfo)
 	{
 		if (betInfo[checkParams[i]] != gameInfo[checkParams[i]])
 		{
-			debugger;
 			return false;
 		}
 	}
@@ -239,7 +219,6 @@ var checkBetInfo = function(betInfo, gameInfo)
 module.exports = 
 {
 	makeBet: makeBet,
-	getUserBets: getUserBets,
 	callBet: callBet,
 
 }

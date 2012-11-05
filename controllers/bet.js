@@ -100,32 +100,9 @@ var callBet = function(gameId, initFBId, callFBId, betTag, cb)
 		betModel.callBet(gameId, initFBId, callFBId, betTag, cb)
 	}
 }
-
-// Retrieve all user bets
-var getUserBets = function(res, uid)
-{
-	// make sure uid is all numbers
-	if (!cUtil.isOnlyNumber(uid))
-	{
-		res.send(resMes.createErrorMessage(uid + " is not a valid uid"))
-		return;
-	}
-
-	betModel.getUserBets(uid, function(err, data)
-	{
-		if (err) res.send(resMes.createErrorMessage(err))
-		else
-		{
-			res.send(resMes.createDataMessage(data));
-			return;
-		}
-	})
-}
-
  
 module.exports =
 {
-	makeBet: makeBet,
-	getUserBets: getUserBets,
+	makeBet: makeBet,	
 	callBet: callBet,
 } 

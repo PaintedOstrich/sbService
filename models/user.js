@@ -3,6 +3,7 @@
  */
 
 var base = require('./base');
+var keys = require('./keys');
 var redClient = require('../config/redisConfig')()
 
 var getUserKey = function(userId)
@@ -69,6 +70,23 @@ var getUserName = function(userId, cb)
 	})
 }
 
+// gets all bets for each user
+var getUserBets = function(uid, cb)
+{
+	var key = keys.getUserBetKey(uid);
+	redClient.smembers(key, function(err, betKeys)
+	{
+		if (err) cb(err)
+		else
+		{
+			base.getMultiHashSets(betKeys, function(err, betInfoArr)
+			{
+				cb(err, betInfoArr)
+			})
+		}
+	})
+}
+
 var userExists = function(userId, cb)
 {
 	redClient.hlen(getUserKey(userId), function(err, numFields)
@@ -84,4 +102,5 @@ module.exports =
 	getUserBalance : getUserBalance,
 	updateUserBalance : updateUserBalance,
 	userExists : userExists,
+	getUserBets: getUserBets,
 }
