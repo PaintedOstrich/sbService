@@ -23,9 +23,9 @@ var bet = function(app) {
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
         
-        betController.callBet(query.params.gameId, query.params.initFBId, query.params.callFBId, query.params.betTag, function(err,data)
+        betController.callBet(query.gameId, query.initFBId, query.callFBId, query.betTag, function(err,data)
         {
-            if (err) errorHandler.send(err)
+            if (err) errorHandler.send(res,err)
             else
             {
                 res.send(data)

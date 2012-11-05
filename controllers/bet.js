@@ -95,7 +95,7 @@ var callBet = function(gameId, initFBId, callFBId, betTag, cb)
 	}
 	else
 	{
-		
+		betModel.callBet(gameId, initFBId, callFBId, betTag, cb)
 	}
 }
 
@@ -125,4 +125,5 @@ module.exports =
 {
 	makeBet: makeBet,
 	getUserBets: getUserBets,
+	callBet: callBet,
 } 

@@ -8,6 +8,21 @@
  var errorHandler = require('../user_modules/errorHandler')
  var user = require('../models/user')
  var cUtil = require('../user_modules/cUtil');
+ var verifyFBLogin = require('../user_modules/fb/verifyFBLogin');
+
+// handles master login method for user and returns all their information
+var login = function(signedreq, cb)
+{
+	var data = verifyFBLogin.verify(signedreq, process.env.FACEBOOK_SECRET);
+	if (data)
+	{
+		cb(null, data)
+	}
+	else
+	{
+		cb(errorHandler.errorCodes.invalidSignedRequest);
+	}
+}
   
 var getUserBalance = function(res, userid)
 {
@@ -51,8 +66,11 @@ var initUser = function(uid, name, balance, cb)
 	}
 }
 
+
+
 module.exports = 
 {
 	getUserBalance:getUserBalance,	
 	initUser: initUser,
+	login:login,
 }

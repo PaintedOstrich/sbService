@@ -27,7 +27,7 @@ var update = function(app) {
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
-    	userModel.updateUserMoney(req.params.userid, req.params.amount, function(err, result)
+    	userModel.updateUserBalance(req.params.userid, req.params.amount, function(err, result)
     	{
     		err && res.send(err);
     		res.send(result);

@@ -30,14 +30,23 @@ var errorCodes =
   {
   reason:'missingParamaters'
   },  
+  // invalid signed fb request
+  'invalidSignedRequest':
+  {
+     reason:'invalidSignedRequest'
+  },  
 }
 
 // formats and sends err message
 var sendError = function(res, errorCodeObject)
 {	
+  if (!res || !errorCodeObject)
+  {
+    throw new Error("Send Error Missing Parameters");
+  }
 	var error = 
 	{
-		err: errorCodeObject
+		reason: errorCodeObject
 	}
 
 	res.send(error);

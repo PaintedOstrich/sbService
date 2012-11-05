@@ -99,7 +99,7 @@ var makeBet = function(betInfo, cb)
 	})
 }
 
-var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
+var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 {
 	// recreate bet key
 	var betKey = getBetKey(gameId, initFBId, callFBId, timeKey);
@@ -111,20 +111,21 @@ var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
 
 		if(value && value === "false")
 		{
-			redClient.hget(betKey, 'amount', function(err, betAmount)
+			redClient.hget(betKey, 'betAmount', function(err, betAmount)
 			{
 				err && cb(err);
 
-				user.getUserBalance(betInfo.initFBId, function(err, userMoney)
+				user.getUserBalance(callFBId, function(err, userMoney)
 				{
 					err && cb(err);
 
+					debugger;
 					if (parseFloat(userMoney) >= parseFloat(betAmount))
 					{
 						redClient.hset(betKey, 'called', 'true', function(err)
 						{
 							err && cb (err);
-							user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
+							user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
 							{
 								err && cb(err)
 
@@ -135,7 +136,7 @@ var confirmBet = function(gameId, initFBId, callFBId, timeKey, cb)
 					else
 					{
 						// user must watch ad then rebet
-						cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
+						cb(ad = {amountNeeded: (betAmount - userMoney)})
 					}
 				
 				})
@@ -186,11 +187,7 @@ var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 var checkBetInfo = function(betInfo, gameInfo)
 {
 	checkParams = [];
-	if(betInfo.type === "straight")
-	{
-
-	}
-	else if(betInfo.type === "spread")
+	if(betInfo.type === "spread")
 	{
 		// process bet on spread
 		checkParams.push("spreadTeam1", "spreadTeam2", "initTeamBet")
@@ -223,6 +220,7 @@ module.exports =
 {
 	makeBet: makeBet,
 	getUserBets: getUserBets,
+	callBet: callBet,
 
 }
 
