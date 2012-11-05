@@ -23,11 +23,10 @@ var configureSettings = function(app)
 	app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
 	app.use(express.methodOverride());
 
-	// Init Facebook Lightweight Wrapper
-	require('faceplate').middleware({
-	    app_id: process.env.FACEBOOK_APP_ID,
-	    secret: process.env.FACEBOOK_SECRET
-	})
+	// FB params 
+	//     app_id: process.env.FACEBOOK_APP_ID,
+	//     secret: process.env.FACEBOOK_SECRET
+
 
 	// cross browser enabling
 	app.use(setCrossBrowserHeaders);
