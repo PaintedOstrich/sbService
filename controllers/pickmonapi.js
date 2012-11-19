@@ -305,7 +305,7 @@ var sportsList =
 
 var checkForUpdates = function()
 {
-
+	
 }
 
 var updateAllGames = function(sportName, res)

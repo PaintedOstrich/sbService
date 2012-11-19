@@ -7,6 +7,20 @@ var getNumElements = function(obj){
 	return count;
 }
 
+/* 
+ * Sets prop if obj doesn't have the name of this function
+ */ 
+var set = function(obj, name, fun)
+{
+	if (obj.hasOwnProperty(name))
+	{
+		obj.name = fun;
+	}
+	else
+	{
+		console.log("Object Already has this propery");
+	}		
+}
 
 /*
  * Checks that an contains letters

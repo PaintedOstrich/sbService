@@ -14,7 +14,8 @@
     "underscore": "1.4.2",
     "redis" : "0.8.1",
     "cron" : "1.0.0",
-    "time" : "0.8.3"
+    "time" : "0.8.3",
+    "mixpanel" : "0.0.9"
   },
 
   "engines": {

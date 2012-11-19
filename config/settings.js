@@ -45,6 +45,8 @@ var configureSettings = function(app)
 		app.use(express.logger());
 		app.use(express.errorHandler());
 	})
+
+	
 };
 
 module.exports = configureSettings;

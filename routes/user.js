@@ -14,7 +14,11 @@ var userHandle = function(app) {
 		userController.getUserBalance(res, uid);
     });
 
-    // Get Current User's balance
+    /* Check if user is correctly logged in, and return batch info
+	 *  Consists of bets to accept, decline, current, and past
+	 *  Current Balance 
+	 *  
+	 */
     app.get('/api/user/login/:signedrequest', function(req, res) {
 		userController.login(req.params.signedrequest,function(err, value)
 		{
