@@ -9,6 +9,7 @@ var games = require('./game');
 var keys = require('./keys');
 var user = require('./user');
 var betStats = require('./betStats');
+var datetime = require('../user_modules/datetime');
 var errorHandler = require('../user_modules/errorHandler');
 /* Beginning of Redis Wrapper for Bets */
 
@@ -230,14 +231,10 @@ var checkBetInfo = function(betInfo, gameInfo)
 	}
 
 	// check that bet is before wager cutoff
-	var d = new Date();
+	var now = new Date();
 	var wagerCutoff = new Date(betInfo.wagerCutoff);
-	if (d > wagerCutoff)
-	{
-		return false;
-	}
-
-	return true;
+	
+	return now.isBefore(wagerCutoff);
 }
 
 // gets Bet Info necessary for update after game ends

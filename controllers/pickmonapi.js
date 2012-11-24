@@ -62,8 +62,7 @@ var parseGames = function(result) {
       				// get all games
 					gamesArr = result['lines']['game'];
 					async.forEach(gamesArr, parseGame, function(err){
-						if(err)console.log(err)
-
+						if(err) { throw "error processing game :" + err }
 					});
       			}
     		});
@@ -106,6 +105,7 @@ var executeBets = function(item){
 // Master function to retrieve all data about a game
 // Helper functions specific to this xml feed and element location
 var PickMonitorGame = function(item) {	
+
 	var game = item;
 	
 	// to-do: compare external vs internal updated times
@@ -155,12 +155,15 @@ var PickMonitorGame = function(item) {
 	    dataArr.totalUnder=getTotalUnder();
 	    dataArr.hasBeenProcessed = false;
 
-	    debugger;
+
+	    console.log(typeof item);
+		console.log(typeof dataArr.date)
 	    
-	    gameModel.getGameIdFromHeaderAndDate(dataArr.id, dataArr.header, dataArr.date, function(err, gameId)
-	    {
-	    	try
-	    	{
+	    try
+    	{
+		    gameModel.getGameIdFromHeaderAndDate(dataArr.id, dataArr.header, dataArr.date, function(err, gameId)
+		    {
+	    	
 	    		if (err) throw err;
 
 	    		// reset gameId to unique id per game, as api gives multiple
@@ -177,7 +180,7 @@ var PickMonitorGame = function(item) {
 				    		console.log("winner is " + util.inspect(dataArr.winner, true, 3));
 
 				    		// get all bet games
-				    		gameModel
+				    		// gameModel
 
 			    		}
 			    	
@@ -191,12 +194,12 @@ var PickMonitorGame = function(item) {
 						if (err) console.log(err)
 					})
 			    }
-			}
-			catch(e)
-			{
-				console.log(e);
-			}
-	    })
+			})
+	    }
+	    catch(e)
+		{
+			console.log(e);
+		}
 	}
 		
 	// Beginning of helper functions	

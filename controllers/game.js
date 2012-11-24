@@ -28,8 +28,6 @@ var updateBetsPerGameEnd = function()
 	
 }
 
-
-
 module.exports = 
 {
   getGames : getGames,
