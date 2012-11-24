@@ -15,7 +15,7 @@ var gameModel = require('../models/game')
 var getBetInfo = function(betObj, shouldDoFullUpdate, cb)
 {
 	var request = restler.get(betObj.getUrl(shouldDoFullUpdate));
-	console.log(betObj.getUrl(shouldDoFullUpdate, false));
+	console.log(betObj.getUrl(shouldDoFullUpdate, true));
 
     request.on('fail', function(data) {
       cb();
@@ -55,7 +55,7 @@ var parseGames = function(result) {
 		    parser.parseString(result, function (err, result) {
       			if (err)
       			{
-      				console.log('unable to parse response: '+ err)
+      				throw err;
       			}
       			else
       			{
@@ -70,7 +70,7 @@ var parseGames = function(result) {
 		}
 		catch(err)
 		{
-			console.log('unable to parse response: '+ err)
+			console.log('Error: unable to parse response: '+ err)
 		}
 	}
 	
@@ -153,17 +153,50 @@ var PickMonitorGame = function(item) {
 	    dataArr.totalPoints=getTotalPoints();
 	    dataArr.totalOver=getTotalOver();
 	    dataArr.totalUnder=getTotalUnder();
-		
-		// console.log(util.inspect(dataArr, true, 10));
-		// console.log(util.inspect(dataArr, true, 3));
-		// console.log(dataArr);
-		// remove id before passing all fields
-		var gameId = dataArr['id'];
-		gameModel.setGameInfo(dataArr['id'], dataArr, function(err)
-		{
-			if (err) console.log(err)
-		})
+	    dataArr.hasBeenProcessed = false;
 
+	    debugger;
+	    
+	    gameModel.getGameIdFromHeaderAndDate(dataArr.id, dataArr.header, dataArr.date, function(err, gameId)
+	    {
+	    	try
+	    	{
+	    		if (err) throw err;
+
+	    		// reset gameId to unique id per game, as api gives multiple
+	    		dataArr.id = gameId;
+
+			    // on ended games
+			    if (isFinalScore())
+			    {
+			    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed)
+			    	{
+			    		if (!hasBeenProcessed)
+			    		{
+				    		dataArr.winner = getWinner();
+				    		console.log("winner is " + util.inspect(dataArr.winner, true, 3));
+
+				    		// get all bet games
+				    		gameModel
+
+			    		}
+			    	
+			    	})
+			    }
+			    else
+			    {
+					// console.log(util.inspect(dataArr, true, 10));					
+					gameModel.setGameInfo(gameId, dataArr, function(err)
+					{
+						if (err) console.log(err)
+					})
+			    }
+			}
+			catch(e)
+			{
+				console.log(e);
+			}
+	    })
 	}
 		
 	// Beginning of helper functions	
@@ -235,8 +268,21 @@ var PickMonitorGame = function(item) {
 		return game.line[0]['total'][0]['under'][0];
 	}
 
+	// End Score functions
 	var getWinner = function() {
-		return game.line[0]['score'][0]['winner'];
+		return game.line[0]['score'][0]['winner'][0];
+	}
+	var isFinalScore = function(){
+		var winner = game.line[0]['score'][0]['winner'][0];
+		var period = game.line[0]['perioddesc'][0];
+
+		// check api properties to determine ended game
+		if (typeof period !== "undefined" && typeof winner !=="object")
+		{
+			return period === "Game";	
+		}
+		
+		else return false;
 	}
 }
 
@@ -256,6 +302,7 @@ var sportBetApi = {
 	},
 	doGradedGames:
 	{
+		// gets both graded and non graded games if 2, 1 just graded
 		graded:'1'
 	},
 
@@ -269,7 +316,7 @@ var sportBetApi = {
 
 		if (doGradedGames)
 		{
-			url += '&' + querystring.stringify(this.doFullUpdate);
+			url += '&' + querystring.stringify(this.doGradedGames);
 		}
 
 		if (cUtil.getNumElements(this.params)>0)
@@ -305,31 +352,34 @@ var sportsList =
 
 var checkForUpdates = function()
 {
-	
+	getUpdates("ALL", false);
 }
 
-var updateAllGames = function(sportName, res)
+var updateAllGames = function()
+{
+	getUpdates("ALL", true);
+}
+
+var getUpdates = function(sportName, doFullUpdate)
 {
 	if (sportName === "ALL")
 	{
 		for (var sport in sportsList)
 		{
-			getBetInfo(sport, true, parseGames);
+			getBetInfo(sportsList[sport], doFullUpdate, parseGames);
 		}
 	}
 	else
 	{
 		if (sportsList[sportName] !== "undefined")
 		{
-			getBetInfo(sportsList[sportName], true, parseGames);
+			getBetInfo(sportsList[sportName], doFullUpdate, parseGames);
 		}
 		else
 		{
 			console.log("Err: did not pass valid sport name to update api")
 		}
 	}
-	res.send('ok')
-	
 }
 
 module.exports = {

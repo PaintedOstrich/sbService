@@ -8,10 +8,31 @@ var cUtil = require('../user_modules/cUtil');
 
 var base = require('./base');
 
-// gets bet game list key from sport type (string)
-var getGameListKey = function(sport)
+var error = require('../user_modules/errorHandler')
+
+// add yyyymmdd() function
+var datetime = require('../user_modules/datetime')
+
+// get game id key - generated from header since each game from pick mon generates multiple ids
+var getGameIdKey = function(header, datetime)
 {
-	return 'game|'+ sport+ '|list';
+	try
+	{
+		var yyyymmdd = new Date(datetime)	
+		if (yyyymmdd == "Invalid Date")
+		{
+			throw "Error: datetime passed invalid date";
+		}
+	}
+
+	catch (e)
+	{
+		console.log(e)
+		return null;
+	}
+
+	
+	return 'gameId|' + header + '|' + yyyymmdd;
 }
 
 // gets bet info key from game id
@@ -26,10 +47,10 @@ var getLastUpdateKey = function(gameId)
 	return 'game|' + gameId + '|update';
 }
 
-// gets upcoming games for sport
-var getUpcomingGamesKey = function(sport)
+// gets the key for all bets on this game
+var getBetsForGameKey = function(gameId)
 {
-	return 'games|upcoming|' + sport;
+	return 'game|' + gameId + + '|bets';
 }
 
 var getTeamNames = function(sport)
@@ -37,9 +58,38 @@ var getTeamNames = function(sport)
 	console.log("get team names for " + sport + " is "+ getTeamNames)
 }
 
-var addUpComingGames = function(gameIds)
+// returns error in cb or null answer
+var getGameIdFromHeaderAndDate = function(possibleGameId, header, datetime, cb)
 {
+	var betsForGameKey = getGameIdKey(header, timeString);	
+	if (betsForGameKey)
+	{
+		redClient.setnx(betsForGameKey, possibleGameId, function(err)
+		{
+			redClient.get(betsForGameKey,cb);
+		})
+	}
+	else cb(error.errorCodes.inproperGameIdKey)
+}
 
+// add user bet for this game
+var addBetForGame = function(userBetIdKey, gameId, cb)
+{
+	var gameBetKey = getBetsForGameKey(gameId);
+	redClient.sadd(gameBetKey, userBetIdKey, cb)
+}
+
+// get all bets per game
+var getBetsForGame = function(gameId)
+{
+	var gameKey = getBetsForGameKey(gameId);
+	redClient.smembers(gamekey, cb);
+}
+
+var gameHasBeenProcessed = function(gameId,cb)
+{
+	var gameKey = getGameKey(gameId);
+	redClient.hget(gameKey, 'hasBeenProcessed', cb);
 }
 
 // returns an object with all bet info for a given game
@@ -68,7 +118,7 @@ var setGameInfo = function(gameId, gameData, cb)
 		if (err) cb (err);
 
 		addGameToList(gameId, gameData.sport)
-		console.log(gameData.sport)
+		// console.log(gameData.sport)
 		cb();
 	})
 }
@@ -109,5 +159,9 @@ module.exports =
 	setGameInfo : setGameInfo,
 	getGameInfo : getGameInfo,
 	getGamesForSport : getGamesForSport,
-	getTeamNamesFromGame : getTeamNamesFromGame
+	getTeamNamesFromGame : getTeamNamesFromGame,
+	addBetForGame : addBetForGame,
+	getBetsForGame : getBetsForGame,
+	getGameIdFromHeaderAndDate : getGameIdFromHeaderAndDate,
+	gameHasBeenProcessed : gameHasBeenProcessed,
 }

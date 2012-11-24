@@ -23,6 +23,13 @@ var getGames = function(sport, cb)
   }
 }
 
+var updateBetsPerGameEnd = function()
+{
+	
+}
+
+
+
 module.exports = 
 {
   getGames : getGames,

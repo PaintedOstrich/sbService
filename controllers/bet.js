@@ -10,6 +10,13 @@
 
  var errorHandler = require('../user_modules/errorHandler');
 	
+// upates Bet after game won
+var endBet = function(gameId)
+{
+	// betModel.get
+}
+
+// processes bet params and makes sure all required fields are present, then makes bet
 var makeBet = function(res, query)
 {
 	var requiredParams = ["gameId", "initFBId", "callFBId", "betAmount", "type"];

@@ -9,7 +9,7 @@ var games = require('./game');
 var keys = require('./keys');
 var user = require('./user');
 var betStats = require('./betStats');
-var errorHandler = require('../user_modules/errorHandler')
+var errorHandler = require('../user_modules/errorHandler');
 /* Beginning of Redis Wrapper for Bets */
 
 /** module variables **/
@@ -108,6 +108,7 @@ var makeBet = function(betInfo, cb)
 	}
 }
 
+// refactor to get all bet info and then process
 var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 {
 	// recreate bet key
@@ -122,35 +123,51 @@ var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 
 			if(value && value === "false")
 			{
-				redClient.hget(betKey, 'betAmount', function(err, betAmount)
+				// check that time is valid
+				redClient.hget(betKey, 'called', function(err, value)
 				{
-					if (err) throw err;
 
-					user.getUserBalance(callFBId, function(err, userMoney)
+					// get bet amount
+					redClient.hget(betKey, 'betAmount', function(err, betAmount)
 					{
 						if (err) throw err;
 
-						if (parseFloat(userMoney) >= parseFloat(betAmount))
+						// get user balance and check that it's more than bet amount, otherwise need to watch add
+						user.getUserBalance(callFBId, function(err, userMoney)
 						{
-							redClient.hset(betKey, 'called', 'true', function(err)
+							if (err) throw err;
+
+							if (parseFloat(userMoney) >= parseFloat(betAmount))
 							{
-								if (err) throw err;
-								user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
+								// set bet called = true
+								redClient.hset(betKey, 'called', 'true', function(err)
 								{
 									if (err) throw err;
 
-									cb();
-								})
-							});
-						}
-						else
-						{
-							// user must watch ad then rebet
-							cb(ad = {amountNeeded: (betAmount - userMoney)})
-						}
-					
-					})
-				})	
+									// update new user balance
+									user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
+									{
+										if (err) throw err;
+
+										// add to list of bets per game
+										games.addBetForGame(betKey, gameId, function(err)
+										{
+											if (err) throw err;
+											cb();
+										})
+										
+									})
+								});
+							}
+							else
+							{
+								// user must watch ad then rebet
+								cb(ad = {amountNeeded: (betAmount - userMoney)})
+							}
+						
+						})
+					})	
+				})
 			}
 			else
 			{
@@ -212,15 +229,28 @@ var checkBetInfo = function(betInfo, gameInfo)
 		}
 	}
 
+	// check that bet is before wager cutoff
+	var d = new Date();
+	var wagerCutoff = new Date(betInfo.wagerCutoff);
+	if (d > wagerCutoff)
+	{
+		return false;
+	}
+
 	return true;
 }
 
+// gets Bet Info necessary for update after game ends
+var getBetInfoForProcess = function(gameId)
+{
+	var betKey = getBetKey(gameId);
+
+}
 
 module.exports = 
 {
 	makeBet: makeBet,
 	callBet: callBet,
-
 }
 
 // get user 

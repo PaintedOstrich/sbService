@@ -39,6 +39,10 @@ var errorCodes =
   {
     reason:'betZeroOrNegative'
   },
+  'inproperGameIdKey':
+  {
+    reason:'inproperGameIdKey'
+  },
 }
 
 // formats and sends err message
