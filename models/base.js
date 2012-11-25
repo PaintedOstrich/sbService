@@ -25,6 +25,7 @@ var setMultiHashSetItems = function(hkey, namesAndValues, cb)
 }
 
 // iterate through a list of hash keys and get all values for each
+// fields is an array
 var getMultiHashSets = function(hkeys, fields, cb)
 {
 	// add is array exception handler for these fields

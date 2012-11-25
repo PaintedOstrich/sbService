@@ -19,7 +19,15 @@ var game = function(app) {
 		  if (err) errorHandler.send(res, err);
 	      else
 	      {
-	        res.send(data);
+	      	if (typeof data === "undefined")
+	      	{
+	      		// client expects array, so must return empty array
+	      		res.send([]);
+	      	}
+	      	else
+	      	{
+				res.send(data);		
+	      	}
 	      }
 		})
     });

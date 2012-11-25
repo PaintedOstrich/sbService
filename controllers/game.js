@@ -15,7 +15,8 @@ var getGames = function(sport, cb)
 {
   try
   {
-     gameModel.getGamesForSport(sport,cb)
+  	var fields = ["gid","gdate", "header", "team1", "team2", "sport", "wagerCutoff", "spreadTeam1", "spreadTeam2"]; 
+    gameModel.getGamesForSport(sport,fields,cb)
   }
   catch(err)
   {
@@ -25,7 +26,7 @@ var getGames = function(sport, cb)
 
 var updateBetsPerGameEnd = function()
 {
-	
+
 }
 
 module.exports = 

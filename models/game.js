@@ -10,15 +10,11 @@ var base = require('./base');
 
 var error = require('../user_modules/errorHandler')
 
-// add yyyymmdd() function
-var datetime = require('../user_modules/datetime')
-
 // get game id key - generated from header since each game from pick mon generates multiple ids
-var getGameIdKey = function(header, datetime)
+var getGameIdKey = function(header, yyyymmdd)
 {
 	try
 	{
-		var yyyymmdd = new Date(datetime)	
 		if (yyyymmdd == "Invalid Date")
 		{
 			throw "Error: datetime passed invalid date";
@@ -61,7 +57,7 @@ var getTeamNames = function(sport)
 // returns error in cb or null answer
 var getGameIdFromHeaderAndDate = function(possibleGameId, header, datetime, cb)
 {
-	var betsForGameKey = getGameIdKey(header, timeString);	
+	var betsForGameKey = getGameIdKey(header, datetime);	
 	if (betsForGameKey)
 	{
 		redClient.setnx(betsForGameKey, possibleGameId, function(err)
@@ -112,13 +108,13 @@ var getGameInfo = function (gameId, cb)
 var setGameInfo = function(gameId, gameData, cb)
 {
 	var hashKey = getGameKey(gameId);
-	
+
 	base.setMultiHashSetItems(hashKey, gameData, function(err)
 	{
 		if (err) cb (err);
 
 		addGameToList(gameId, gameData.sport)
-		// console.log(gameData.sport)
+
 		cb();
 	})
 }
@@ -130,9 +126,9 @@ var addGameToList = function(gameId, sport)
 }
 
 // get games for sport 
-var getGamesForSport = function(sport, cb)
-{
-
+// pass in fields to get specific fields
+var getGamesForSport = function(sport, fields, cb)
+{	
 	redClient.smembers(getGameKey(sport), function(err,gameIds)
 	{
 		if (err) cb(err);
@@ -143,7 +139,7 @@ var getGamesForSport = function(sport, cb)
 			hashKeys[i] = getGameKey(gameIds[i])	
 		}
 
-		base.getMultiHashSets(hashKeys, cb)
+		base.getMultiHashSets(hashKeys, fields, cb)
 	})
 }
 
