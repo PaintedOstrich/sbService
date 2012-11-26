@@ -43,6 +43,10 @@ var errorCodes =
   {
     reason:'inproperGameIdKey'
   },
+  'userAlreadyExists'{
+    // trying to create user which already exists
+    reason:'userAlreadyExists'
+  }
 }
 
 // formats and sends err message

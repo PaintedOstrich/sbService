@@ -5,101 +5,73 @@
 // Usage : s.getBetInfo(s.base, s.parseGames)
 var querystring = require('querystring');
 var cUtil = require('../user_modules/cUtil')
-var restler = require('restler');
 var xml2js = require('xml2js');
+var restler = require('restler');
 var async = require('async');
 var util = require('util');
 
 var gameModel = require('../models/game')
-var datetime = require('../user_modules/datetime')
+
 
 /* Exported Functions */
-var checkForUpdates = function()
-{
-	getBetUpdates(false);
+var checkForUpdates = function(cb) {
+	getBetUpdates(false, cb);
 }
 
-var updateAllGames = function()
-{
-	getBetUpdates(true);
+var updateAllGames = function(cb) {
+	getBetUpdates(true, cb);
 }
 /* End Exported Functions */
 
-var getBetUpdates = function(shouldDoFullUpdate)
-{
+var getBetUpdates = function(shouldDoFullUpdate, cb) {	
 	var request = restler.get(sportBetApiHandler.getUrl(shouldDoFullUpdate));
 	console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
 
-    request.on('fail', function(err) 
-    {
-      console.log('Error: Unable to reach Pick Mon Api: ', err);
+    request.on('fail', function(err) {
+      cb('Error: Unable to reach Pick Mon Api: ' + err);
       // mix panel log here
     });
 
-    request.on('success', function(data) 
-    {
-      parseGames(data);
+    request.on('success', function(data) {
+    	// FIXME restler failing tests and not autoparsing
+    	try {
+    		// Did api call auto parse result?
+			var parser = new xml2js.Parser();
+			parser.parseString(data, function (err, result) {
+				if (err) { throw err }
+				else {
+					parseGames(result, cb);		
+				} 
+			})
+    	}
+    	catch(e) {
+    		cb("Error parsing PickMon Resonse: " + e)
+    	}
     });
 };
 
-var parseGames = function(result) 
-{
-	try
-	{
-		// Did api call auto parse result?
-		var gamesArr = result['lines']['game'];		
+var parseGames = function(result, cb) {
+	try {		
+		gamesArr = result['lines']['game'];
+		if (typeof gamesArr === "undefined") {
+			cb(null, 'no games to update');
+		}
+		else {
+			async.forEach(gamesArr, parseGame,cb);
+		}	
 
-		// parse each individual game and update
-		async.forEach(gamesArr, parseGame, function(err)
-		{
-			console.log(err)
-		});
 	}
-	catch(err)
-	{
-		// let's try parsing hte response manually (restler didn't do it)
-		try
-		{
-			var parser = new xml2js.Parser();
-		    parser.parseString(result, function (err, result) 
-		    {
-      			if (err)
-      			{
-      				// error parsing result from xml to json
-      				throw err;
-      			}
-      			else
-      			{
-      				// get all games
-					gamesArr = result['lines']['game'];
-					if (typeof gamesArr === "undefined")
-					{
-						console.log('no games to update')
-					}
-					else
-					{
-						async.forEach(gamesArr, parseGame, function(err){
-							if(err) { throw "error processing game :" + err }
-						});
-					}
-					
-      			}
-    		});
-		}
-		catch(err)
-		{
-			console.log('Error: unable to process game due to '+ err)
-		}
+	catch(err) {
+		cb(err);
 	}
-	
 }
 
 // Creates new game object
 // Validates that the update time is new
 // Parses all data into a pretty array 
-var parseGame = function(item, callback) {
+var parseGame = function(item, cb) {
 	var game = new pickMonitorGame(item);
-	game.process();
+	game.process(cb);
 }
 
 // Master function to retrieve all data about a game
@@ -127,8 +99,7 @@ var pickMonitorGame = function(game) {
     this._g.totalUnder=game.line[0]['total'][0]['under'][0];
 
     this._g.winner = game.line[0]['score'][0]['winner'][0];
-    if (typeof this._g.winner === "object")
-    {
+    if (typeof this._g.winner === "object") {
     	// winner not set, so value will be undefined
     	this._g.winner = null;
     }
@@ -136,32 +107,27 @@ var pickMonitorGame = function(game) {
     this._g.period = game.line[0]['perioddesc'][0]; // used to determine whether bet update is end of game
 
     // so this field will be initialized false in db
-    this._g.hasBeenProcessed = false;
+    this._g.hasBeenProcessed = 'false';
 }
 
-pickMonitorGame.prototype.process = function()
-{
+pickMonitorGame.prototype.process = function(cb) {
 	// lose scope after 1st callback
 	var that = this;
 
-    try
-	{
-		if (that._g.gid && that._g.header && that._g.gdate)
-		{
-			var timestring = new Date(that._g.gdate);
-		    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, timestring.yyyymmdd(), function(err, gameId)
-		    {
-	    		if (err) throw err;
+    try {
+		if (that._g.gid && that._g.header && that._g.gdate) {
+			var date = new Date(that._g.gdate);
+		    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
+	    		if (err) { throw err; }
+
 	    		console.log('game id is ' + gameId)
+
 			    // on ended games
-			    if (that.isFinalScore())
-			    {
+			    if (that.isFinalScore()) {
 			    	console.log('is final score');
-			    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed)
-			    	{
-			    		console.log('has been processed: '+ hasBeenProcessed);			    		
-			    		if (!hasBeenProcessed)
-			    		{
+			    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
+			    		console.log(hasBeenProcessed)
+			    		if (hasBeenProcessed === "false") {
 				    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
 
 				    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
@@ -169,42 +135,62 @@ pickMonitorGame.prototype.process = function()
 				    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
 				    		
 				    		// game model
-
+				    		// gameController.processBetsPerGame()
+				    		
+				    		cb()
 			    		}
-			    	
+			    		else
+			    		{
+			    			// do nothing, since game has already been processed for all bets
+			    			console.log('already processed')
+			    			cb()
+			    		}
 			    	})
 			    }
-			    else
-			    {
-					// console.log(util.inspect(dataArr, true, 10));					
-					gameModel.setGameInfo(gameId, that._g, function(err)
-					{
-						if (err) console.log(err)
+			    else if (that.isGameInProcess()) {
+			    	// do nothing
+			    	console.log('is in-process game');
+			    	cb()
+			    }
+			    else {
+					// update bet info for future game
+					gameModel.setGameInfo(gameId, that._g, function(err) {
+						console.log('is unstarted game');
+						if (err) { throw err }
+						cb();
 					})
 			    }
 			})
 		}
-		else
-		{
+		else {
 			// game is not defined
+			console.log('game is not defined');
+			cb()
 		}
     }
-    catch(e)
-	{
-		console.log(e);
+    catch(e) {
+		cb('Error: Unable to process game:' +e);
 	}
 }
 	
-pickMonitorGame.prototype.isFinalScore = function()
-{
+pickMonitorGame.prototype.isFinalScore = function() {
 	// check api properties to determine ended game
-	if (typeof this._g.period !== "undefined" && typeof this._g.winner !=="object")
-	{
+	if (typeof this._g.period !== "undefined" && typeof this._g.winner !=="object") {
 		return this._g.period === "Game";	
 	}
 	
-	else 
-	{
+	else {
+		return false;
+	}
+}
+
+pickMonitorGame.prototype.isGameInProcess = function() {
+	// check api properties to determine ended game
+	if (typeof this._g.period !== "undefined" && typeof this._g.winner !=="object") {
+		return this._g.period !== "Game";	
+	}
+	
+	else {
 		return false;
 	}
 }
@@ -226,25 +212,22 @@ var sportBetApiHandler = {
 	doGradedGames:
 	{
 		// gets both graded and non graded games if 2, 1 just graded
-		graded:'1'
+		graded:'2'
 	},
 	params:
 	{
 		// this should be a comma deliminated list (so football-NFL,basketball-NBA, etc.)
 		sports:"football-NFL",
 	},
-	getUrl : function (doFullCall, doGradedGames)
-	{
+	getUrl : function (doFullCall) {
 		var url= this.basePath+querystring.stringify(this.credentials);
 		if (doFullCall)
 		{
 			url += '&' + querystring.stringify(this.doFullUpdate);
 		}
-
-		if (doGradedGames)
-		{
-			url += '&' + querystring.stringify(this.doGradedGames);
-		}
+	
+		// get both graded and non graded games
+		url += '&' + querystring.stringify(this.doGradedGames);
 
 		if (cUtil.getNumElements(this.params)>0)
 		{

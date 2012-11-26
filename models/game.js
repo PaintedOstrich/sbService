@@ -9,6 +9,7 @@ var cUtil = require('../user_modules/cUtil');
 var base = require('./base');
 
 var error = require('../user_modules/errorHandler')
+var datetime = require('../user_modules/datetime')
 
 // get game id key - generated from header since each game from pick mon generates multiple ids
 var getGameIdKey = function(header, yyyymmdd)
@@ -55,9 +56,10 @@ var getTeamNames = function(sport)
 }
 
 // returns error in cb or null answer
-var getGameIdFromHeaderAndDate = function(possibleGameId, header, datetime, cb)
+var getGameIdFromHeaderAndDate = function(possibleGameId, header, date, cb)
 {
-	var betsForGameKey = getGameIdKey(header, datetime);	
+	var timestring = date.yyyymmdd()
+	var betsForGameKey = getGameIdKey(header, timestring);	
 	if (betsForGameKey)
 	{
 		redClient.setnx(betsForGameKey, possibleGameId, function(err)

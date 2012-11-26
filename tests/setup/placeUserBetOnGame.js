@@ -1,0 +1,1 @@
+/* plaecs a user bet on a random game */

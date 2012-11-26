@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<lines>
+<game>
+<id>428642</id>
+<header>Seattle Seahawks At Miami Dolphins</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-25 13:00:00</gamedate>
+<last_update>2012-11-25 10:57:04</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>235</rotnum>
+<name>Seattle Seahawks</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>236</rotnum>
+<name>Miami Dolphins</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-11-25 12:55:00</wagercutoff>
+<money>
+<team1>-120</team1>
+<team2>100</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>0.5</points>
+<team1>125</team1>
+<team2>-145</team2>
+</spread>
+<total>
+<points>12.5</points>
+<over>100</over>
+<under>-120</under>
+</total>
+<teamtotal>
+<team1>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team1>
+<team2>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>426078</id>
+<header>Seattle Seahawks At Miami Dolphins</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-25 13:00:00</gamedate>
+<last_update>2012-11-25 16:00:08</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>235</rotnum>
+<name>Seattle Seahawks</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>236</rotnum>
+<name>Miami Dolphins</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>1</periodnum>
+<perioddesc>1st Half</perioddesc>
+<wagercutoff>2012-11-25 12:55:00</wagercutoff>
+<money>
+<team1>-155</team1>
+<team2>135</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>2.5</points>
+<team1>-110</team1>
+<team2>-110</team2>
+</spread>
+<total>
+<points>19.5</points>
+<over>-120</over>
+<under>100</under>
+</total>
+<teamtotal>
+<team1>
+<points>10.5</points>
+<over>-105</over>
+<under>-125</under>
+</team1>
+<team2>
+<points>7.5</points>
+<over>-135</over>
+<under>105</under>
+</team2>
+</teamtotal>
+<score>
+<team1>7</team1>
+<team2>7</team2>
+<winner>T</winner>
+</score>
+</line>
+</game>
+<game>
+<id>425029</id>
+<header>Seattle Seahawks At Miami Dolphins</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-25 13:00:00</gamedate>
+<last_update>2012-11-25 16:00:07</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>235</rotnum>
+<name>Seattle Seahawks</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>236</rotnum>
+<name>Miami Dolphins</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-11-25 13:00:00</wagercutoff>
+<money>
+<team1>-170</team1>
+<team2>160</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>3</points>
+<team1>-121</team1>
+<team2>111</team2>
+</spread>
+<total>
+<points>37.5</points>
+<over>-105</over>
+<under>-105</under>
+</total>
+<teamtotal>
+<team1>
+<points>20.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>17.5</points>
+<over>105</over>
+<under>-125</under>
+</team2>
+</teamtotal>
+<score>
+<team1>21</team1>
+<team2>24</team2>
+<winner>Miami Dolphins</winner>
+</score>
+</line>
+</game>
+</lines>
