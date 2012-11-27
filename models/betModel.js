@@ -33,6 +33,11 @@ var setCalledForBet = function(betKey, cb) {
 	redClient.hset(betKey, 'called', 'true', cb);
 }
 
+// update bet to called
+var setEndedForBet = function(betKey, cb) {
+	redClient.hset(betKey, 'ended', 'true', cb);
+}
+
 // gets All info for specific bet
 var getBetInfo = function(betKey, cb) {
 	var hkeys = [betKey];
@@ -64,6 +69,7 @@ module.exports =
 	saveBet   : saveBet,
 	setCalledForBet : setCalledForBet,
 	addBetForUsers : addBetForUsers,
+	setEndedForBet : setEndedForBet,
 }
 
 // get user 

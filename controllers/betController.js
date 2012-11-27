@@ -3,7 +3,7 @@
  * Bet Response logic
  */
  var util = require('util')
- 
+ var async = require('async')
  var resMes = require('../user_modules/responseMessages')
  var betModel = require('../models/betModel');
  var gameModel = require('../models/gameModel');
@@ -14,9 +14,54 @@
  var datetime = require('../user_modules/datetime');
  var errorHandler = require('../user_modules/errorHandler');
 	
-// upates Bet after game won
-var endBet = function(gameId) {
-	// betModel.get
+// upates All bets after game won
+var endBets = function(gameId, winnerGameId, winSpread,  cb) {
+	try {
+		// ratio of winnings to amount bet
+		var winRatio = calcWinRatio(odds);
+		gameModel.getBetsForGame(gameId, function(err, betIds) {
+			async.forEach(betIds, endBet,function(err) {
+				if(err) {
+					cb(err)
+				}
+				else {
+					gameModel.setProcessGameComplete(gameId, cb);
+				}
+			})
+		})
+	}
+	catch(err) {
+		cb(err);
+	}
+}
+
+/* ends individual bet, awarding user winnings and changes 
+ * both bet ended to true and each 
+ */
+var endBet = function(winnerGameId, winRatio) {
+	return function(betKey, cb) {
+		betModel.getBetInfo(betKey, function(err, betInfo) {
+			var winnerFBId = winnerGameId === betInfo.initTeamBet ? betInfo.initFBId : betInfo.callFBId;
+			// update user winnings
+			updateWinnings(winnerFBId, betInfo.betAmount, winRatio, function(err) {
+				// mark bet as ended
+				betModel.setEndedForBet(betKey, cb)
+			})
+		})
+	}
+}
+
+/* Calculate win ratio from odds 
+ * if spread is -105, then you bet $105 dollars to win $100
+ * if spread is 120, then you bet $100 dollars to win $120
+ */
+var calcWinRatio = function(winSpread) {
+	odds = parseFloat(winSpread);
+	if (odds < 0) {
+		return 100.0/odds;
+	} else {
+		return odds/100.0;
+	}
 }
 
 // processes bet params and makes sure all required fields are present, then makes bet
