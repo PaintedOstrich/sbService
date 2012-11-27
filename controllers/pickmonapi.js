@@ -83,8 +83,8 @@ var pickMonitorGame = function(game) {
 	this._g.gid=game.id[0];
     this._g.gdate=game.gamedate[0];
     this._g.header=game.header[0];
-    this._g.team1=game.team1[0]['name'][0];
-    this._g.team2=game.team2[0]['name'][0];
+    this._g.team1Name=game.team1[0]['name'][0];
+    this._g.team2Name=game.team2[0]['name'][0];
     this._g.sport=game.sportsubtype[0];
     this._g.lastUpdate=game.last_update[0];
     this._g.wagerCutoff=game.line[0]['wagercutoff'][0];
@@ -126,7 +126,7 @@ pickMonitorGame.prototype.process = function(cb) {
 			    if (that.isFinalScore()) {
 			    	console.log('is final score');
 			    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
-			    		console.log(hasBeenProcessed)
+			    		console.log('game has been procesed:' + hasBeenProcessed)
 			    		if (hasBeenProcessed === "false") {
 				    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
 
@@ -169,7 +169,7 @@ pickMonitorGame.prototype.process = function(cb) {
 		}
     }
     catch(e) {
-		cb('Error: Unable to process game:' +e);
+		cb('Error: Unable to process game:' +e.stack);
 	}
 }
 	

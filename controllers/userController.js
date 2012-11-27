@@ -4,9 +4,11 @@
  */
 
  var util = require('util')
- 
+ var async = require('async');
  var errorHandler = require('../user_modules/errorHandler')
  var userModel = require('../models/userModel')
+ var gameController = require('./gameController')
+
  var cUtil = require('../user_modules/cUtil');
  var resMes = require('../user_modules/responseMessages');
  var verifyFBLogin = require('../user_modules/fb/verifyFBLogin');
@@ -20,6 +22,11 @@ var login = function(signedreq, cb) {
 	else {
 		cb(errorHandler.errorCodes.invalidSignedRequest);
 	}
+}
+
+// gets all user info on startup
+var getBaseUserInfo = function(uid, cb) {
+	async.parallel()
 }
 
 var initUser = function(uid, name, balance, cb) {
@@ -81,19 +88,24 @@ var getUserBets = function(uid, filter, cb) {
 			useOneFilter = false;
 		}
 
+		var result = {};
 		userModel.getUserBets(uid, function(err, data) {
 			if (useOneFilter) {
-				var result = filterResults(filter, uid, data)
+				result[filter] = filterResults(filter, uid, data)
 			}
 			else
 			{
-				var result = {};
+				
 				for (var i = 0; i<filters.length; i++) {
 					result[filters[i]] = filterResults(filters[i], uid, data);
 				}
 			}
 
-			cb(null, result)
+			gameController.getAssocBetInfo(data, function(err, assocGameInfo) {
+				result['gameInfo'] = assocGameInfo;
+				cb(null, result);	
+			})
+			
 		})
 	
 	}
@@ -139,4 +151,5 @@ module.exports = {
 	getUserBets:getUserBets,
 	initUser: initUser,
 	login:login,
+	getBaseUserInfo : getBaseUserInfo,
 }

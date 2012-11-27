@@ -28,14 +28,22 @@ var userHandle = function(app) {
 	 *  
 	 */
     app.get('/api/user/login/:signedrequest', function(req, res) {
-		userController.login(req.params.signedrequest,function(err, value)
+		userController.login(req.params.signedrequest,function(err, data)
 		{
 			if (err) {
 				errorHandler.send(res, err)
 			}
 			else
 			{
-				res.send(value)
+				var uid = data.user_id;
+				userController.getBaseUserInfo(uid, function(err, baseInfo) {
+					if (err) {
+						errorHandler.send(res, err);
+					}
+					else {
+						send(baseInfo)
+					}
+				})
 			}
 		})
     });

@@ -50,14 +50,17 @@ var getBetsForGameKey = function(gameId)
 	return 'game|' + gameId + + '|bets';
 }
 
+var teamNameIdHash = 'teamNamesHash';
+
 var getTeamNames = function(sport)
 {
 	console.log("get team names for " + sport + " is "+ getTeamNames)
 }
 
 // returns error in cb or null answer
-var getGameIdFromHeaderAndDate = function(possibleGameId, header, date, cb)
+var getGameIdFromHeaderAndDate = function(possibleGameId, header, datestring, cb)
 {
+	var date = new Date(datestring)
 	var timestring = date.yyyymmdd()
 	var betsForGameKey = getGameIdKey(header, timestring);	
 	if (betsForGameKey)
@@ -68,6 +71,77 @@ var getGameIdFromHeaderAndDate = function(possibleGameId, header, date, cb)
 		})
 	}
 	else cb(error.errorCodes.inproperGameIdKey)
+}
+
+// gets unique team id or creates one if it doesn't exist
+var getUniqueTeamId = function(teamName, cb) {
+	try
+	{
+		redClient.hexists(teamNameIdHash, teamName, function(err, doesExist) {
+			if (!doesExist) {
+				// generate new team id and return
+				generateUniqueTeamId(teamNameIdHash, function(err, newTeamId) {
+					saveTeamNameIdMapping(teamNameIdHash, teamName, newTeamId, cb)
+				})
+			}
+			else
+			{
+				redClient.hget(teamNameIdHash, teamName, cb);
+			}
+		})
+	}
+	catch(err)
+	{
+		cb(err)
+	}
+}
+
+var getUniqueTeamIds = function(teamNames, cb)
+{
+	var totalCount = teamNames.length;
+	var finishedCount = 0;
+
+	// if no keys, return
+	if (totalCount == 0)
+	{
+		cb();
+	}
+
+	try {
+		var teamNamesToIds = {};
+		for (var index in teamNames)
+		{
+			var teamName = teamNames[index];
+
+			getUniqueTeamId(teamName, function(teamName) {
+				// pass callback using closure to key unique betid in scope per call	
+				return function setTeamIdForName(err, teamId) {
+					teamNamesToIds[teamName] = teamId;
+					finishedCount++;
+					if (totalCount == finishedCount) {
+						cb(null, teamNamesToIds)
+					}
+				}
+			}(teamName))
+		}
+	}
+	catch(err) {
+		cb(err);
+	}
+}
+
+// maps teamName -> teamId and teamId -> teamName
+var saveTeamNameIdMapping = function(teamNameIdHash, teamName, teamId, cb){
+	redClient.hset(teamNameIdHash, teamName, teamId, function(err) {
+		redClient.hset(teamNameIdHash, teamId, teamName, function(err) {
+			cb(teamId)
+		})
+	})
+}
+
+// generates uinque team id using a counter
+var generateUniqueTeamId = function(teamNameIdHash, cb) {
+	redClient.HINCRBY(teamNameIdHash, 'teamIds', 1, cb);
 }
 
 // add user bet for this game
@@ -84,47 +158,116 @@ var getBetsForGame = function(gameId)
 	redClient.smembers(gamekey, cb);
 }
 
+// returns whether game has been completely processed
 var gameHasBeenProcessed = function(gameId,cb)
 {
 	var gameKey = getGameKey(gameId);
 	redClient.hget(gameKey, 'hasBeenProcessed', cb);
 }
 
+// cleans up game and marks it so it is not processed again
+var setProcessGameComplete = function(gameId, cb) {
+	try {
+		getGameInfo(gameId, function(err, gameInfo) {
+			var gameKey = getGameKey(gameId);
+			redClient.hset(gameKey, 'hasBeenProcessed', 'true', function(err) {
+				// FIXME need callback on removeGame function???
+				removeGameFromList(gameId, gameInfo.sport, cb)
+			})
+		})
+	}
+	catch(err) {
+		cb(err)
+	}
+	
+}
+
 // returns an object with all bet info for a given game
 var getGameInfo = function (gameId, cb)
 {
 	var key = getGameKey(gameId);
-	console.log(key)
-	
-	redClient.hgetall(key, function(err, betInfo)
+	try 
 	{
-		if (err){
-			cb(err);
-		} 
+		redClient.hgetall(key, function(err, betInfo)
+		{
+			if (err){
+				cb(err);
+			} 
 
-		// result will be undefined if bet doesn't exist
-		cb(null, betInfo);	
-	});
+			// result will be undefined if bet doesn't exist
+			cb(null, betInfo);	
+		});
+	}
+	catch(err) {
+		cb(err)
+	}
+	
 }
 
+// shouldDoGameUpdate
+var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
+	try
+	{
+		var thisDate = new Date(thisUpdate);
+		var gameKey = getGameKey(gameId);
+		redClient.hget(gameKey, 'lastUpdate', function(err, datestring) {
+			var lastUpdate = new Date(datestring);
+			cb(null, lastUpdate.isBefore(thisUpdate));
+		})
+	}
+	catch(err) {
+		cb(err)
+	}
+}
+
+// sets info for game into persistent redis store
 var setGameInfo = function(gameId, gameData, cb)
 {
-	var hashKey = getGameKey(gameId);
-
-	base.setMultiHashSetItems(hashKey, gameData, function(err)
+	var teamNames = [gameData.team1Name,gameData.team2Name];
+	console.log(teamNames)
+	try
 	{
-		if (err) cb (err);
+		shouldDoGameUpdate(gameId, gameData.lastUpdate, function(err, doUpdate) {
+			if (doUpdate) {
+				// update games since this update is more recent than the one currently stored
+				getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
+					if (!err) {
+						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
+						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];	
+					}
 
-		addGameToList(gameId, gameData.sport)
+					var hashKey = getGameKey(gameId);
 
-		cb();
-	})
+					base.setMultiHashSetItems(hashKey, gameData, function(err)
+					{
+						if (err) cb (err);
+
+						addGameToList(gameId, gameData.sport)
+
+						cb();
+					})
+				})
+			}
+			else {
+				// 
+				cb()
+			}
+		})
+		
+	}
+	catch(err) {
+		cb(err)
+	}
 }
 
 // adds game to list of betting options for the sport
-var addGameToList = function(gameId, sport)
-{
+var addGameToList = function(gameId, sport) {
 	redClient.sadd(getGameKey(sport), gameId);
+}
+
+// removes the game from this list
+var removeGameFromList = function(gameId, sport, cb) {
+	redClient.srem(getGameKey(sport), gameId, cb);
 }
 
 // get games for sport 
@@ -145,10 +288,16 @@ var getGamesForSport = function(sport, fields, cb)
 	})
 }
 
-var getTeamNamesFromGame = function(gameId, cb)
+var getTeamNamesAndDateForGames = function(gameIds, cb)
 {
-	var fields = ["team1", "team2"];
-	base.getMultiHashSets([getGameKey(gameId)], fields, cb);
+	var fields = ['gdate', 'team1Name', 'team2Name'];
+	try {
+		base.getMultiHashSetsAsObject(gameIds, getGameKey, fields, cb);	
+	}
+	catch(err)
+	{
+		cb(err)
+	}
 }
 
 module.exports = 
@@ -157,9 +306,12 @@ module.exports =
 	setGameInfo : setGameInfo,
 	getGameInfo : getGameInfo,
 	getGamesForSport : getGamesForSport,
-	getTeamNamesFromGame : getTeamNamesFromGame,
+	getTeamNamesAndDateForGames : getTeamNamesAndDateForGames,
 	addBetForGame : addBetForGame,
 	getBetsForGame : getBetsForGame,
 	getGameIdFromHeaderAndDate : getGameIdFromHeaderAndDate,
 	gameHasBeenProcessed : gameHasBeenProcessed,
+	getUniqueTeamIds : getUniqueTeamIds,
+	removeGameFromList : removeGameFromList,
+	setProcessGameComplete : setProcessGameComplete,
 }
