@@ -23,84 +23,20 @@ var getBetKey = function(gameId, initFBId, callFBId, timeKey)
 	return betKey;
 }
 
-/* Main db functions */
-// takes in a betInfo object (validated in api) and stores it
-// also adds key to each of users sets of games bet on 
-// each bet unique since bet key includes timestamp
-var makeBet = function(betInfo, cb)
-{
-	
+// save bet info
+var saveBet= function(betKey, betInfo, cb) {
+	base.setMultiHashSetItems(betKey, betInfo, cb);
 }
 
-// refactor to get all bet info and then process
-var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
-{
-	// recreate bet key
-	var betKey = getBetKey(gameId, initFBId, callFBId, timeKey);
+// update bet to called
+var setCalledForBet = function(betKey, cb) {
+	redClient.hset(betKey, 'called', 'true', cb);
+}
 
-	try
-	{
-		// also checks if bet exists or this field will not be present
-		redClient.hget(betKey, 'called', function(err, value)
-		{
-			if(value && value === "false")
-			{
-				// check that time is valid
-				redClient.hget(betKey, 'called', function(err, value)
-				{
-
-					// get bet amount
-					redClient.hget(betKey, 'betAmount', function(err, betAmount)
-					{
-						if (err) throw err;
-
-						// get user balance and check that it's more than bet amount, otherwise need to watch add
-						user.getUserBalance(callFBId, function(err, userMoney)
-						{
-							if (err) throw err;
-
-							if (parseFloat(userMoney) >= parseFloat(betAmount))
-							{
-								// set bet called = true
-								redClient.hset(betKey, 'called', 'true', function(err)
-								{
-									if (err) throw err;
-
-									// update new user balance
-									user.updateUserBalance(callFBId, -parseFloat(betAmount), function(err, updatedMoney)
-									{
-										if (err) throw err;
-
-										// add to list of bets per game
-										games.addBetForGame(betKey, gameId, function(err)
-										{
-											if (err) throw err;
-											cb();
-										})
-										
-									})
-								});
-							}
-							else
-							{
-								// user must watch ad then rebet
-								cb(ad = {amountNeeded: (betAmount - userMoney)})
-							}
-						
-						})
-					})	
-				})
-			}
-			else
-			{
-				cb({err:"bet already called or doesnt exist"})
-			}
-		})
-	}
-	catch(err)
-	{
-		cb(err)
-	}
+// gets All info for specific bet
+var getBetInfo = function(betKey, cb) {
+	var hkeys = [betKey];
+	redClient.hgetall(betKey, cb);
 }
 
 // adds a bet to each user
@@ -121,18 +57,13 @@ var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 	})
 }
 
-// gets Bet Info necessary for update after game ends
-var getBetInfoForProcess = function(gameId)
-{
-	var betKey = getBetKey(gameId);
-
-}
-
 module.exports = 
 {
 	getBetKey : getBetKey,
-	makeBet: makeBet,
-	callBet: callBet,
+	getBetInfo : getBetInfo,
+	saveBet   : saveBet,
+	setCalledForBet : setCalledForBet,
+	addBetForUsers : addBetForUsers,
 }
 
 // get user 

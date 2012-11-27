@@ -44,12 +44,23 @@ var getUserBalance = function(userId, cb)
 {
 	redClient.hget(getUserKey(userId), 'balance', function(err, value)
 	{
-		err && cb(err);
-
 		cb(null, value)
 	})
 }
 
+var setUserName = function(uid, name, cb) {
+	var parts = name.split(' ');
+	var firstname = parts[0];
+	var lastname = parts.slice(1).join(' ');
+	var names = {
+		fullname:name,
+		firstname:firstname,
+		lastname:lastname
+	}
+
+	// set first, last and full names
+	base.setMultiHashSetItems(getUserKey(uid),names, cb)
+}
 /* batched request of user names */
 var getUserNames = function(userIds, cb)
 {
@@ -103,4 +114,5 @@ module.exports =
 	updateUserBalance : updateUserBalance,
 	userExists : userExists,
 	getUserBets: getUserBets,
+	setUserName : setUserName,
 }

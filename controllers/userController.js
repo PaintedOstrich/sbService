@@ -32,20 +32,24 @@ var initUser = function(uid, name, balance, cb) {
 				cb(errorHandler.errorCodes.userAlreadyExists)
 			}
 			else {
-				userModel.updateUserBalance(uid, balance, function(err, data) {				
+				userModel.updateUserBalance(uid, balance, function(err, data) {		
 					if (balance != data.balance) {
 						cb(errorHandler.errorCodes.updateBalanceError);
 					}
 					else {
-						var data = {
-							uid:uid,
-							name:name,
-							balance: data.balance,
-						}
+						userModel.setUserName(uid, name, function(err){
+							var newUserInfo = {
+								uid:uid,
+								name:name,
+								balance: data.balance,
+							}
+							
+							cb(null, newUserInfo)
+						})
 						
-						cb(null, data)
 					}
 				})
+
 			}
 		})
 	}
@@ -54,49 +58,47 @@ var initUser = function(uid, name, balance, cb) {
 	}
 }
 
-var filters = ['current', 'past', 'userAccept', 'pendingOtherAccept'];
+var filters = ['current', 'past', 'pendingUserAccept', 'pendingOtherAccept'];
 // Retrieve all user bets
 // @params: uid, [filter ,] cb
 var getUserBets = function(uid, filter, cb) {	
 	// return just specific filter result
-	var useOneFilter = true;
+	try {
+		var useOneFilter = true;
 
-	if (typeof filter === "function") {
-		// return all results since no filter requested
-		cb = filter;
-		useOneFilter = false;
-	}
-	else if (filters.indexOf(filter) === -1)
-	{	
-		// return all results if filter doesn't exist
-		useOneFilter = false;
-	}
+		// check if user only wants one type of result
+		if (typeof filter === "function") {
+			// return all results since no filter requested
+			cb = filter;
+			useOneFilter = false;
+		}
+		else if (typeof filter === "undefined") {
+			useOneFilter = false;
+		}
+		else if (filter && filters.indexOf(filter) === -1)
+		{	
+			// return all results if filter doesn't exist
+			useOneFilter = false;
+		}
 
-	// make sure uid is all numbers
-	if (!cUtil.isOnlyNumber(uid)) {
-		cb(resMes.createErrorMessage(uid + ' is not a valid uid'))
-	}
-	else {
 		userModel.getUserBets(uid, function(err, data) {
-			if (err) {
-				cb(err)
+			if (useOneFilter) {
+				var result = filterResults(filter, uid, data)
 			}
-			else {
+			else
+			{
+				var result = {};
+				for (var i = 0; i<filters.length; i++) {
+					result[filters[i]] = filterResults(filters[i], uid, data);
+				}
+			}
 
-				if (useOneFilter) {
-					var result = filterResults(filter, uid, data)
-				}
-				else
-				{
-					var result = {};
-					for (var i = 0; i<filters.length; i++) {
-						result[filters[i]] == filterResults(filters[i], uid, data);
-					}
-				}
-				
-				cb(null, result)
-			}
+			cb(null, result)
 		})
+	
+	}
+	catch(err) {
+		cb(err)
 	}
 }
 
@@ -118,7 +120,7 @@ var filterResults = function(filterType, uid, data) {
 		    results.push(bet)
 			}   
 		}
-		else if (filterType === 'userAccept') {
+		else if (filterType === 'pendingUserAccept') {
 			if(bet.callFBId === uid && bet.called === 'false') {
 		    results.push(bet)
 			}                         

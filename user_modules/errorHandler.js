@@ -56,6 +56,12 @@ var errorCodes =
   'insufficientFunds' : {
     reason :'insufficientFunds'
   },
+  'betAlreadyCalled' : {
+    reason :'betAlreadyCalled'
+  },
+  'betDoesNotExist' : {
+    reason :'betDoesNotExist'
+  }
 }
 
 // formats and sends err message
@@ -67,7 +73,7 @@ var sendError = function(res, errorCodeObject)
   }
 	var error = 
 	{
-		reason: errorCodeObject
+      err: errorCodeObject  
 	}
 
 	res.send(error);

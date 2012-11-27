@@ -11,13 +11,12 @@
 var userHandle = function(app) {
     // Get Current User's balance 
     app.get('/api/user/:uid/balance', function(req, res) {
-		var uid = req.params.userid;
+		var uid = req.params.uid;
 		userModel.getUserBalance(uid, function(err, data) {
 			if (err) {
 				errorHandler.send(res, err)
 			} 
-			else
-			{
+			else {
 				res.send(data)
 			}
 		});

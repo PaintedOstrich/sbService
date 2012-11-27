@@ -6,7 +6,7 @@
  var util = require('util')
 
  var betController = require('../controllers/betController')
- var betStatsController = require('../controllers/betStatsController');
+ var betStatsModel = require('../models/betStatsModel');
  var errorHandler = require('../user_modules/errorHandler')
  var resMes = require('../user_modules/responseMessages')
 
@@ -19,7 +19,7 @@ var bet = function(app) {
 		betController.makeBet(query, function(err, data)
         {
             if(err) {
-                res.send(err)
+                errorHandler.send(res, err)
             }
             else {
                 res.send(data)
@@ -37,7 +37,7 @@ var bet = function(app) {
             if (err) errorHandler.send(res,err)
             else
             {
-                res.send(resMes.createSuccessMessage())
+                res.send(data)
             }
         });
     });
@@ -50,7 +50,15 @@ var bet = function(app) {
     // });
 
      app.get('/api/bet/recent', function(req, res) {
-        betStatsController.getRecentBets(res);
+        betStatsModel.getRecentBets(function(err, data)
+        {
+            if (err) {
+                errorHandler.send(res, err);
+            } 
+            else {
+                res.send(data);
+            }
+        });
     });
 }
  
