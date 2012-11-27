@@ -6,7 +6,7 @@
  var util = require('util')
  
  var errorHandler = require('../user_modules/errorHandler')
- var userModel = require('../models/user')
+ var userModel = require('../models/userModel')
  var cUtil = require('../user_modules/cUtil');
  var resMes = require('../user_modules/responseMessages');
  var verifyFBLogin = require('../user_modules/fb/verifyFBLogin');
@@ -20,13 +20,6 @@ var login = function(signedreq, cb) {
 	else {
 		cb(errorHandler.errorCodes.invalidSignedRequest);
 	}
-}
-  
-var getUserBalance = function(res, userid) {
-	userModel.getUserBalance(userid, function(err, data) {
-		err && errorHandler.send(res, err)
-		res.send(data);	
-	})
 }
 
 var initUser = function(uid, name, balance, cb) {
@@ -86,7 +79,7 @@ var getUserBets = function(uid, filter, cb) {
 	else {
 		userModel.getUserBets(uid, function(err, data) {
 			if (err) {
-				cb(resMes.createErrorMessage(err))
+				cb(err)
 			}
 			else {
 
@@ -101,7 +94,7 @@ var getUserBets = function(uid, filter, cb) {
 					}
 				}
 				
-				cb(null, result;
+				cb(null, result)
 			}
 		})
 	}
@@ -141,7 +134,6 @@ var filterResults = function(filterType, uid, data) {
 }
 
 module.exports = {
-	getUserBalance:getUserBalance,	
 	getUserBets:getUserBets,
 	initUser: initUser,
 	login:login,

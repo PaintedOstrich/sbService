@@ -5,9 +5,9 @@
 var redClient = require('../config/redisConfig')()
 
 var cUtil = require('../user_modules/cUtil');
-var user = require('./user');
+var user = require('./userModel');
 var base = require('./base');
-var gameModel = require('./game');
+var gameModel = require('./gameModel');
 
 var recentBetsAllKey = 'recentbets|all';
 var totalRecentStored = 20;

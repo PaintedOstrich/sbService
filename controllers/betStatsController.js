@@ -1,5 +1,5 @@
 
-var betStatsModel = require('../models/betStats');
+var betStatsModel = require('../models/betStatsModel');
 var resMes = require('../user_modules/responseMessages')
 var errorHandler = require('../user_modules/errorHandler')
 

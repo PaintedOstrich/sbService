@@ -4,14 +4,23 @@
  var url = require('url');
  var util = require('util')
 
- var userController = require('../controllers/user')
+ var userController = require('../controllers/userController')
+ var userModel = require('../models/userModel')
  var errorHandler = require('../user_modules/errorHandler')
 
 var userHandle = function(app) {
-    // Get Current User's balance
+    // Get Current User's balance 
     app.get('/api/user/:uid/balance', function(req, res) {
 		var uid = req.params.userid;
-		userController.getUserBalance(res, uid);
+		userModel.getUserBalance(uid, function(err, data) {
+			if (err) {
+				errorHandler.send(res, err)
+			} 
+			else
+			{
+				res.send(data)
+			}
+		});
     });
 
     /* Check if user is correctly logged in, and return batch info
@@ -22,7 +31,9 @@ var userHandle = function(app) {
     app.get('/api/user/login/:signedrequest', function(req, res) {
 		userController.login(req.params.signedrequest,function(err, value)
 		{
-			if (err) errorHandler.send(res, err)
+			if (err) {
+				errorHandler.send(res, err)
+			}
 			else
 			{
 				res.send(value)
@@ -41,9 +52,10 @@ var userHandle = function(app) {
 
 		userController.getUserBets(uid, filter, function(err, data)
 		{
-			if(err) errorHandler.send(res, err)
-			else
-			{
+			if(err) {
+				errorHandler.send(res, err)
+			}
+			else {
 				res.send(data)
 			}
 		});

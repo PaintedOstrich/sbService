@@ -43,10 +43,19 @@ var errorCodes =
   {
     reason:'inproperGameIdKey'
   },
-  'userAlreadyExists'{
+  'userAlreadyExists' : {
     // trying to create user which already exists
     reason:'userAlreadyExists'
-  }
+  },
+  'missingParamaters' : {
+    reason:'missingParameters'
+  },
+  'outOfDate' : {
+    reason:'outOfDate'
+  },
+  'insufficientFunds' : {
+    reason :'insufficientFunds'
+  },
 }
 
 // formats and sends err message
@@ -64,8 +73,23 @@ var sendError = function(res, errorCodeObject)
 	res.send(error);
 }
 
+// creates a custom error code
+// @params: error == error code object, params = array of values or string
+// returns new error code
+var createErrorMessage = function(error, params) {
+  if (typeof error === 'string')
+  {
+    throw new Error('createErrorMessage must be passed error object');
+  }
+
+ error.data = params;
+
+  return error;
+}
+
 module.exports = 
 {
+  createErrorMessage : createErrorMessage,
 	send: sendError,
 	errorCodes: errorCodes,
 }

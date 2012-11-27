@@ -10,7 +10,7 @@ var restler = require('restler');
 var async = require('async');
 var util = require('util');
 
-var gameModel = require('../models/game')
+var gameModel = require('../models/gameModel')
 
 
 /* Exported Functions */

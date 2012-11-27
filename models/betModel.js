@@ -5,10 +5,9 @@ var redClient = require('../config/redisConfig')()
 
 var cUtil = require('../user_modules/cUtil');
 var base = require('./base');
-var games = require('./game');
+var games = require('./gameModel');
 var keys = require('./keys');
-var user = require('./user');
-var betStats = require('./betStats');
+var user = require('./userModel');
 var datetime = require('../user_modules/datetime');
 var errorHandler = require('../user_modules/errorHandler');
 /* Beginning of Redis Wrapper for Bets */
@@ -30,83 +29,7 @@ var getBetKey = function(gameId, initFBId, callFBId, timeKey)
 // each bet unique since bet key includes timestamp
 var makeBet = function(betInfo, cb)
 {
-	betInfo.called = false;
-	betInfo.ended = false;
-	betInfo.timeKey = new Date().getTime();
-	var hkey = getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.timeKey);
-
-	try	
-	{
-		//make sure bet amount is greater than 0 otherwise return
-		if (betInfo.betAmount <= 0)
-		{
-			cb(errorHandler.errorCodes.betZeroOrNegative);
-		}
-		else
-		{
-			games.getGameInfo(betInfo.gameId, function(err, gameInfo)
-			{
-				// error handling if game doesn't exist
-				if(err) throw err;
-				
-				if (gameInfo == null)
-				{
-					cb(errorHandler.errorCodes.gameDoesNotExist);
-				} 
-				// make sure odss are the same
-				else if (!checkBetInfo(betInfo, gameInfo))
-				{
-					err = 
-					{
-						reason: 'outofdate',
-						data : gameInfo
-					}
-
-					cb(err);
-				}
-				else
-				{
-					user.getUserBalance(betInfo.initFBId, function(err, userMoney)
-					{
-						var userMoney = parseFloat(userMoney);
-						if(err) throw err;
-						else if (userMoney >= parseFloat(betInfo.betAmount))
-						{
-							// user has enough money to make bet
-							base.setMultiHashSetItems(hkey, betInfo, function(err)
-							{
-								if (err) throw err;
-
-								// add to user list of bets
-								addBetForUsers(hkey, betInfo.initFBId, betInfo.callFBId, function(err)
-								{
-									if (err) throw err;
-
-									user.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney)
-									{
-										if(err) throw err;
-										else
-										{
-											betStats.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, cb)	
-										}
-									})
-								});
-							})
-						}
-						else
-						{
-							// user must watch ad then rebet
-							cb(ad = {amountNeeded: (betInfo.betAmount - userMoney)})
-						}
-					})
-				}
-			})
-		}
-	}
-	catch(err)
-	{
-		cb(err);
-	}
+	
 }
 
 // refactor to get all bet info and then process
@@ -120,8 +43,6 @@ var callBet = function(gameId, initFBId, callFBId, timeKey, cb)
 		// also checks if bet exists or this field will not be present
 		redClient.hget(betKey, 'called', function(err, value)
 		{
-			if (err) throw err;
-
 			if(value && value === "false")
 			{
 				// check that time is valid
@@ -200,43 +121,6 @@ var addBetForUsers = function(betKey, initFBId, callFBId, cb)
 	})
 }
 
-// verifies that correct type of bet submitted for user
-// not changing of odds
-var checkBetInfo = function(betInfo, gameInfo)
-{
-	checkParams = [];
-	if(betInfo.type === "spread")
-	{
-		// process bet on spread
-		checkParams.push("spreadTeam1", "spreadTeam2")
-		
-	}
-	else if(betInfo.type === "score")
-	{
-		// process points on game
-		checkParams.push("pointsOver", "pointsUnder")
-	}
-	else if(betInfo.type === "money")
-	{
-		// process points on money
-		checkParams.push("moneyTeam1", "moneyTeam2", "moneyDraw")
-	}
-
-	for (var i=0; i < checkParams.length; i++)
-	{
-		if (betInfo[checkParams[i]] != gameInfo[checkParams[i]])
-		{
-			return false;
-		}
-	}
-
-	// check that bet is before wager cutoff
-	var now = new Date();
-	var wagerCutoff = new Date(betInfo.wagerCutoff);
-	
-	return now.isBefore(wagerCutoff);
-}
-
 // gets Bet Info necessary for update after game ends
 var getBetInfoForProcess = function(gameId)
 {
@@ -246,6 +130,7 @@ var getBetInfoForProcess = function(gameId)
 
 module.exports = 
 {
+	getBetKey : getBetKey,
 	makeBet: makeBet,
 	callBet: callBet,
 }

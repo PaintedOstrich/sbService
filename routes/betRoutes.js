@@ -5,8 +5,8 @@
  var url = require('url');
  var util = require('util')
 
- var betController = require('../controllers/bet')
- var betStatsController = require('../controllers/betStats');
+ var betController = require('../controllers/betController')
+ var betStatsController = require('../controllers/betStatsController');
  var errorHandler = require('../user_modules/errorHandler')
  var resMes = require('../user_modules/responseMessages')
 
@@ -16,7 +16,15 @@ var bet = function(app) {
     	var url_parts = url.parse(req.url, true);
 		var query = url_parts.query;
 		
-		betController.makeBet(res, query);
+		betController.makeBet(query, function(err, data)
+        {
+            if(err) {
+                res.send(err)
+            }
+            else {
+                res.send(data)
+            }
+        });
     });
 
     // Call a bet (Accept)

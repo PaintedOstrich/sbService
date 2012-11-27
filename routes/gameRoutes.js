@@ -7,7 +7,7 @@
  
  var errorHandler = require('../user_modules/errorHandler')
 
- var gameController = require('../controllers/game')
+ var gameController = require('../controllers/gameController')
 
 var game = function(app) {
     

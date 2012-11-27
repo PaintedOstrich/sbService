@@ -9,8 +9,8 @@
  var errorHandler = require('../user_modules/errorHandler');
 
  var pickmonapi = require('../controllers/pickmonapi')
- var userController = require('../controllers/user')
- var userModel = require('../models/user');
+ var userController = require('../controllers/userController')
+ var userModel = require('../models/userModel');
 
 var update = function(app) {    
     // return all games for all sports

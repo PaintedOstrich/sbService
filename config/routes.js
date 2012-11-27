@@ -14,7 +14,7 @@ var loadRoutes = function(routePath, app) {
 			}
       		catch(err)
 			{
-				console.log("error intializing " + file + " : due to error: " + err)
+				console.log("error intializing " + file + " : due to error: " + err.stack)
 			}
     	});
   };
