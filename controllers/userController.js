@@ -26,7 +26,32 @@ var login = function(signedreq, cb) {
 
 // gets all user info on startup
 var getBaseUserInfo = function(uid, cb) {
-	async.parallel()
+	var baseInfo = {uid : uid};
+	try {
+		userModel.userExists(uid, function(err, doesExist) {
+			if (doesExist) {
+				// get user balance
+				userModel.getUserBalance(uid, function(err, balance) {
+					baseInfo.balance = balance;
+
+					// get user 
+					getUserBets(uid, function(err, bets) {
+						baseInfo.bets = bets;
+						cb(baseInfo)
+					})
+
+				})
+
+			}
+			else {
+				// new User
+				cb(null, {user: 'new user'});
+			}
+		})
+	}
+	catch(err) {
+		cb(err)
+	}
 }
 
 var initUser = function(uid, name, balance, cb) {
@@ -73,6 +98,7 @@ var getUserBets = function(uid, filter, cb) {
 	try {
 		var useOneFilter = true;
 
+		console.log(typeof filter)
 		// check if user only wants one type of result
 		if (typeof filter === "function") {
 			// return all results since no filter requested
@@ -83,7 +109,7 @@ var getUserBets = function(uid, filter, cb) {
 			useOneFilter = false;
 		}
 		else if (filter && filters.indexOf(filter) === -1)
-		{	
+		{		
 			// return all results if filter doesn't exist
 			useOneFilter = false;
 		}
@@ -105,9 +131,7 @@ var getUserBets = function(uid, filter, cb) {
 				result['gameInfo'] = assocGameInfo;
 				cb(null, result);	
 			})
-			
 		})
-	
 	}
 	catch(err) {
 		cb(err)
@@ -122,7 +146,7 @@ var filterResults = function(filterType, uid, data) {
 		var bet = data[index]
 
 		if (filterType === 'current') { 
-			if(bet.ended === 'false') {
+			if(bet.ended === 'false' && bet.called === 'true') {
 			     results.push(bet)
 			}
 		}

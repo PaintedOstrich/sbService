@@ -36,12 +36,13 @@ var userHandle = function(app) {
 			else
 			{
 				var uid = data.user_id;
+				// get desired base login info to start up app
 				userController.getBaseUserInfo(uid, function(err, baseInfo) {
 					if (err) {
 						errorHandler.send(res, err);
 					}
 					else {
-						send(baseInfo)
+						res.send(baseInfo)
 					}
 				})
 			}

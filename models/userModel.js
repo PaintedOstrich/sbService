@@ -14,36 +14,32 @@ var getUserKey = function(userId)
 // updates user money to previous amount + - updateAmount
 var updateUserBalance = function(userId, updateAmount, cb)
 {
-	getUserBalance(userId, function(err, value)
-	{
-		err && cb(err);
-		if (typeof parseFloat(updateAmount)=== "NaN")
-		{
-			cb({error:"passed NaN value to update user money ::" + value})
-		}
-		else if (value != null && value != "NaN")
-		{
-			var newAmount = parseFloat(updateAmount)+parseFloat(value);
-		}
-		else 
-		{
-			var newAmount = parseFloat(updateAmount);
-		}
-		
-		var update = {'balance': newAmount};
-		base.setMultiHashSetItems(getUserKey(userId), update, function(err)
-		{
-			if (err) cb (err);
-
-			cb(null, {'balance' : newAmount});
+	try {
+		getUserBalance(userId, function(err, value) {
+			err && cb(err);
+			if (typeof parseFloat(updateAmount)=== "NaN") {
+				cb({error:"passed NaN value to update user money ::" + value})
+			}
+			else if (value != null && value != "NaN") {
+				var newAmount = parseFloat(updateAmount)+parseFloat(value);
+			}
+			else {
+				var newAmount = parseFloat(updateAmount);
+			}
+			
+			var update = {'balance': newAmount};
+			base.setMultiHashSetItems(getUserKey(userId), update, function(err) {
+				cb(null, newAmount);	
+			})
 		})
-	})
+	} 
+	catch(err) {
+		cb(err)
+	}
 }
 
-var getUserBalance = function(userId, cb)
-{
-	redClient.hget(getUserKey(userId), 'balance', function(err, value)
-	{
+var getUserBalance = function(userId, cb) {
+	redClient.hget(getUserKey(userId), 'balance', function(err, value) {
 		cb(null, value)
 	})
 }
@@ -76,7 +72,6 @@ var getUserName = function(userId, cb)
 {
 	redClient.hget(getUserKey(userId), 'fullname', function(err, value)
 	{
-		err && cb(err);
 		cb(null, value)
 	})
 }
@@ -100,11 +95,15 @@ var getUserBets = function(uid, cb)
 
 var userExists = function(userId, cb)
 {
-	redClient.hlen(getUserKey(userId), function(err, numFields)
-	{
-		err && cb(err)
-		cb(null, numFields > 0)
-	})
+	try{
+		redClient.hlen(getUserKey(userId), function(err, numFields)
+		{
+			cb(null, numFields > 0)
+		})
+	}
+	catch(err) {
+		cb(err.stack)
+	}
 }
 
 module.exports = 

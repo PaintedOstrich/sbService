@@ -21,7 +21,14 @@ var update = function(app) {
 	
 		var getTeamNames = query.getTeamNames == 1 ? true : false;
 
-		pickmonapi.updateAllGames();
+		pickmonapi.updateAllGames(function(err) {
+            if (err) {
+                res.send(err)
+            }
+            else {
+                res.send('ok')
+            }
+        });
     });
 
     // test check for updates only
