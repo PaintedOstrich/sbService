@@ -15,9 +15,9 @@ module.exports = function()
 	// Red Client Throws on an Error.
 	// All Client Models should access redis in try/catch block.
 	// This helps simplify code and eliminates need to check for errors at every step.
-	redClient.on("error", function(err) {
-  		throw new Error("Error Connecting to Redis" + err);
-	});
+	// redClient.on("error", function(err) {
+ //  		throw new Error("Error Connecting to Redis" + err);
+	// });
 
 	return redClient;
 }
