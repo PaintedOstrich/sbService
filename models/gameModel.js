@@ -211,7 +211,7 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 		var thisDate = new Date(thisUpdate);
 		var gameKey = getGameKey(gameId);
 		redClient.hget(gameKey, 'lastUpdate', function(err, datestring) {
-			if (typeof datestring === "undefined") {
+			if (!datestring) {
 				cb(null, true);
 			}
 			else {
@@ -233,9 +233,11 @@ var setGameInfo = function(gameId, gameData, cb)
 	try
 	{
 		shouldDoGameUpdate(gameId, gameData.lastUpdate, function(err, doUpdate) {
+			console.log('doUpdate' + doUpdate)
 			if (doUpdate) {
 				// update games since this update is more recent than the one currently stored
 				getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
+					console.log('team Names :' + teamNamesToIds);
 					if (!err) {
 						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
 						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];	
@@ -284,8 +286,7 @@ var getGamesForSport = function(sport, fields, cb)
 		if (err) cb(err);
 		var hashKeys = [];
 		// replace game ids with game hash keys
-		for (i = 0; i < gameIds.length; i++)
-		{
+		for (i = 0; i < gameIds.length; i++) {
 			hashKeys[i] = getGameKey(gameIds[i])	
 		}
 
@@ -299,8 +300,7 @@ var getTeamNamesAndDateForGames = function(gameIds, cb)
 	try {
 		base.getMultiHashSetsAsObject(gameIds, getGameKey, fields, cb);	
 	}
-	catch(err)
-	{
+	catch(err) {
 		cb(err)
 	}
 }
