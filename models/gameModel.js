@@ -52,11 +52,6 @@ var getBetsForGameKey = function(gameId)
 
 var teamNameIdHash = 'teamNamesHash';
 
-var getTeamNames = function(sport)
-{
-	console.log("get team names for " + sport + " is "+ getTeamNames)
-}
-
 // returns error in cb or null answer
 var getGameIdFromHeaderAndDate = function(possibleGameId, header, datestring, cb)
 {
@@ -75,8 +70,7 @@ var getGameIdFromHeaderAndDate = function(possibleGameId, header, datestring, cb
 
 // gets unique team id or creates one if it doesn't exist
 var getUniqueTeamId = function(teamName, cb) {
-	try
-	{
+	try {
 		redClient.hexists(teamNameIdHash, teamName, function(err, doesExist) {
 			if (!doesExist) {
 				// generate new team id and return
@@ -84,15 +78,22 @@ var getUniqueTeamId = function(teamName, cb) {
 					saveTeamNameIdMapping(teamNameIdHash, teamName, newTeamId, cb)
 				})
 			}
-			else
-			{
+			else {
 				redClient.hget(teamNameIdHash, teamName, cb);
 			}
 		})
 	}
-	catch(err)
-	{
+	catch(err) {
 		cb(err)
+	}
+}
+
+var getPresetTeamIdFromName = function(teamName, cb) {
+	try {
+		redClient.hget(teamNameIdHash, teamName, cb);
+	}
+	catch (e) {
+		throw e;
 	}
 }
 
@@ -102,15 +103,13 @@ var getUniqueTeamIds = function(teamNames, cb)
 	var finishedCount = 0;
 
 	// if no keys, return
-	if (totalCount == 0)
-	{
+	if (totalCount == 0) {
 		cb();
 	}
 
 	try {
 		var teamNamesToIds = {};
-		for (var index in teamNames)
-		{
+		for (var index in teamNames) {
 			var teamName = teamNames[index];
 
 			getUniqueTeamId(teamName, function(teamName) {
@@ -145,22 +144,19 @@ var generateUniqueTeamId = function(teamNameIdHash, cb) {
 }
 
 // add user bet for this game
-var addBetForGame = function(userBetIdKey, gameId, cb)
-{
+var addBetForGame = function(userBetIdKey, gameId, cb) {
 	var gameBetKey = getBetsForGameKey(gameId);
 	redClient.sadd(gameBetKey, userBetIdKey, cb)
 }
 
 // get all bets per game
-var getBetsForGame = function(gameId)
-{
+var getBetsForGame = function(gameId) {
 	var gameKey = getBetsForGameKey(gameId);
 	redClient.smembers(gamekey, cb);
 }
 
 // returns whether game has been completely processed
-var gameHasBeenProcessed = function(gameId,cb)
-{
+var gameHasBeenProcessed = function(gameId,cb) {
 	var gameKey = getGameKey(gameId);
 	redClient.hget(gameKey, 'hasBeenProcessed', cb);
 }
@@ -183,14 +179,11 @@ var setProcessGameComplete = function(gameId, cb) {
 }
 
 // returns an object with all bet info for a given game
-var getGameInfo = function (gameId, cb)
-{
+var getGameInfo = function (gameId, cb) {
 	var key = getGameKey(gameId);
-	try 
-	{
-		redClient.hgetall(key, function(err, betInfo)
-		{
-			if (err){
+	try {
+		redClient.hgetall(key, function(err, betInfo) {
+			if (err) {
 				cb(err);
 			} 
 
@@ -200,14 +193,12 @@ var getGameInfo = function (gameId, cb)
 	}
 	catch(err) {
 		cb(err)
-	}
-	
+	}	
 }
 
 // shouldDoGameUpdate
 var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
-	try
-	{
+	try {
 		var thisDate = new Date(thisUpdate);
 		var gameKey = getGameKey(gameId);
 		redClient.hget(gameKey, 'lastUpdate', function(err, datestring) {
@@ -227,11 +218,9 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 }
 
 // sets info for game into persistent redis store
-var setGameInfo = function(gameId, gameData, cb)
-{
+var setGameInfo = function(gameId, gameData, cb) {
 	var teamNames = [gameData.team1Name,gameData.team2Name];
-	try
-	{
+	try {
 		shouldDoGameUpdate(gameId, gameData.lastUpdate, function(err, doUpdate) {
 			if (doUpdate) {
 				// update games since this update is more recent than the one currently stored
@@ -241,7 +230,6 @@ var setGameInfo = function(gameId, gameData, cb)
 						cb(err)
 					}
 					else {
-
 						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
 						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];
 
@@ -249,8 +237,7 @@ var setGameInfo = function(gameId, gameData, cb)
 
 						var hashKey = getGameKey(gameId);
 
-						base.setMultiHashSetItems(hashKey, gameData, function(err)
-						{
+						base.setMultiHashSetItems(hashKey, gameData, function(err) {
 							if (err) cb (err);
 
 							addGameToList(gameId, gameData.sport)
@@ -312,7 +299,6 @@ var getTeamNamesAndDateForGames = function(gameIds, cb)
 
 module.exports = 
 {
-	getTeamNames : getTeamNames,
 	setGameInfo : setGameInfo,
 	getGameInfo : getGameInfo,
 	getGamesForSport : getGamesForSport,
@@ -324,4 +310,5 @@ module.exports =
 	getUniqueTeamIds : getUniqueTeamIds,
 	removeGameFromList : removeGameFromList,
 	setProcessGameComplete : setProcessGameComplete,
+	getPresetTeamIdFromName : getPresetTeamIdFromName
 }

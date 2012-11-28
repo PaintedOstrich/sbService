@@ -8,6 +8,7 @@
  var errorHandler = require('../user_modules/errorHandler')
  var userModel = require('../models/userModel')
  var gameController = require('./gameController')
+ var mixpanel = require('../config/mixPanelConfig');
 
  var cUtil = require('../user_modules/cUtil');
  var resMes = require('../user_modules/responseMessages');
@@ -54,7 +55,7 @@ var getBaseUserInfo = function(uid, cb) {
 	}
 }
 
-var initUser = function(uid, name, balance, cb) {
+var initUser = function(uid, name, email, balance, cb) {
 	try {
 		userModel.userExists(uid, function(err, doesExist) {
 			if (err) {
@@ -64,22 +65,21 @@ var initUser = function(uid, name, balance, cb) {
 				cb(errorHandler.errorCodes.userAlreadyExists)
 			}
 			else {
-				userModel.updateUserBalance(uid, balance, function(err, data) {		
-					if (balance != data.balance) {
-						cb(errorHandler.errorCodes.updateBalanceError);
-					}
-					else {
-						userModel.setUserName(uid, name, function(err){
-							var newUserInfo = {
-								uid:uid,
-								name:name,
-								balance: data.balance,
-							}
-							
-							cb(null, newUserInfo)
-						})
+				userModel.updateUserBalance(uid, balance, function(err, newBalance) {		
+					userModel.setUserName(uid, name, function(err){
+						var newUserInfo = {
+							uid:uid,
+							name:name,
+							balance: newBalance,
+							'$created': new Date(),
+							'$email': email,
+						}
+
+						// mix Panel Logging
+						mixpanel.people.set(uid, newUserInfo);
 						
-					}
+						cb(null, newUserInfo)
+					})
 				})
 
 			}
@@ -98,7 +98,6 @@ var getUserBets = function(uid, filter, cb) {
 	try {
 		var useOneFilter = true;
 
-		console.log(typeof filter)
 		// check if user only wants one type of result
 		if (typeof filter === "function") {
 			// return all results since no filter requested

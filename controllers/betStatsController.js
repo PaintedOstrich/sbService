@@ -3,7 +3,7 @@ var betStatsModel = require('../models/betStatsModel');
 var gameModel = require('../models/gameModel');
 var userModel = require('../models/userModel');
 var errorHandler = require('../user_modules/errorHandler');
-
+var util = require('util')
 // prepares data and finds key to insert at
 var setRecentBet = function(gameId, userId1, userId2, amount, cb)
 {
@@ -13,10 +13,10 @@ var setRecentBet = function(gameId, userId1, userId2, amount, cb)
 			var userName1 = data[userId1].fullname
 			var userName2 = data[userId2].fullname
 
-			gameModel.getTeamNamesFromGame(gameId, function(err, data)
+			gameModel.getTeamNamesAndDateForGames([gameId], function(err, data)
 			{				
-				var team1Name = data[0].team1;
-				var team2Name = data[0].team2;
+				var team1Name = data[gameId].team1Name;
+				var team2Name = data[gameId].team2Name;
 
 				var data = 
 				{

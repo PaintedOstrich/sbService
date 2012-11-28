@@ -15,20 +15,28 @@
  var errorHandler = require('../user_modules/errorHandler');
 	
 // upates All bets after game won
-var endBets = function(gameId, winnerGameId, winSpread,  cb) {
+var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
 	try {
 		// ratio of winnings to amount bet
-		var winRatio = calcWinRatio(odds);
-		gameModel.getBetsForGame(gameId, function(err, betIds) {
-			async.forEach(betIds, endBet,function(err) {
-				if(err) {
-					cb(err)
-				}
-				else {
-					gameModel.setProcessGameComplete(gameId, cb);
-				}
-			})
-		})
+		var winnerTeamId = gameModel.getUniqueTeamId(winnerName, function(err, winnerTeamId) {
+			if (err) {
+				console.log('team id must exist on this bet already')
+			}
+			else {
+				var processEndBetFn = endBet(gameId, winnerTeamId, isWinnerTeam1);
+				gameModel.getBetsForGame(gameId, function(err, betIds) {
+					async.forEach(betIds, processEndBetFn,function(err) {
+						if(err) {
+							cb(err)
+						}
+						else {
+							gameModel.setProcessGameComplete(gameId, cb);
+						}
+					})
+				})
+			}
+		}) 
+	
 	}
 	catch(err) {
 		cb(err);
@@ -38,11 +46,14 @@ var endBets = function(gameId, winnerGameId, winSpread,  cb) {
 /* ends individual bet, awarding user winnings and changes 
  * both bet ended to true and each 
  */
-var endBet = function(winnerGameId, winRatio) {
-	return function(betKey, cb) {
+var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
+	return function processEndBet(betKey, cb) {
 		betModel.getBetInfo(betKey, function(err, betInfo) {
+			// calculate which user one and the winnings ratio from the bet spread
 			var winnerFBId = winnerGameId === betInfo.initTeamBet ? betInfo.initFBId : betInfo.callFBId;
-			// update user winnings
+			var winSpread = isWinnerTeam1 ? betInfo.spreadTeam1 : betInfo.spreadTeam2;
+			var winRatio = calcWinRatio(winSpread);
+			// update user winnings with 
 			updateWinnings(winnerFBId, betInfo.betAmount, winRatio, function(err) {
 				// mark bet as ended
 				betModel.setEndedForBet(betKey, cb)
@@ -195,7 +206,7 @@ var isMissingParameter = function(query)
 	}
 	else
 	{
-		return errorHandler.createErrorMessage(errorCodes.missingParameters, "type")
+		return errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, "type")
 	}
 
 	var isMissingParameter = false;
@@ -250,19 +261,27 @@ var isBetInfoCorrect = function(betInfo, gameInfo)
 }
 
 // Calls a user bet
-var callBet = function(gameId, initFBId, callFBId, betTag, cb)
-{
+var callBet = function(query, cb) {
+	if (typeof query !== 'object') {
+		cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, 'must post call parameters'));
+	}
+
+	var gameId = query.gameId;
+	var initFBId = query.initFBId;
+	var callFBId = query.callFBId;
+	var betTag = query.betTag;
+
 	if (!gameId || !initFBId || !callFBId || !betTag)
 	{
 		var details = {
 			request:'needs all these parameters',
 			params : ['gameId', 'initFBId', 'callFBId', 'betTag']
 		}
-		cb(errorHandler.createErrorMessage(errorHandler.missingParameters, details));
+		cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, details));
 	}
 	else
 	{
-		var betKey = betModel.getBetKey(gameId, initFBId, callFBId, timeKey);
+		var betKey = betModel.getBetKey(gameId, initFBId, callFBId, betTag);
 
 		try
 		{
@@ -286,7 +305,7 @@ var callBet = function(gameId, initFBId, callFBId, betTag, cb)
 							cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
 						}
 						else {
-							setCallBet(betKey, betInfo, cb);
+							setCallInfo(betKey, betInfo, cb);
 						}
 					})
 				}
@@ -303,4 +322,5 @@ module.exports =
 {
 	makeBet: makeBet,	
 	callBet: callBet,
+	processEndBets : processEndBets,
 } 

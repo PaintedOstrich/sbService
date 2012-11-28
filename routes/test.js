@@ -44,7 +44,7 @@ var update = function(app) {
    app.get('/api/inituser', function(req, res) {
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        userController.initUser(query.fbid, query.name, query.money, function(err, data)
+        userController.initUser(query.fbid, query.name, query.email, query.money, function(err, data)
         {
             if (err)
             {

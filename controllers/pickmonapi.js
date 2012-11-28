@@ -10,6 +10,7 @@ var restler = require('restler');
 var async = require('async');
 var util = require('util');
 
+var betController = require('./betController')
 var gameModel = require('../models/gameModel')
 
 
@@ -25,7 +26,7 @@ var updateAllGames = function(cb) {
 
 var getBetUpdates = function(shouldDoFullUpdate, cb) {	
 	var request = restler.get(sportBetApiHandler.getUrl(shouldDoFullUpdate));
-	console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
+	// console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
 
     request.on('fail', function(err) {
       cb('Error: Unable to reach Pick Mon Api: ' + err);
@@ -133,17 +134,14 @@ pickMonitorGame.prototype.process = function(cb) {
 			    		if (hasBeenProcessed === "false") {
 				    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
 
+				    		var isWinnerTeam1 = that._g.winner === that._g.team1Name;
+
 				    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
 				    		// if something happens and there is an error in the middle of processing games, this field will not be set,
 				    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
-				    		
-				    		// game model
-				    		// gameController.processBetsPerGame()
-				    		
-				    		cb()
+				    		betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
 			    		}
-			    		else
-			    		{
+			    		else {
 			    			// do nothing, since game has already been processed for all bets
 			    			console.log('already processed')
 			    			cb()

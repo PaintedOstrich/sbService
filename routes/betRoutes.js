@@ -11,28 +11,27 @@
  var resMes = require('../user_modules/responseMessages')
 
 var bet = function(app) {
-    // Place a User Bet
-    app.get('/api/bet', function(req, res) {
-    	var url_parts = url.parse(req.url, true);
-		var query = url_parts.query;
-		
-		betController.makeBet(query, function(err, data)
+    // Post a user bet
+    app.post('/api/bet', function(req, res) {
+        var query = req.body;
+        
+        betController.makeBet(query, function(err, data)
         {
             if(err) {
                 errorHandler.send(res, err)
             }
             else {
+                var suc = {success:'success'};
                 res.send(data)
             }
         });
     });
 
     // Call a bet (Accept)
-    app.get('/api/bet/call', function(req, res) {
-        var url_parts = url.parse(req.url, true);
-        var query = url_parts.query;
+    app.post('/api/bet/call', function(req, res) {
+        var query = req.body;
         
-        betController.callBet(query.gameId, query.initFBId, query.callFBId, query.betTag, function(err,data)
+        betController.callBet(query, function(err,data)
         {
             if (err) errorHandler.send(res,err)
             else

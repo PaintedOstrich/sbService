@@ -26,9 +26,9 @@ var errorCodes =
 	reason:'updateBalanceError'
   },	
   // missingParamaters
-  'missingParamaters':
+  'missingParameters':
   {
-  reason:'missingParamaters'
+  reason:'missingParameters'
   },  
   // invalid signed fb request
   'invalidSignedRequest':
@@ -83,7 +83,7 @@ var sendError = function(res, errorCodeObject)
 // @params: error == error code object, params = array of values or string
 // returns new error code
 var createErrorMessage = function(error, params) {
-  if (typeof error === 'string')
+  if (!error || typeof error === 'string')
   {
     throw new Error('createErrorMessage must be passed error object');
   }

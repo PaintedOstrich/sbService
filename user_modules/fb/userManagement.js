@@ -2,7 +2,7 @@
  *
  */
 
-var redClient = require('../config/redisConfig')();
+var redClient = require('../../config/redisConfig')();
 
 // key for third party id 
 var getThirdPartyKey = function(uid)
