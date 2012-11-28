@@ -211,8 +211,13 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 		var thisDate = new Date(thisUpdate);
 		var gameKey = getGameKey(gameId);
 		redClient.hget(gameKey, 'lastUpdate', function(err, datestring) {
-			var lastUpdate = new Date(datestring);
-			cb(null, lastUpdate.isBefore(thisUpdate));
+			if (typeof datestring === "undefined") {
+				cb(null, true);
+			}
+			else {
+				var lastUpdate = new Date(datestring);
+				cb(null, lastUpdate.isBefore(thisUpdate));
+			}
 		})
 	}
 	catch(err) {
