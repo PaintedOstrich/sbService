@@ -47,7 +47,7 @@ var getBetUpdates = function(shouldDoFullUpdate, cb) {
 			})
     	}
     	catch(e) {
-    		console.log('cb is : ' +typeof cb)
+    		console.log(cb)
     		cb(e.stack)
     	}
     });
