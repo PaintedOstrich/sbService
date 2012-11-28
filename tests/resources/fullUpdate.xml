@@ -1,0 +1,1085 @@
+<lines>
+<game>
+<id>428962</id>
+<header>New England Patriots At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:57:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-11-29 20:25:00</wagercutoff>
+<money>
+<team1>170</team1>
+<team2>-185</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-3.5</points>
+<team1>-108</team1>
+<team2>-102</team2>
+</spread>
+<total>
+<points>56</points>
+<over>-101</over>
+<under>-109</under>
+</total>
+<teamtotal>
+<team1>
+<points>26.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>29.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429887</id>
+<header>New Orleans Saints At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:48:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>3</periodnum>
+<perioddesc>1st Quarter</perioddesc>
+<wagercutoff>2012-11-29 20:20:00</wagercutoff>
+<money>
+<team1>125</team1>
+<team2>-145</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-0.5</points>
+<team1>-130</team1>
+<team2>110</team2>
+</spread>
+<total>
+<points>10.5</points>
+<over>110</over>
+<under>-130</under>
+</total>
+<teamtotal>
+<team1>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team1>
+<team2>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429224</id>
+<header>New Orleans Saints At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:48:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>1</periodnum>
+<perioddesc>1st Half</perioddesc>
+<wagercutoff>2012-11-29 20:20:00</wagercutoff>
+<money>
+<team1>145</team1>
+<team2>-165</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-3</points>
+<team1>-120</team1>
+<team2>100</team2>
+</spread>
+<total>
+<points>28</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>12.5</points>
+<over>-115</over>
+<under>-115</under>
+</team1>
+<team2>
+<points>15.5</points>
+<over>-115</over>
+<under>-115</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429891</id>
+<header>New Orleans Saints At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:51:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>4</periodnum>
+<perioddesc>2nd Quarter</perioddesc>
+<wagercutoff>2012-11-29 20:20:00</wagercutoff>
+<money>
+<team1>125</team1>
+<team2>-145</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-0.5</points>
+<team1>-125</team1>
+<team2>105</team2>
+</spread>
+<total>
+<points>16.5</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team1>
+<team2>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429901</id>
+<header>New Orleans Saints At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:54:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>5</periodnum>
+<perioddesc>3rd Quarter</perioddesc>
+<wagercutoff>2012-11-29 20:20:00</wagercutoff>
+<money>
+<team1>120</team1>
+<team2>-140</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-0.5</points>
+<team1>-140</team1>
+<team2>120</team2>
+</spread>
+<total>
+<points>10.5</points>
+<over>100</over>
+<under>-120</under>
+</total>
+<teamtotal>
+<team1>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team1>
+<team2>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429902</id>
+<header>New Orleans Saints At Atlanta Falcons</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-11-29 20:25:00</gamedate>
+<last_update>2012-11-28 12:54:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>301</rotnum>
+<name>New Orleans Saints</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>302</rotnum>
+<name>Atlanta Falcons</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>6</periodnum>
+<perioddesc>4th Quarter</perioddesc>
+<wagercutoff>2012-11-29 20:20:00</wagercutoff>
+<money>
+<team1>115</team1>
+<team2>-135</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-0.5</points>
+<team1>-135</team1>
+<team2>115</team2>
+</spread>
+<total>
+<points>17</points>
+<over>105</over>
+<under>-125</under>
+</total>
+<teamtotal>
+<team1>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team1>
+<team2>
+<points>0</points>
+<over>0</over>
+<under>0</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429088</id>
+<header>Minnesota Vikings At Green Bay Packers</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 15:09:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>341</rotnum>
+<name>Minnesota Vikings</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>342</rotnum>
+<name>Green Bay Packers</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>380</team1>
+<team2>-475</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-9.5</points>
+<team1>-125</team1>
+<team2>105</team2>
+</spread>
+<total>
+<points>46.5</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>19</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>27.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428963</id>
+<header>San Francisco 49ers At St. Louis Rams</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 14:27:05</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>343</rotnum>
+<name>San Francisco 49ers</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>344</rotnum>
+<name>St. Louis Rams</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>-335</team1>
+<team2>275</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>8</points>
+<team1>110</team1>
+<team2>-130</team2>
+</spread>
+<total>
+<points>40</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>23.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>16.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428966</id>
+<header>Jacksonville Jaguars At Buffalo Bills</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 14:27:06</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>351</rotnum>
+<name>Jacksonville Jaguars</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>352</rotnum>
+<name>Buffalo Bills</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>210</team1>
+<team2>-250</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-5.5</points>
+<team1>-110</team1>
+<team2>-110</team2>
+</spread>
+<total>
+<points>45</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>20</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>25</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428967</id>
+<header>New England Patriots At Miami Dolphins</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 15:09:03</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>353</rotnum>
+<name>New England Patriots</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>354</rotnum>
+<name>Miami Dolphins</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>-400</team1>
+<team2>325</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>8.5</points>
+<team1>110</team1>
+<team2>-130</team2>
+</spread>
+<total>
+<points>51</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>29</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>22</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428968</id>
+<header>Houston Texans At Tennessee Titans</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-28 11:57:04</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>355</rotnum>
+<name>Houston Texans</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>356</rotnum>
+<name>Tennessee Titans</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>-260</team1>
+<team2>220</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>7</points>
+<team1>110</team1>
+<team2>-130</team2>
+</spread>
+<total>
+<points>47</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>26</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>21</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428964</id>
+<header>Arizona Cardinals At New York Jets</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 14:27:05</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>345</rotnum>
+<name>Arizona Cardinals</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>346</rotnum>
+<name>New York Jets</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>180</team1>
+<team2>-220</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-4.5</points>
+<team1>-110</team1>
+<team2>-110</team2>
+</spread>
+<total>
+<points>36.5</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>16</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>20.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428965</id>
+<header>Indianapolis Colts At Detroit Lions</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 14:27:05</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>349</rotnum>
+<name>Indianapolis Colts</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>350</rotnum>
+<name>Detroit Lions</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>180</team1>
+<team2>-220</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-4.5</points>
+<team1>-110</team1>
+<team2>-110</team2>
+</spread>
+<total>
+<points>51</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>23.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>27.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429609</id>
+<header>Seattle Seahawks At Chicago Bears</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 21:12:02</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>339</rotnum>
+<name>Seattle Seahawks</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>340</rotnum>
+<name>Chicago Bears</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>173</team1>
+<team2>-205</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-4</points>
+<team1>-110</team1>
+<team2>-110</team2>
+</spread>
+<total>
+<points>37.5</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>17</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>20.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429427</id>
+<header>Carolina Panthers At Kansas City Chiefs</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 13:00:00</gamedate>
+<last_update>2012-11-27 14:27:05</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>347</rotnum>
+<name>Carolina Panthers</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>348</rotnum>
+<name>Kansas City Chiefs</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 13:00:00</wagercutoff>
+<money>
+<team1>-155</team1>
+<team2>135</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>2.5</points>
+<team1>-130</team1>
+<team2>110</team2>
+</spread>
+<total>
+<points>40.5</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>21.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>19</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428969</id>
+<header>Tampa Bay Buccaneers At Denver Broncos</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 16:05:00</gamedate>
+<last_update>2012-11-27 14:27:06</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>357</rotnum>
+<name>Tampa Bay Buccaneers</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>358</rotnum>
+<name>Denver Broncos</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 16:05:00</wagercutoff>
+<money>
+<team1>275</team1>
+<team2>-335</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-8</points>
+<team1>-130</team1>
+<team2>110</team2>
+</spread>
+<total>
+<points>50</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>21.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>28.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>428970</id>
+<header>Cincinnati Bengals At San Diego Chargers</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 16:25:00</gamedate>
+<last_update>2012-11-27 14:30:06</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>363</rotnum>
+<name>Cincinnati Bengals</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>364</rotnum>
+<name>San Diego Chargers</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 16:25:00</wagercutoff>
+<money>
+<team1>-137</team1>
+<team2>117</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>1.5</points>
+<team1>-125</team1>
+<team2>105</team2>
+</spread>
+<total>
+<points>46</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>24</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>22</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429428</id>
+<header>Philadelphia Eagles At Dallas Cowboys</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-02 20:30:00</gamedate>
+<last_update>2012-11-27 21:12:02</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>365</rotnum>
+<name>Philadelphia Eagles</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>366</rotnum>
+<name>Dallas Cowboys</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-02 20:30:00</wagercutoff>
+<money>
+<team1>400</team1>
+<team2>-500</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>-11</points>
+<team1>-125</team1>
+<team2>105</team2>
+</spread>
+<total>
+<points>43</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>17</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>26</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+<game>
+<id>429100</id>
+<header>New York Giants At Washington Redskins</header>
+<sporttype>Football</sporttype>
+<sportsubtype>NFL</sportsubtype>
+<gamedate>2012-12-03 20:40:00</gamedate>
+<last_update>2012-11-27 14:30:07</last_update>
+<void>0</void>
+<last_pitcher_change/>
+<team1>
+<rotnum>367</rotnum>
+<name>New York Giants</name>
+<pitcher/>
+</team1>
+<team2>
+<rotnum>368</rotnum>
+<name>Washington Redskins</name>
+<pitcher/>
+</team2>
+<line>
+<periodnum>0</periodnum>
+<perioddesc>Game</perioddesc>
+<wagercutoff>2012-12-03 20:40:00</wagercutoff>
+<money>
+<team1>-147</team1>
+<team2>127</team2>
+<draw>0</draw>
+</money>
+<spread>
+<points>2</points>
+<team1>-125</team1>
+<team2>105</team2>
+</spread>
+<total>
+<points>51</points>
+<over>-110</over>
+<under>-110</under>
+</total>
+<teamtotal>
+<team1>
+<points>26.5</points>
+<over>-110</over>
+<under>-110</under>
+</team1>
+<team2>
+<points>24.5</points>
+<over>-110</over>
+<under>-110</under>
+</team2>
+</teamtotal>
+<score>
+<team1/>
+<team2/>
+<winner/>
+</score>
+</line>
+</game>
+</lines>

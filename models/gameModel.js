@@ -134,7 +134,7 @@ var getUniqueTeamIds = function(teamNames, cb)
 var saveTeamNameIdMapping = function(teamNameIdHash, teamName, teamId, cb){
 	redClient.hset(teamNameIdHash, teamName, teamId, function(err) {
 		redClient.hset(teamNameIdHash, teamId, teamName, function(err) {
-			cb(teamId)
+			cb(null, teamId)
 		})
 	})
 }
@@ -217,7 +217,7 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 			else {
 				var lastUpdate = new Date(datestring);
 				// don't update if this upate is before last update
-				cb(null, thisDate.isBefore(lastUpdate) );
+				cb(null, !thisDate.isBefore(lastUpdate) );
 			}
 		})
 	}
@@ -240,19 +240,24 @@ var setGameInfo = function(gameId, gameData, cb)
 					if (err) {
 						cb(err)
 					}
+					else {
+
 						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
-						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];	
+						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];
 
-					var hashKey = getGameKey(gameId);
+						console.log(util.inspect(teamNamesToIds, true, 3));	
 
-					base.setMultiHashSetItems(hashKey, gameData, function(err)
-					{
-						if (err) cb (err);
+						var hashKey = getGameKey(gameId);
 
-						addGameToList(gameId, gameData.sport)
+						base.setMultiHashSetItems(hashKey, gameData, function(err)
+						{
+							if (err) cb (err);
 
-						cb();
-					})
+							addGameToList(gameId, gameData.sport)
+
+							cb();
+						})
+					}
 				})
 			}
 			else {
