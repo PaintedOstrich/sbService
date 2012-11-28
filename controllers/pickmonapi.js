@@ -123,7 +123,7 @@ pickMonitorGame.prototype.process = function(cb) {
 		    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
 	    		if (err) { throw err; }
 
-	    		console.log('game id is ' + gameId)
+	    		// console.log('game id is ' + gameId)
 
 			    // on ended games
 			    if (that.isFinalScore()) {
@@ -158,7 +158,6 @@ pickMonitorGame.prototype.process = function(cb) {
 			    else {
 					// update bet info for future game
 					gameModel.setGameInfo(gameId, that._g, function(err) {
-						console.log('is unstarted game');
 						if (err) { throw err }
 						cb();
 					})

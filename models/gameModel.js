@@ -7,7 +7,7 @@ var redClient = require('../config/redisConfig')()
 var cUtil = require('../user_modules/cUtil');
 
 var base = require('./base');
-
+var util = require('util');
 var error = require('../user_modules/errorHandler')
 var datetime = require('../user_modules/datetime')
 
@@ -216,7 +216,8 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 			}
 			else {
 				var lastUpdate = new Date(datestring);
-				cb(null, lastUpdate.isBefore(thisUpdate));
+				// don't update if this upate is before last update
+				cb(null, !thisUpdate.isBefore(lastUpdate));
 			}
 		})
 	}
@@ -229,15 +230,13 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 var setGameInfo = function(gameId, gameData, cb)
 {
 	var teamNames = [gameData.team1Name,gameData.team2Name];
-	console.log(teamNames)
 	try
 	{
 		shouldDoGameUpdate(gameId, gameData.lastUpdate, function(err, doUpdate) {
-			console.log('doUpdate' + doUpdate)
 			if (doUpdate) {
 				// update games since this update is more recent than the one currently stored
 				getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
-					console.log('team Names :' + teamNamesToIds);
+					
 					if (!err) {
 						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
 						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];	
