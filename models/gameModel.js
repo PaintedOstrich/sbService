@@ -237,10 +237,11 @@ var setGameInfo = function(gameId, gameData, cb)
 				// update games since this update is more recent than the one currently stored
 				getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
 					
-					if (!err) {
+					if (err) {
+						cb(err)
+					}
 						gameData['team1Id'] = teamNamesToIds[gameData.team1Name];
 						gameData['team2Id'] = teamNamesToIds[gameData.team2Name];	
-					}
 
 					var hashKey = getGameKey(gameId);
 
