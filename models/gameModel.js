@@ -217,7 +217,7 @@ var shouldDoGameUpdate = function(gameId, thisUpdate, cb) {
 			else {
 				var lastUpdate = new Date(datestring);
 				// don't update if this upate is before last update
-				cb(null, !thisUpdate.isBefore(lastUpdate));
+				cb(null, thisDate.isBefore(lastUpdate) );
 			}
 		})
 	}
