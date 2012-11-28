@@ -33,8 +33,10 @@ var getBetUpdates = function(shouldDoFullUpdate, cb) {
     });
 
     request.on('success', function(data) {
+
     	// FIXME restler failing tests and not autoparsing
     	try {
+    		debugger;
     		// Did api call auto parse result?
 			var parser = new xml2js.Parser();
 			parser.parseString(data, function (err, result) {
@@ -45,7 +47,8 @@ var getBetUpdates = function(shouldDoFullUpdate, cb) {
 			})
     	}
     	catch(e) {
-    		cb("Error parsing PickMon Resonse: " + e)
+    		console.log('cb is : ' +typeof cb)
+    		cb(e.stack)
     	}
     });
 };
