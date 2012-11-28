@@ -31,16 +31,6 @@ var update = function(app) {
         });
     });
 
-    // test check for updates only
-    app.get('/api/test/updatecheck', function(req, res) {
-        var url_parts = url.parse(req.url, true);
-        var query = url_parts.query;
-    
-        var getTeamNames = query.getTeamNames == 1 ? true : false;
-
-        pickmonapi.checkForUpdates("NFL", res);
-    });
-
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
