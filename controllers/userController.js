@@ -67,9 +67,14 @@ var initUser = function(uid, name, email, balance, cb) {
 			else {
 				userModel.updateUserBalance(uid, balance, function(err, newBalance) {		
 					userModel.setUserName(uid, name, function(err){
+						var parts = name.split(' ');
+						var firstname = parts[0];
+						var lastname = parts.slice(1).join(' ');
+
 						var newUserInfo = {
-							uid:uid,
-							name:name,
+							'$first_name':firstname,
+							'uid':uid,
+							'$last_name': lastname,
 							balance: newBalance,
 							'$created': new Date(),
 							'$email': email,

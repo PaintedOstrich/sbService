@@ -15,7 +15,8 @@
     "redis" : "0.8.1",
     "cron" : "1.0.0",
     "time" : "0.8.3",
-    "mixpanel" : "0.0.9"
+    "mixpanel" : "0.0.9",
+    "nconf"    : "0.6.5"
   },
 
   "engines": {

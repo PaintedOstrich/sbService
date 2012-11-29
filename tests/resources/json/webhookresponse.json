@@ -1,0 +1,1 @@
+{ users: '[{"$distinct_id": "11", "$properties": {"$email": "test@yahoo.com", "$last_name": "scott", "$created": "2012-11-28T15:42:11", "$first_name": "bobby", "$last_seen": "2012-11-28T15:42:12", "balance": 200}}, ]' }

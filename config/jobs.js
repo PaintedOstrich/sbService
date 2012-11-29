@@ -37,7 +37,6 @@ var createJobs = function()
 	  true /* Start the job right now */,
 	  "America/Los_Angeles" /* Time zone of this job. */
 	);
-
 }
 
 module.exports = createJobs;

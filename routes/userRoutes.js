@@ -17,6 +17,7 @@ var userHandle = function(app) {
 				errorHandler.send(res, err)
 			} 
 			else {
+				data = data || 0;
 				res.send(data)
 			}
 		});

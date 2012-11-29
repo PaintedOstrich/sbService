@@ -13,11 +13,37 @@ var Mixpanel = require('mixpanel');
 // Configure logging to dev or production
 var mixpanel = process.env.NODE_ENV == "production" ? Mixpanel.init('01a1b72f289a3c15bbc83c52f3d43da3') : Mixpanel.init('11973125d2a118c43604ea195e1a9d80');	
 
-// mixpanel.prototype.identifyOnce = function(uid)
-// {
-// 	uid = userManagement.getThirdPartyId(uid);
-// 	mixpanel.distinct_id = uid;
-// }
+mixpanel.trackMadeBet = function(betInfo) {
+	if (!betInfo) {
+		return;
+	}
+
+	var toSave = {
+		'distinct_id': betInfo.initFBId,
+		'callee':betInfo.callFBId,
+		'gameId':betInfo.gameId,
+		'amount':betInfo.betAmount,
+		'sport' :betInfo.sport
+	}
+
+	mixpanel.track('bet', toSave)
+}
+
+mixpanel.trackCallBet = function(betInfo) {	
+	if (!betInfo) {
+		return;
+	}
+
+	var toSave = {
+		'distinct_id': betInfo.callFBId,
+		'initBet':betInfo.initFBId,
+		'gameId':betInfo.gameId,
+		'amount':betInfo.betAmount,
+		'sport' :betInfo.sport
+	}
+
+	mixpanel.track('call', toSave)
+}
 
 // mixpanel.customTrack = function(data)
 // {

@@ -13,10 +13,13 @@ var app = express();
 require('./config/database')(__dirname + '/models/');
 
 // // Configuration
-require('./config/settings')(app);
+require('./config/serverSettings')(app);
 
 // // Routing setup
 require('./config/routes')(__dirname + '/routes/', app);
+
+// // Load nconf config settings from files and redis
+require('./config/configSettings')(__dirname);
 
 // // Start cron jobs
 require('./config/jobs')();

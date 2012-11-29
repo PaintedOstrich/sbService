@@ -13,6 +13,8 @@
  var cUtil = require('../user_modules/cUtil');
  var datetime = require('../user_modules/datetime');
  var errorHandler = require('../user_modules/errorHandler');
+
+ var mixpanel = require('../config/mixPanelConfig');
 	
 // upates All bets after game won
 var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
@@ -67,11 +69,11 @@ var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
  * if spread is 120, then you bet $100 dollars to win $120
  */
 var calcWinRatio = function(winSpread) {
-	odds = parseFloat(winSpread);
+	var odds = parseFloat(winSpread);
 	if (odds < 0) {
-		return 100.0/odds;
+		return 100.0/Math.abs(odds);
 	} else {
-		return odds/100.0;
+		return Math.abs(odds)/100.0;
 	}
 }
 
@@ -121,6 +123,9 @@ var makeBet = function(betInfo, cb) {
 							}
 							else {
 								setBetInfo(betKey, betInfo, cb);
+
+								// log bet
+								mixpanel.trackMadeBet(betInfo);
 							}
 						})
 					}
@@ -287,14 +292,14 @@ var callBet = function(query, cb) {
 		{
 			// also checks if bet exists or this field will not be present
 			betModel.getBetInfo(betKey, function(err, betInfo) {
-				if (typeof betInfo ===  "undefined") {
+				if (!betInfo) {
 					cb(errorHandler.errorCodes.betDoesNotExist)
 				}
 				else if (betInfo.called === 'true') {
 					cb(errorHandler.errorCodes.betAlreadyCalled)
 				}
 				else {
-					doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
+					doesUserHaveSufficientFunds(betInfo.callFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
 						if (amountNeeded)
 						{
 							// user doesn't have money to make bet
@@ -306,6 +311,9 @@ var callBet = function(query, cb) {
 						}
 						else {
 							setCallInfo(betKey, betInfo, cb);
+
+							// log bet
+							mixpanel.trackCallBet(betInfo);
 						}
 					})
 				}

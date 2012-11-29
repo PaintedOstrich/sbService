@@ -114,4 +114,5 @@ module.exports =
 	userExists : userExists,
 	getUserBets: getUserBets,
 	setUserName : setUserName,
+	getUserKey : getUserKey,
 }
