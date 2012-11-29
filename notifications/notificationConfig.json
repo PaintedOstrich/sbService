@@ -10,9 +10,13 @@
       "lostBet1" : "Congratulations, you won a bet",
       "lostBet2" : "Congratulations, you won @amount on a bet",
       "lostBet3" : "Congratulations, you beat @user and won a bet"
+    },
+    "notificationPriority" : {
+      "wonBet" : 10,
+      "lostBet": 5
     }
   },
   "notifQueueConfig" : {
-    "minTimeBetweenNotifications" : "240"
+    "minTimeBetweenNotifications" : 240
   }
 }

@@ -3,3 +3,4 @@ node_modules/*
 views/*
 public/*
 dump.rdb
+*.DS_Store

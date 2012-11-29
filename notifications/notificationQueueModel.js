@@ -2,10 +2,10 @@
  *  This Model queues notifications and sends to facebook canvas app
  *  It also follows rules
  */
-var redClient = require('../config/redisConfig')()
+var redClient = require('../config/redisConfig')();
 
-var base = require('../modelsbase');
-var gamesModel = require('./models.gameModel');
+var base = require('../models/base');
+var gamesModel = require('../models/gameModel');
 var userModel = require('../models/userModel');
 var getUserKey = userModel.getUserKey;
 
@@ -18,26 +18,36 @@ var NotificationModel = function() {
     'usersPendingNotif2',
   ];
 
-  this.getUserNotifKey = function(uid) {
-    return 'user|' + uid + 'notifs';
+  // notif list and notif last update keys
+  this.getUserNotifsKey = function(uid) {
+    return 'user|' + uid + '|notifs';
+  }
+  this.getLastUserNotifKey = function(uid) {
+    return 'user|' + uid + '|lastnotif';
   }
   // key for data store of user last sent notification
   this.userLastSentNotifKey = 'userLastSentNotifKey';
 
   // which collection is currently collecting user keys to store pending notification list
   this.currentCollector = this.usersPendingNotifKeys[0];
+  this.inactiveCollector = this.usersPendingNotifKeys[1];
 }
 
 /* switches store from db1 to db2, in essence putting a lock on this data set */
 NotificationModel.prototype._switchCollectors = function(){
-  this.currentCollector = this.currentCollector == this.usersPendingNotifKeys[0] ? this.usersPendingNotifKeys[1] : this.usersPendingNotifKeys[0];
+  var inactiveCollector = this.inactiveCollector;
+  var currentCollector = this.currentCollector;
+
+  this.currentCollector = inactiveCollector;
+  this.inactiveCollector = currentCollector;
 }
 
 /* get users awaiting notifications and switch databse */
 NotificationModel.prototype.getUsersPendingNotification = function(cb){
+  var that = this;
   try {
-    redClient.smembers(this.currentCollector, function(err, userids) {
-      this._switchCollectors();
+    redClient.smembers(that.currentCollector, function(err, userids) {
+      that._switchCollectors();
       cb(null, userids);
     })  
   }
@@ -48,9 +58,8 @@ NotificationModel.prototype.getUsersPendingNotification = function(cb){
 
 /* get users awaiting notifications and switch databse */
 NotificationModel.prototype.getInfoForUsersPendingNotification = function(cb){
-  try {
-    
-    base.(this.currentCollector, function(err, userids) {
+  try {    
+    redClient.smembers(this.currentCollector, function(err, userids) {
       this._switchCollectors();
       cb(null, userids);
     })  
@@ -65,7 +74,7 @@ NotificationModel.prototype.getInfoForUsersPendingNotification = function(cb){
  * fields : wanted info for creatives
  */
 NotificationModel.prototype._compressNotification = function(actionType, fields) {
-  var compress = 'actionType|' | actionType;
+  var compress = 'actionType|' +  actionType;
   if (fields && typeof fields !== 'object') {
     console.warn('passing non object as fields to compress:' + fields);
   }
@@ -91,7 +100,7 @@ NotificationModel.prototype._decompressNotification = function(compressedString)
   // iterate through each pair and create object;
   for (var index in pairs) { 
     var pair = pairs[index].split('|'); 
-    decompress[pair[0] = pair[1];
+    decompress[pair[0]] = pair[1];
   }
 
   return decompress;
@@ -101,10 +110,83 @@ NotificationModel.prototype._decompressNotification = function(compressedString)
  * ActionType : corresponding Creative action
  * fields : key|value 'object array' of wanted info for creatives
  */
-NotificationModel.prototype.saveNotification = function(uid, actionType, fields, cb) {
-  var notifKey = this.getUserNotifKey(uid);
-
+NotificationModel.prototype.saveNotification = function(uid, actionType, fields) {
+  var notifKey = this.getUserNotifsKey(uid);
+  var compressed = this._compressNotification(actionType,fields);
+  try {
+    redClient.sadd(notifKey, compressed);  
+  }
+  catch(e) {
+    console.log(e.stack);
+  }
 } 
+
+NotificationModel.prototype.getAllNotifications = function(cb) {
+  var that = this;
+  try {
+    that.getInfoForUsersPendingNotification(function(err, members) {
+      base.getMembersOfMultipleSets(members, that.getUserNotifsKey)
+    })  
+  }
+  catch(e) {
+    console.log(e.stack);
+  }
+}
+
+/* 
+ *set last time user was notified to now and remove pending keys
+*/
+NotificationModel.prototype.setUsersHaveBeenNotified= function(notifiedMembers) {
+  var that = this;
+  var now = new Date();
+  try {
+    for (var index in notifiedMembers) {
+      var uid = notifiedMembers[index];
+      redClient.set(that.getLastUserNotifKey(uid), now);
+      redClient.del(that.getUserNotifsKey(uid));
+    }
+  }  
+  catch(e) {
+    console.log(e.stack);
+  }
+}
+
+/*
+ *  Remove all users just notified except those pending
+ *       clear locked (inactive) key, and add other user to active set
+ */
+NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(notifiedMembers, membersNotNotified) {
+  var that = this;
+  try {
+    // delete set from which most users notified
+    redClient.del(this.inactiveCollector);
+
+    // add unnotified users to actives set
+    redClient.sadd(this.activeCollector, membersNotNotified);
+
+    // delete pending notification list for each user
+    that.setUsersHaveBeenNotified(notifiedMembers);
+  }  
+  catch(e) {
+    console.log(e.stack);
+  }
+}
+  
+/* 
+ *  Init function to make this a global singleton and retain state
+ */  
+ var notifModel;
+
+ var createModel = function(){
+    if (notifModel){
+      return notifModel;
+    }
+    else {
+      return notifModel = new NotificationModel();
+    }
+ }
+
+module.exports = createModel;
 
 
 

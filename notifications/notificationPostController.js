@@ -1,14 +1,17 @@
 /*
- *  This file contains the creatives for notifications, which will ultimately be replaced by a server backed solution
+ *  NotificationPostController handles communication with the Facebook NotificationPostController API
+ *  It forms the request and sends it to facebook
  */
 
 var querystring = require('querystring');
 var https = require('https');
 var util = require('util')
 
-var Notifications = function(options){
+var NotificationPostController = function(options){
   if (typeof options !== "object") {
-    console.log('must init Notifications with options')
+    // warn that options passed in wrong format
+    if (options) {console.warn('must init NotificationPostController with options object')};
+    
     options = {};
   }
 
@@ -29,7 +32,7 @@ var Notifications = function(options){
 }
 
 // href and callback are optional
-Notifications.prototype.sendNotification = function(uid, template, hrefTag, cb) {
+NotificationPostController.prototype.sendNotification = function(uid, template, creativeRef, hrefTag, cb) {
   if(!uid || !template) {
     throw new Error('must pass uid and template to notifications')
   }
@@ -46,6 +49,7 @@ Notifications.prototype.sendNotification = function(uid, template, hrefTag, cb) 
   }
       
   fields.template = template;
+  fields.ref = creativeRef;
     
   // An object of options to indicate where to post to
   var post_options = this.request_options;
@@ -77,4 +81,17 @@ Notifications.prototype.sendNotification = function(uid, template, hrefTag, cb) 
   post_req.end();
 }
       
-module.exports = Notifications;
+/* 
+ *  Init function to make this a global singleton and retain state
+ */  
+ var notifPostController;
+
+ var createPostController = function(){
+    if (notifPostController){
+      return notifPostController;
+    }
+    else {
+      return notifPostController = new NotificationPostController();
+    }
+ }
+module.exports = createPostController;
