@@ -31,54 +31,71 @@ var NotificationPostController = function(options){
   }
 }
 
+// checks that notification fields are present
+var hasCorrectParams = function(uid, template, creativeRef) {
+  if(!uid || !template || !creativeRef) {
+    console.warn('notificationPostController: Param Missing: must pass uid and template and creativeRef to notifications')
+    return false;;
+  }
+  else if(typeof uid !== "string" || typeof template !== "string" || typeof creativeRef !== "string") {
+    console.warn('notificationPostController: must pass uid and template and creativeRef as strings to notifications');
+    return false;
+  }
+
+  return true;
+}
+
 // href and callback are optional
 NotificationPostController.prototype.sendNotification = function(uid, template, creativeRef, hrefTag, cb) {
-  if(!uid || !template) {
-    throw new Error('must pass uid and template to notifications')
-  }
 
-  var fields = this.params;
+  if(hasCorrectParams(uid, template, creativeRef))
+  {
 
-  if (typeof hrefTag === 'function') {
-    cb = hrefTag || function(){}
-  } 
-  else {
-    // append special tag on redirect to be interpreted on client, like #bet:id to show specific bet
-    fields.href += hrefTag;
-    cb = cb || function(){};
-  }
-      
-  fields.template = template;
-  fields.ref = creativeRef;
-    
-  // An object of options to indicate where to post to
-  var post_options = this.request_options;
+    var fields = this.params;
 
-  // set specific notification to this user
-  post_options.path = '/' + uid +'/notifications?' + querystring.stringify(fields);
-
-  // Set up the request
-  var post_req = https.request(post_options, function(res) {
-    var data = '';
-    res.on('data', function(chunk) {
-        data += chunk;
-      });
-      
-      res.on('end', function() {
+    if (typeof hrefTag === 'function') {
+      cb = hrefTag || function(){}
+    } 
+    else {
+      // append special tag on redirect to be interpreted on client, like #bet:id to show specific bet
+      fields.href += hrefTag;
+      cb = cb || function(){};
+    }
         
-        cb(null, JSON.parse(data));
-      });
-    }).on('error', function(e) {
-      if(process.env.DEBUG) {
-        cb("Notif Error: " + e);
-      }
-  });
+    fields.template = template;
+    fields.ref = creativeRef;
+      
+    // An object of options to indicate where to post to
+    var post_options = this.request_options;
 
-  // post the data
-  var post_data = 'test';
+    // set specific notification to this user
+    post_options.path = '/' + uid +'/notifications?' + querystring.stringify(fields);
 
-  post_req.write(post_data);
-  post_req.end();
+    // Set up the request
+    var post_req = https.request(post_options, function(res) {
+      var data = '';
+      res.on('data', function(chunk) {
+          data += chunk;
+        });
+        
+        res.on('end', function() {
+          cb(null, JSON.parse(data));
+        });
+      }).on('error', function(e) {
+        if(process.env.DEBUG) {
+          cb("Notif Error: " + e);
+        }
+    });
+
+    // post the data
+    var post_data = 'test';
+
+    post_req.write(post_data);
+    post_req.end();
+  }
+  else {
+    cb('incorrect params');
+  }
 }
       
 /* 
@@ -86,12 +103,12 @@ NotificationPostController.prototype.sendNotification = function(uid, template, 
  */  
  var notifPostController;
 
- var createPostController = function(){
+ var createPostController = function(options){
     if (notifPostController){
       return notifPostController;
     }
     else {
-      return notifPostController = new NotificationPostController();
+      return notifPostController = new NotificationPostController(options);
     }
  }
 module.exports = createPostController;

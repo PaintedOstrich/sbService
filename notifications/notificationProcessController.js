@@ -13,24 +13,126 @@
 var util = require('util')
 var nconf = require('nconf')
 
-var notificationPostController = require('./notificationPostController')();
-var notificationPostController = require('./notificationPostController')();
+
+// var notificationPostController = require('./notificationPostController')();
 
 var NotificationProcessController = function(){
-  this.creative = nconf.get('creative');
-  this.notificationPriority = creative.
+  var creatives = nconf.get('creative');
+  this.notificationPriorities = creatives.notificationPriority;
 
-  this.notifQueueConfig
-
-  
+  var notifQueueConfig = nconf.get('notifQueueConfig');
 
   // user will not receive two notifications within this time
-  this.minTimeBetweenNotifications = queueConfig.minTimeBetweenNotifications || 4*60;
+  this.minTimeBetweenNotifications = notifQueueConfig.minTimeBetweenNotifications || 4*60;
+
 }
 
-var NotificationProcessController.prototype.GetHighestPriorityUpdate = function(){
-  
+/* returns an array of the highest prioirity updates
+ * @param: notifs is an array of
+  ['userid':  
+    [
+      {
+        actionType: 'wonBet',
+        against : '12345',
+        amount  : '0.30'
+      }
+    ]
+  ]
+ *
+ */
+NotificationProcessController.prototype.getHighestPriorityUpdate = function(notifs){
+  var pendingNotifs = {};
+  // iterate through all users
+  for (var userId in notifs) {
+    var userNotifs = notifs[userId];
+
+    var currentHighPriority = -1;
+    pendingNotifs[userId] = [];
+
+    
+    // iterate through lal notifications per user
+    for (var itemIndex in userNotifs) {
+
+      var notif = userNotifs[itemIndex];
+    
+      var priority = this._getPriorityOfNotif(notif);
+
+      if (priority > currentHighPriority) {
+        pendingNotifs[userId] = [notif];
+        currentHighPriority = priority;
+      }
+      else if (priority == currentHighPriority) {
+        pendingNotifs[userId].push(notif);
+      }
+    }
+  }
+
+  return pendingNotifs;
 }
+
+/* get the priority of this notification 
+ * Notif = notification object
+ */
+NotificationProcessController.prototype._getPriorityOfNotif = function(notif) {
+  var priority = this.notificationPriorities[notif.actionType];
+  if (!priority) {
+    priority = 0;
+    console.warn(notif.actionType + ' does not have priority value');
+  }
+  return priority;
+}
+
+/* Generates a random creative per matching notification 
+ * Checks if count exists, otherwise goes down hierarchy
+ * 
+ *
+ */
+NotificationProcessController.prototype.getCreativeForNotification = function(notifs){
+  var toSend = [];
+  for (var uid in notifs) {
+    var notifList = notifs[uid];
+    var count = notifList.length;
+
+    if(count >=3) {
+
+    }
+    else if (count == 2) {
+
+    }
+    else {
+
+    }
+  }
+ 
+
+  uid, template, creativeRef, hrefTag,
+
+}
+
+
+/*
+ *  Generates a creative
+ */
+NotificationProcessController.prototype.getBestCreative = function(actionType, count){
+  while(count != 0) {
+    var actionTypeList = creatives[actionType][count];
+    if (actionTypeList) {
+      var creativeIndex = Math.floor(Math.random() * actionTypeList.length);
+      return this.generateCreative()
+    }
+    count--;
+  }
+}
+
+/*
+ * 
+ */
+NotificationProcessController.prototype.generateCreative = function(uid, actionType, template, creativeRef, listOfNotifications) {
+  if (template.indexOf('@amount') >0) {
+    for 
+  }
+}
+
 
 /*
  *  Sends notifcations if they have not already been sent
@@ -43,12 +145,11 @@ var NotificationProcessController.prototype.GetHighestPriorityUpdate = function(
  var notifProcessController;
 
  var createProcessController = function(){
-    if (notifProcessController){
-      return notifProcessController;
+    if (!notifProcessController){
+      notifProcessController = new NotificationProcessController();
     }
-    else {
-      return notifProcessController = new NotificationProcessController();
-    }
+    
+    return notifProcessController;
  }
 
 

@@ -2,7 +2,7 @@
  *  This Model queues notifications and sends to facebook canvas app
  *  It also follows rules
  */
-var redClient = require('../config/redisConfig')();
+var redClient = require('../config/redisConfig');
 
 var base = require('../models/base');
 var gamesModel = require('../models/gameModel');
@@ -33,6 +33,36 @@ var NotificationModel = function() {
   this.inactiveCollector = this.usersPendingNotifKeys[1];
 }
 
+/* gets Info for all users pending notifications */
+NotificationModel.prototype.getAllNotifications = function(cb) {
+  var that = this;
+  try {
+    that.getUsersPendingNotification(function(err, users) {
+      that.getNotificationsForUsers(users, function(err, idsToNotifications) {
+        // decompress stored notifications
+        console.log('idsToNotifications' + idsToNotifications );
+        for (var grouping in idsToNotifications) {
+          for (var notifs in grouping) {
+            idsToNotifications[grouping[notifs]] = that._decompressNotification(grouping[notifs]);
+          }
+        }
+
+        // call back notifications
+        cb(null, idsToNotifications);
+      }) 
+    }) 
+  }
+  catch(e) {
+    cb(e);
+    console.log(e.stack);
+  }
+}
+
+/* Gets list of notification ids per user */
+NotificationModel.prototype.getNotificationsForUsers = function(uids, cb){
+  base.getMembersOfMultipleSets(uids, this.getUserNotifsKey, cb);
+}
+
 /* switches store from db1 to db2, in essence putting a lock on this data set */
 NotificationModel.prototype._switchCollectors = function(){
   var inactiveCollector = this.inactiveCollector;
@@ -48,19 +78,6 @@ NotificationModel.prototype.getUsersPendingNotification = function(cb){
   try {
     redClient.smembers(that.currentCollector, function(err, userids) {
       that._switchCollectors();
-      cb(null, userids);
-    })  
-  }
-  catch(e) {
-    cb(e);
-  }
-}
-
-/* get users awaiting notifications and switch databse */
-NotificationModel.prototype.getInfoForUsersPendingNotification = function(cb){
-  try {    
-    redClient.smembers(this.currentCollector, function(err, userids) {
-      this._switchCollectors();
       cb(null, userids);
     })  
   }
@@ -121,18 +138,6 @@ NotificationModel.prototype.saveNotification = function(uid, actionType, fields)
   }
 } 
 
-NotificationModel.prototype.getAllNotifications = function(cb) {
-  var that = this;
-  try {
-    that.getInfoForUsersPendingNotification(function(err, members) {
-      base.getMembersOfMultipleSets(members, that.getUserNotifsKey)
-    })  
-  }
-  catch(e) {
-    console.log(e.stack);
-  }
-}
-
 /* 
  *set last time user was notified to now and remove pending keys
 */
@@ -159,10 +164,10 @@ NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(
   var that = this;
   try {
     // delete set from which most users notified
-    redClient.del(this.inactiveCollector);
+    redClient.del(that.inactiveCollector);
 
     // add unnotified users to actives set
-    redClient.sadd(this.activeCollector, membersNotNotified);
+    redClient.sadd(that.activeCollector, membersNotNotified);
 
     // delete pending notification list for each user
     that.setUsersHaveBeenNotified(notifiedMembers);

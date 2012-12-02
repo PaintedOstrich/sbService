@@ -1,16 +1,21 @@
+/*
+ *   Redis Mock.  
+ *   Initialized with a dictionary of [key].response
+ */ 
 
-var RedClientMock = function(){
-   this.members = ['123','234','345'];
+
+// allows us to set varying fields for smembers 
+var RedClientMock = function(keysToResponses){
+  this.keysToResponses = keysToResponses
 };
 
-RedClientMock.prototype.smembers = function(uid, cb) {
-
-  cb(null, this.members)
+RedClientMock.prototype.smembers = function(key, cb) {
+  cb(null, this.keysToResponses[key])
 }
 
-// create new mock object
-var initClient = function() {
-  return new RedClientMock()
+// create new mock object 
+var init = function(keysToResponses) {
+  return new RedClientMock(keysToResponses);
 }
 
-module.exports = initClient;
+module.exports = init;

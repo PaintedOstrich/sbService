@@ -1,0 +1,23 @@
+{
+  "creative":{
+    "wonBet" : {
+      "wonBet1" : "Congratulations, you won a bet",
+      "wonBet2" : "Congratulations, you won @amount on a bet",
+      "wonBet3" : "Congratulations, you beat @user and won a bet",
+      "wonBet4" : "Congratulations, you beat @user and @user in bets"
+    },
+    "lostBet" : {
+      "lostBet1" : "Congratulations, you won a bet",
+      "lostBet2" : "Congratulations, you won @amount on a bet",
+      "lostBet3" : "Congratulations, you beat @user and won a bet"
+    },
+    "notificationPriority" : {
+      "wonBet" : 10,
+      "lostBet": 5
+    }
+  },
+  "notifQueueConfig" : {
+    "minTimeBetweenNotifications" : 240
+  }
+}
+
