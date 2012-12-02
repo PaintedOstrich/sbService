@@ -38,7 +38,7 @@ var getBaseUserInfo = function(uid, cb) {
 					// get user 
 					getUserBets(uid, function(err, bets) {
 						baseInfo.bets = bets;
-						cb(baseInfo)
+						cb(null, baseInfo)
 					})
 
 				})
