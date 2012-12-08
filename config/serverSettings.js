@@ -3,7 +3,7 @@ var express = require('express')
 var bodyLimiter = require('../middleware/bodyLimiter')
 
 // access control list
-var allowedDomains = ['sports-bets.herokuapp.com'];
+var allowedDomains = ['sports-bets.herokuapp.com','sportsbetsservice.herokuapp.com'];
 if (DEVELOPMENT) {
 	allowedDomains.push('127.0.0.1');
 }
@@ -14,6 +14,7 @@ var setCrossBrowserHeaders = function(req,res,next) {
 	var index = allowedDomains.indexOf(req.host);
 
 	if (index == -1) {
+		console.log(req.originalUrl);
 		// from a forbidden host
 		console.log('forbidden host access attempt from : '+ req.host);
 		// FIXME server log access attempt
