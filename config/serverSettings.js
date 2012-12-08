@@ -2,9 +2,12 @@
 var express = require('express')
 var bodyLimiter = require('../middleware/bodyLimiter')
 
+
+var allowedDomains = 'https://sports-bets.herokuapp.com,http://127.0.0.1:5000';
 // Set Headers For Cross Domain Browser Requests
 var setCrossBrowserHeaders = function(req,res,next) {	
-	res.header('Access-Control-Allow-Origin','*'); 
+	// res.header('Access-Control-Allow-Origin','*'); 
+	res.header('Access-Control-Allow-Origin', allowedDomains);
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Origin, Accept');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 
