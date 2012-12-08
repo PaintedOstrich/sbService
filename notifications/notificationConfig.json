@@ -4,8 +4,7 @@
       "1" : {
         "wonBet1" : "Congratulations, you won a bet",
         "wonBet2" : "Congratulations, you won @amount on a bet",
-        "wonBet3" : "Congratulations, you beat @user and won a bet",
-        
+        "wonBet3" : "Congratulations, you beat @user and won a bet"
       },
       "2" : {
         "wonBet5" : "Congratulations, you won a bet",
