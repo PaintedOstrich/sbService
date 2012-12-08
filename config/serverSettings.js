@@ -7,9 +7,16 @@ var setCrossBrowserHeaders = function(req,res,next) {
 	res.header('Access-Control-Allow-Origin','*'); 
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Origin, Accept');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+
+	/* Access-Control-Allow-Credentials: Indicates whether or not the response to the request can be exposed when the credentials flag is true.  
+	 * When used as part of a response to a preflight request, 
+	 * this indicates whether or not the actual request can be made using credentials. 
+	 * Note that simple GET requests are not preflighted, and so if a request is made for a resource with credentials, 
+	 * if this header is not returned with the resource, the response is ignored by the browser and not returned to web content.
+	 */
 	res.header('Access-Control-Allow-Credentials', 'true');
 
-	if (res.method.toLowerCase() === 'options') {
+	if (req.method.toLowerCase() === 'options') {
 		// setting up cro0ss browser access preflight response
 		res.send(200);
 		return;
