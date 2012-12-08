@@ -9,8 +9,8 @@ var express = require('express')
 
 var app = express();
 
-// // Database and Model setup
-require('./config/database')(__dirname + '/models/');
+// // set global environment variable
+DEVELOPMENT = process.env.NODE_ENV === "development" ? true : false;
 
 // // Configuration
 require('./config/serverSettings')(app);
@@ -23,6 +23,9 @@ require('./config/configSettings')(__dirname);
 
 // // Start cron jobs
 require('./config/jobs')();
+
+// // Database and Model setup
+// require('./config/database')(__dirname + '/models/');
 
 app.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

@@ -32,6 +32,7 @@ var listOfReplace = function(action, notifList) {
 
     return amount;
   }
+  
   if (action === '@user') {
     var count = temp.match(/@user/g); 
     

@@ -5,13 +5,15 @@
         "wonBet1" : "Congratulations, you won a bet",
         "wonBet2" : "Congratulations, you won @amount on a bet",
         "wonBet3" : "Congratulations, you beat @user and won a bet",
-        "wonBet4" : "Congratulations, you beat @user and @user in bets"
+        
       },
       "2" : {
-        "wonBet5" : "Congratulations, you won a bet"
+        "wonBet5" : "Congratulations, you won a bet",
+        "wonBet6" : "Congratulations, you beat @user and @user in bets"
       },
       "3" : {
-        "wonBet9" : "Congratulations, you won a bet"
+        "wonBet9" : "Congratulations, you won a bet",
+        "wonBet7" : "Congratulations, you beat @user and @user, and 3 others in bets"
       }
     },
     "lostBet" : {

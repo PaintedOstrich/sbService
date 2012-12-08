@@ -2,12 +2,25 @@
 var express = require('express')
 var bodyLimiter = require('../middleware/bodyLimiter')
 
+// access control list
+var allowedDomains = ['sports-bets.herokuapp.com'];
+if (DEVELOPMENT) {
+	allowedDomains.push('127.0.0.1');
+}
 
-var allowedDomains = 'https://sports-bets.herokuapp.com,http://127.0.0.1:5000';
 // Set Headers For Cross Domain Browser Requests
 var setCrossBrowserHeaders = function(req,res,next) {	
-	// res.header('Access-Control-Allow-Origin','*'); 
-	res.header('Access-Control-Allow-Origin', allowedDomains);
+	
+	var index = allowedDomains.indexOf(req.host);
+
+	if (index == -1) {
+		// from a forbidden host
+		console.log('forbidden host access attempt from : '+ req.host);
+		// FIXME server log access attempt
+		return res.send(403);
+	}
+
+	res.header('Access-Control-Allow-Origin', allowedDomains[index]);
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Origin, Accept');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 
@@ -21,8 +34,7 @@ var setCrossBrowserHeaders = function(req,res,next) {
 
 	if (req.method.toLowerCase() === 'options') {
 		// setting up cro0ss browser access preflight response
-		res.send(200);
-		return;
+		return res.send(200);
 	}
 	else {
 		// continue to process actual request

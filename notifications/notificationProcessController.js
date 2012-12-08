@@ -91,7 +91,6 @@ NotificationProcessController.prototype._getPriorityOfNotif = function(notif) {
 
 /* Generates a random creative per matching notification 
  * Checks if count exists, otherwise goes down hierarchy
- * 
  *
  */
 NotificationProcessController.prototype.getCreativeForNotification = function(notifs){
@@ -112,7 +111,7 @@ NotificationProcessController.prototype.getCreativeForNotification = function(no
   }
  
 
-  uid, template, creativeRef, hrefTag,
+  // uid, template, creativeRef, hrefTag,
 
 }
 
@@ -128,15 +127,6 @@ NotificationProcessController.prototype.getBestCreative = function(actionType, c
       return this.generateCreative()
     }
     count--;
-  }
-}
-
-/*
- * 
- */
-NotificationProcessController.prototype.generateCreative = function(uid, actionType, template, creativeRef, listOfNotifications) {
-  if (template.indexOf('@amount') >0) {
-    for 
   }
 }
 
