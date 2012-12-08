@@ -38,8 +38,32 @@ var isOnlyNumber = function(str)
    }
  */
 
+// var dates = []; //<-- Contains a list of dates for the coming week 
+// var baseUrl = "http://www.someserver.com";
+// var storedChannels = [1,2,3,4,5,6,7,8,9,10,45,23,56,34,23,67,23,567,234,67,345,465,67,34];
 
+// function ProcessNext(betInfo, currentUser, callUsers, cb) {
+//     if (currentUser < )
+//         d=0;
+//         if (ch < storedChannels.length) {
+//             ch++;
+//         } else {
+//             return;
+//         }
+//     }
 
+//     var channel = storedChannels[ch];
+//     var currentDate = dates[d];
+//     ajax({    
+//         url: baseUrl+"?ch="+channel+"&dt=currentDate"+,
+//         complete: function(res) {
+//             CMLocalStore.setString('ch' + ch + "_" + scheduleDay, res);
+//             ProcessNext(ch, d);
+//             },
+//     });
+// }
+
+// ProcessNext(0, 0);
 
 module.exports = 
 {

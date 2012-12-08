@@ -77,6 +77,24 @@ var calcWinRatio = function(winSpread) {
 	}
 }
 
+// makes a batch bet for multiple users.
+// some bets may go through, and others may be returned as error.  For example, a user may have enough funds to bet 1 of 2 users.
+var makeBetBatch = function(betInfoMult, cb) {
+	// try {
+	// 	var callFBIds = bet.callFBIds;
+	// 	if (!callFBIds || typeof callFBIds != "object"){
+	// 			cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, "callFBIds not array"))
+	// 	}
+	// 	else {
+	// 		betInfo = betInfoMult;
+	// 		// remove callFBIds,
+	// 		delete betInfo.callFBIds;
+
+	// 		for ()
+	// 	}
+	// }
+}
+
 // processes bet params and makes sure all required fields are present, then makes bet
 var makeBet = function(betInfo, cb) {
 	var missingParams = isMissingParameter(betInfo);

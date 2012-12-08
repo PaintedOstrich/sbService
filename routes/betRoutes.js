@@ -21,7 +21,21 @@ var bet = function(app) {
                 errorHandler.send(res, err)
             }
             else {
-                var suc = {success:'success'};
+                res.send(data)
+            }
+        });
+    });
+
+     // Post a user bet in batch against multiple users
+    app.post('/api/bet/batch', function(req, res) {
+        var query = req.body;
+        
+        betController.makeBetBetch(query, function(err, data)
+        {
+            if(err) {
+                errorHandler.send(res, err)
+            }
+            else {
                 res.send(data)
             }
         });

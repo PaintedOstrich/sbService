@@ -27,7 +27,7 @@ var NotificationProcessController = function(){
 
 }
 
-/* returns an array of the highest prioirity updates
+/* returns an array of the highest prioirity updates for each user
  * @param: notifs is an array of
   ['userid':  
     [
@@ -35,9 +35,10 @@ var NotificationProcessController = function(){
         actionType: 'wonBet',
         against : '12345',
         amount  : '0.30'
-      }
+      },
     ]
-  ]
+  ], 
+  .... next user
  *
  */
 NotificationProcessController.prototype.getHighestPriorityUpdate = function(notifs){

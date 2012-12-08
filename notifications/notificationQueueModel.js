@@ -6,8 +6,6 @@ var redClient = require('../config/redisConfig');
 
 var base = require('../models/base');
 var gamesModel = require('../models/gameModel');
-var userModel = require('../models/userModel');
-var getUserKey = userModel.getUserKey;
 
 var datetime = require('../user_modules/datetime');
 var cUtil = require('../user_modules/cUtil');
@@ -123,11 +121,13 @@ NotificationModel.prototype._decompressNotification = function(compressedString)
   return decompress;
 } 
 
-/* Saves info about a user action as a string for that user in a hashset
+/* 
+ * Queues a notification to be processed on job.
+ * Saves info about a user action as a string for that user in a hashset
  * ActionType : corresponding Creative action
  * fields : key|value 'object array' of wanted info for creatives
  */
-NotificationModel.prototype.saveNotification = function(uid, actionType, fields) {
+NotificationModel.prototype.queueNotification = function(uid, actionType, fields) {
   var notifKey = this.getUserNotifsKey(uid);
   var compressed = this._compressNotification(actionType,fields);
   try {

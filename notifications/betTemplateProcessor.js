@@ -1,3 +1,4 @@
+// randomly selects a template from the template list
 var generateSportsTemplate = function(templateList, notifList) {
   while(templateList.length >0) {
     var creativeIndex = Math.floor(Math.random() * actionTypeList.length);
@@ -32,6 +33,7 @@ var listOfReplace = function(action, notifList) {
     return amount;
   }
   if (action === '@user') {
+    var count = temp.match(/@user/g); 
     
   }
 }
