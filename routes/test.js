@@ -1,4 +1,3 @@
-
 /*
  * Sport Bet API Info routing
  */
@@ -36,8 +35,12 @@ var update = function(app) {
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
     	userModel.updateUserBalance(req.params.userid, req.params.amount, function(err, result)
     	{
-    		err && res.send(err);
-    		res.send(result);
+    		if (err) {
+                res.send(err);
+            } 
+            else {
+                res.send(result);    
+            }
     	})
     });
 
@@ -56,9 +59,7 @@ var update = function(app) {
             }
             
         });
-    });
-   
+    });   
 }
-
 
 module.exports = update;

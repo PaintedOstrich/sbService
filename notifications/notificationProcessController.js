@@ -41,15 +41,21 @@ var NotificationProcessController = function(){
   .... next user
  *
  */
-NotificationProcessController.prototype.getHighestPriorityUpdate = function(notifs){
+NotificationProcessController.prototype.getHighestPriorityUpdatesBatch = function(notifs){
   var pendingNotifs = {};
   // iterate through all users
   for (var userId in notifs) {
     var userNotifs = notifs[userId];
 
-    var currentHighPriority = -1;
-    pendingNotifs[userId] = [];
+   
+  }
 
+  return pendingNotifs;
+}
+
+NotificationProcessController.prototype.getHighestPriorityUpdates = function(userNotifs){
+ var currentHighPriority = -1;
+    pendingNotifs = [];
     
     // iterate through lal notifications per user
     for (var itemIndex in userNotifs) {
@@ -59,16 +65,16 @@ NotificationProcessController.prototype.getHighestPriorityUpdate = function(noti
       var priority = this._getPriorityOfNotif(notif);
 
       if (priority > currentHighPriority) {
-        pendingNotifs[userId] = [notif];
+        pendingNotifs = [notif];
         currentHighPriority = priority;
       }
       else if (priority == currentHighPriority) {
-        pendingNotifs[userId].push(notif);
+        pendingNotifs.push(notif);
       }
     }
-  }
 
-  return pendingNotifs;
+    // returns single individuals pending user
+    return pendingNotifsPerUser;
 }
 
 /* get the priority of this notification 

@@ -54,13 +54,6 @@ var bet = function(app) {
             }
         });
     });
-    // FIXME need to change from get to post
-    // app.post('/api/bet', function(req, res) {
-    //     var url_parts = url.parse(req.url, true);
-    //     var query = url_parts.query;
-        
-    //     betController.makeBet(res, query);
-    // });
 
      app.get('/api/bet/recent', function(req, res) {
         betStatsModel.getRecentBets(function(err, data)

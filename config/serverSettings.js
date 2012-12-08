@@ -3,15 +3,31 @@ var express = require('express')
 var bodyLimiter = require('../middleware/bodyLimiter')
 
 // Set Headers For Cross Domain Browser Requests
-var setCrossBrowserHeaders = function(req,res,next) 
-{	
-	// res.header("Access-Control-Allow-Origin",req.header('origin')); 
-	res.header("Access-Control-Allow-Origin",'*'); 
-	res.header("Access-Control-Allow-Headers", "X-Requested-With"); 
+var setCrossBrowserHeaders = function(req,res,next) {	
+	res.header('Access-Control-Allow-Origin','*'); 
+  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Origin, Accept');
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+	res.header('Access-Control-Allow-Credentials', 'true');
 
-	next();
+	if (res.method.toLowerCase() === 'options') {
+		// setting up cro0ss browser access preflight response
+		res.send(200);
+		return;
+	}
+	else {
+		// continue to process actual request
+		next(); 
+	}
 };
 
+// Set Status 
+// *** currently not in use
+var setStatus = function(req,res,next) 
+{	
+	// everything is normal. may add additional logic here later
+	res.status('200');
+	next();
+};
 
 var configureSettings = function(app)
 {
@@ -21,7 +37,7 @@ var configureSettings = function(app)
 
   // cross browser enabling
 	app.use(setCrossBrowserHeaders);
-	
+
 	app.use(express.bodyParser());
 	app.use(express.cookieParser('bdae@gkdl{dd}]fb132afet;dsfasdfbxcwerd'));
 	app.use(express.session({secret: process.env.SESSION_SECRET || 'secret123'}));
