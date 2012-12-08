@@ -1,22 +1,22 @@
 
 var express = require('express')
 var bodyLimiter = require('../middleware/bodyLimiter')
+var util = require('util')
 
 // access control list
-var allowedDomains = ['sports-bets.herokuapp.com','sportsbetsservice.herokuapp.com'];
+var allowedDomains = ['sports-bets.herokuapp.com'];
 if (DEVELOPMENT) {
-	allowedDomains.push('127.0.0.1');
+	allowedDomains.push('127.0.0.1:5000');
 }
 
 // Set Headers For Cross Domain Browser Requests
 var setCrossBrowserHeaders = function(req,res,next) {	
-	
-	var index = allowedDomains.indexOf(req.host);
+	var requestedBy = req.headers.host;
+	var index = allowedDomains.indexOf(requestedBy);
 
 	if (index == -1) {
-		console.log(req.originalUrl);
 		// from a forbidden host
-		console.log('forbidden host access attempt from : '+ req.host);
+		console.log('forbidden host access attempt from : '+ requestedBy);
 		// FIXME server log access attempt
 		return res.send(403);
 	}
