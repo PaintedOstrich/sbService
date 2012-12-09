@@ -14,8 +14,6 @@ var setCrossBrowserHeaders = function(req,res,next) {
 	var requestedBy = req.host;
 	var index = allowedDomains.indexOf(requestedBy);
 
-	console.log(util.inspect(req, false, 10));
-	debugger;
 	if (index == -1) {
 		// from a forbidden host
 		console.log('forbidden host access attempt from : '+ requestedBy);
