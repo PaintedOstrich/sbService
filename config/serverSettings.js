@@ -33,7 +33,7 @@ var setCrossBrowserHeaders = function(req,res,next) {
 	 * Note that simple GET requests are not preflighted, and so if a request is made for a resource with credentials, 
 	 * if this header is not returned with the resource, the response is ignored by the browser and not returned to web content.
 	 */
-	res.header('Access-Control-Allow-Credentials', 'true');
+	// res.header('Access-Control-Allow-Credentials', 'true');
 
 	if (req.method.toLowerCase() === 'options') {
 		// setting up cro0ss browser access preflight response
