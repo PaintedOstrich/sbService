@@ -6,14 +6,16 @@ var util = require('util')
 // access control list
 var allowedDomains = ['sports-bets.herokuapp.com'];
 if (DEVELOPMENT) {
-	allowedDomains.push('127.0.0.1:5000');
+	allowedDomains.push('127.0.0.1');
 }
 
 // Set Headers For Cross Domain Browser Requests
 var setCrossBrowserHeaders = function(req,res,next) {	
-	var requestedBy = req.headers.host;
+	var requestedBy = req.host;
 	var index = allowedDomains.indexOf(requestedBy);
 
+	console.log(util.inspect(req, false, 10));
+	debugger;
 	if (index == -1) {
 		// from a forbidden host
 		console.log('forbidden host access attempt from : '+ requestedBy);
