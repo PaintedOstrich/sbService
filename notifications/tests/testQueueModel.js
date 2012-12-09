@@ -18,8 +18,8 @@ var date = new Date(-10).toString();
 var mockData = {
   usersPendingNotif1 : ['11','22','33'],
   usersPendingNotif2 : ['123','234','345'],
-  'user|11|notifs' : ['actionType|wonBet_against|12345_amount|0.30'],
-  'user|12|notifs' : ['actionType|wonBet_against|1235_amount|1.50','actionType|wonBet_against|12345_amount|0.30'],
+  'user|11|notifs' : ['actionType|wonBet_user|12345_amount|0.30'],
+  'user|12|notifs' : ['actionType|wonBet_user|1235_amount|1.50','actionType|wonBet_user|12345_amount|0.30'],
   'user|1|lastnotif': date,
 }
 
@@ -35,20 +35,12 @@ var notifQueueModel = SandboxedModule.require('../notificationQueueModel', {
 })()
 
 // compressed string from notif info
-var compressed = 'actionType|wonBet_against|12345_amount|0.30';
+var compressed = 'actionType|wonBet_user|12345_amount|0.30';
 
 var decompressed = {
   actionType: 'wonBet',
-  against : '12345',
+  user : '12345',
   amount  : '0.30'
-}
-
-var mockData = {
-  usersPendingNotif1 : ['11','22','33'],
-  usersPendingNotif2 : ['123','234','345'],
-  'user|11|notifs' : ['actionType|wonBet_against|12345_amount|0.30'],
-  'user|12|notifs' : ['actionType|wonBet_against|1235_amount|1.50','actionType|wonBet_against|12345_amount|0.30'],
-  'user|1|lastnotif': date,
 }
 
 queueSuite.addBatch({
@@ -57,7 +49,7 @@ queueSuite.addBatch({
       var notifInfo = {
         actionType: 'wonBet',
         fields : {
-          'against' : '12345',
+          'user' : '12345',
           'amount'  : '0.30'
         }
       }
@@ -70,7 +62,7 @@ queueSuite.addBatch({
   'test decompression of notif info': {
     topic: function() {
       
-      var compressed = 'actionType|wonBet_against|12345_amount|0.30';
+      var compressed = 'actionType|wonBet_user|12345_amount|0.30';
       return notifQueueModel._decompressNotification(compressed);
     },
      'String decompressed correctly': function (decompress) {

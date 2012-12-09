@@ -19,7 +19,7 @@ var errorHandler = require('../user_modules/errorHandler');
 // based upon game Id, user ids, and time
 var getBetKey = function(gameId, initFBId, callFBId, timeKey)
 {
-	var betKey = 'bet|' + gameId + '|' + initFBId + '|' + callFBId + '|' + timeKey;;
+	var betKey = 'bet|' + gameId + '|' + initFBId + '|' + callFBId + '|' + timeKey;
 	return betKey;
 }
 

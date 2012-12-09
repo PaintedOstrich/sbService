@@ -1,33 +1,71 @@
 {
   "creative":{
-    "wonBet" : {
-      "1" : {
-        "wonBet1" : "Congratulations, you won a bet",
-        "wonBet2" : "Congratulations, you won @amount on a bet",
-        "wonBet3" : "Congratulations, you beat @user and won a bet"
+    "templates" : {
+      "wonBet" : {
+        "1" : [
+          {
+            "template" : "Congratulations, you won a bet",
+            "creativeRef" : "wonBet1"
+          },
+          {
+            "wonBet2" : "Congratulations, you won @amount on a bet",
+            "creativeRef" : "wonBet2"
+          },
+          {
+            "wonBet3" : "Congratulations, you beat @user and won a bet",
+            "creativeRef" : "wonBet3"
+          }
+        ],
+        "2" : [
+          {
+            "template" : "Congratulations, you won a bet",
+            "creativeRef" : "wonBet4"
+          },
+          {
+            "template" : "Congratulations, you beat @user and @user in bets",
+            "creativeRef" : "wonBet5" 
+          }
+        ],
+        "3" : [
+          {
+            "template" : "Congratulations, you won a bet",
+            "creativeRef" : "wonBet6"
+          },
+          {
+             "template" : "Congratulations, you beat @user and @user, and @count other in bets",
+             "creativeRef" : "wonBet7"
+          }
+        ],
+        "4" : [
+          {
+            "template" : "Congratulations, you beat @user and @user, and @count others in bets",
+            "creativeRef" : "wonBet8" 
+          }
+        ] 
       },
-      "2" : {
-        "wonBet5" : "Congratulations, you won a bet",
-        "wonBet6" : "Congratulations, you beat @user and @user in bets"
-      },
-      "3" : {
-        "wonBet9" : "Congratulations, you won a bet",
-        "wonBet7" : "Congratulations, you beat @user and @user, and 3 others in bets"
-      }
-    },
-    "lostBet" : {
-      "1" : {
-        "lostBet1" : "Congratulations, you won a bet",
-        "lostBet2" : "Congratulations, you won @amount on a bet",
-        "lostBet3" : "Congratulations, you beat @user and won a bet"
-      },
-      "2" : {
+      "lostBet" : {
+        "1" : [
+          {
+            "template" : "Congratulations, you lost a bets",
+            "creativeRef" : "lostBet1" 
+          },
+          {
+            "template" : "Congratulations, you lost a bets",
+            "creativeRef" : "lostBet2" 
+          }
+        ],
+        "2" : [ ]
       }
     },
     "notificationPriority" : {
       "wonBet" : 10,
       "lostBet": 5
-    }
+    },
+    "creativeKeys" : [
+      "@user",
+      "@amount",
+      "@count"
+    ]
   },
   "notifQueueConfig" : {
     "minTimeBetweenNotifications" : 240

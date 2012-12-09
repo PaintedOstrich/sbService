@@ -10,11 +10,6 @@ Sends an error in the following format
 */
 var errorCodes =
 {
-  'watchAdCode':
-  {
-  	// User doesn't have sufficient funds and needs to watch an advertisement
-  	reason:'insufficientFunds'
-  },
   'gameDoesNotExist':
   {
   	// Game being accessed does not exist
