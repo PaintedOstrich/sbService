@@ -15,13 +15,15 @@ var setCrossBrowserHeaders = function(req,res,next) {
 	var index = allowedDomains.indexOf(requestedBy);
 
 	if (index == -1) {
+		// FIXME
 		// from a forbidden host
-		console.log('forbidden host access attempt from : '+ requestedBy);
+		// console.log('forbidden host access attempt from : '+ requestedBy);
 		// FIXME server log access attempt
-		return res.send(403);
+		// return res.send(403);
 	}
 
-	res.header('Access-Control-Allow-Origin', allowedDomains[index]);
+	// res.header('Access-Control-Allow-Origin', allowedDomains[index]);
+	res.header('Access-Control-Allow-Origin', '*';
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Origin, Accept');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 
