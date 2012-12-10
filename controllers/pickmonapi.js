@@ -17,17 +17,19 @@ var gameModel = require('../models/gameModel');
 
 /* Exported Functions */
 var checkForUpdates = function(cb) {
+  cb = cb || function(){};
 	getBetUpdates(false, cb);
 }
 
 var updateAllGames = function(cb) {
+  cb = cb || function(){};
 	getBetUpdates(true, cb);
 }
 /* End Exported Functions */
 
 var getBetUpdates = function(shouldDoFullUpdate, cb) {	
 	var request = restler.get(sportBetApiHandler.getUrl(shouldDoFullUpdate));
-	// console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
+	console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
 
     request.on('fail', function(err) {
       cb('Error: Unable to reach Pick Mon Api: ' + err);
@@ -62,7 +64,8 @@ var parseGames = function(result, cb) {
 			cb(null, 'no games to update');
 		}
 		else {
-			async.forEach(gamesArr, parseGame,cb);
+			// async.forEach(gamesArr, parseGame,cb);
+      cUtil.processSeriesAsync(gamesArr, parseGame, cb);
 		}	
 
 	}
@@ -119,48 +122,51 @@ pickMonitorGame.prototype.process = function(cb) {
 	// lose scope after 1st callback
 	var that = this;
 
-    try {
+  try {
 		if (that._g.gid && that._g.header && that._g.gdate) {
 			var date = new Date(that._g.gdate);
-		    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
-	    		if (err) { throw err; }
+	    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
+    		if (err) { throw err; }
 
-	    		// console.log('game id is ' + gameId)
+    		// console.log('game id is ' + gameId)
 
-			    // on ended games
-			    if (that.isFinalScore()) {
-			    	console.log('is final score');
-			    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
-			    		console.log('game has been procesed:' + hasBeenProcessed)
-			    		if (hasBeenProcessed === "false") {
-				    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
+		    // on ended games
+        console.log('is final score' + that._g.header + that._g.gdate);
+		    if (that.isFinalScore()) {
+		    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
+		    		console.log('game has been procesed:' + hasBeenProcessed)
+		    		if (hasBeenProcessed === "false") {
+			    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
 
-				    		var isWinnerTeam1 = that._g.winner === that._g.team1Name;
+			    		var isWinnerTeam1 = that._g.winner === that._g.team1Name;
 
-				    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
-				    		// if something happens and there is an error in the middle of processing games, this field will not be set,
-				    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
-				    		betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
-			    		}
-			    		else {
-			    			// do nothing, since game has already been processed for all bets
-			    			console.log('already processed')
-			    			cb()
-			    		}
-			    	})
-			    }
-			    else if (that.isGameInProcess()) {
-			    	// do nothing
-			    	console.log('is in-process game');
-			    	cb()
-			    }
-			    else {
-  					// update bet info for future game
-  					gameController.saveGame(that._g, function(err) {
-  						if (err) { throw err }
-  						cb();
-  					})
-			    }
+			    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
+			    		// if something happens and there is an error in the middle of processing games, this field will not be set,
+			    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
+			    		
+
+              // betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
+              cb();
+		    		}
+		    		else {
+		    			// do nothing, since game has already been processed for all bets
+		    			console.log('already processed')
+		    			cb()
+		    		}
+		    	})
+		    }
+		    else if (that.isGameInProcess()) {
+		    	// do nothing
+		    	console.log('is in-process game');
+		    	cb()
+		    }
+		    else {
+					// update bet info for future game
+					gameController.saveGame(that._g, function(err) {
+						if (err) { throw err }
+						cb();
+					})
+		    }
 			})
 		}
 		else {
@@ -168,10 +174,10 @@ pickMonitorGame.prototype.process = function(cb) {
 			console.log('game is not defined');
 			cb()
 		}
-    }
-    catch(e) {
-		cb('Error: Unable to process game:' +e.stack);
-	}
+  }
+  catch(e) {
+      cb('Error: Unable to process game:' +e.stack);
+  }
 }
 	
 pickMonitorGame.prototype.isFinalScore = function() {

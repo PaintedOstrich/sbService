@@ -11,23 +11,36 @@
 
  var mongoose = require('mongoose');
  var Game = mongoose.model('Game');
+ var gaemModel = require('../models/gameModel')
   
 var saveGame = function(newGameInfo, cb){
   var query = Game.find();
-  debugger;
+  console.log('adding : \n' + newGameInfo.header + "\n" + newGameInfo.lastUpdate)
+  var gameDate = new Date(newGameInfo.gdate);
   query.and([{header: newGameInfo.header}, {gdate : newGameInfo.gdate}]).exec(function(err, oldGameInfo){
-    // console.log(oldGameInfo);
-    console.log(typeof oldGameInfo._id);
-    console.log(oldGameInfo._id);
-    console.log(oldGameInfo.gdate);
-    console.log(oldGameInfo);
-    if (oldGameInfo._id){
-      console.log('found old game ' + oldGameInfo.header);
-      //update existing game
-       Game.update({_id: oldGameInfo._id}, newGameInfo, cb)
+    if (oldGameInfo.length){
+      // found old game
+      // makes update if this update is sooner;
+
+      if (oldGameInfo[0].lastUpdate < new Date(newGameInfo.lastUpdate)){
+         console.log('newer update')
+         Game.findByIdAndUpdate(oldGameInfo[0]._id, newGameInfo, cb)
+       }
+      else {
+        console.log('older update')
+        cb()
+       }
     }
     else {
-      new Game(newGameInfo).save(cb);
+      var teamNames = [newGameInfo.team1Name,newGameInfo.team2Name];
+      console.log('first time adding game\n' + newGameInfo.header + '   ' + newGameInfo.gdate);
+      gameModel.getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
+        // get unique team ids for these games, to pass to client  
+        newGameInfo['team1Id'] = teamNamesToIds[newGameInfo.team1Name];
+        newGameInfo['team2Id'] = teamNamesToIds[newGameInfo.team2Name];
+
+        new Game(newGameInfo).save(cb);
+      })
     }  
   })
 }

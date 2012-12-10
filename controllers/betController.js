@@ -18,6 +18,8 @@
 	
 var mongoose = require('mongoose');
 var Bet = mongoose.model('Bet');
+var Game = mongoose.model('Game');
+var User = mongoose.model('User');
 
 // upates All bets after game won
 var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
@@ -116,9 +118,9 @@ var makeBet = function(betInfo, cb) {
 				cb(errorHandler.errorCodes.betZeroOrNegative);
 			}
 			else {
-				gameModel.getGameInfo(betInfo.gameId, function(err, gameInfo) {
+				Game.find({uid:betInfo.gameId}, function(err, gameInfo) {
 					// error handling if game doesn't exist
-					if (gameInfo == null) {
+					if (!gameInfo.length) {
 						cb(errorHandler.errorCodes.gameDoesNotExist);
 					} 
 					// make sure odss are the same
@@ -189,8 +191,8 @@ var setCallInfo = function(betKey, betInfo, cb) {
 
 // User Has Sufficient Funds
 var doesUserHaveSufficientFunds = function(uid, amountNeeded, cb) {
-	userModel.getUserBalance(uid, function(err, userMoney) {
-		var currentUserBalalance = parseFloat(userMoney);	
+	User.findOne({uid:uid}, {'balance':1}, function(err, userInfo){
+		var currentUserBalalance = parseFloat(userInfo.balance);	
 		if (currentUserBalalance >= amountNeeded) {
 			cb(null, currentUserBalalance)
 		}

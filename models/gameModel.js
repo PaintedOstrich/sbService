@@ -308,6 +308,7 @@ module.exports =
 	getGameIdFromHeaderAndDate : getGameIdFromHeaderAndDate,
 	gameHasBeenProcessed : gameHasBeenProcessed,
 	getUniqueTeamIds : getUniqueTeamIds,
+	getUniqueTeamId : getUniqueTeamId,
 	removeGameFromList : removeGameFromList,
 	setProcessGameComplete : setProcessGameComplete,
 	getPresetTeamIdFromName : getPresetTeamIdFromName

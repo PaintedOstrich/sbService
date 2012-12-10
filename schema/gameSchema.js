@@ -8,7 +8,7 @@ module.exports = function(mongoose)
 
   var Game = new Schema({
       gid            : String 
-    , gdate          : Date 
+    , gdate          : String 
     , header         : String 
     , team1Name      : String
     , team1Id        : String
