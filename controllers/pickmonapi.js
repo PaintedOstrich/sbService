@@ -10,8 +10,9 @@ var restler = require('restler');
 var async = require('async');
 var util = require('util');
 
-var betController = require('./betController')
-var gameModel = require('../models/gameModel')
+var betController = require('./betController');
+var gameController = require('./gameController');
+var gameModel = require('../models/gameModel');
 
 
 /* Exported Functions */
@@ -154,11 +155,11 @@ pickMonitorGame.prototype.process = function(cb) {
 			    	cb()
 			    }
 			    else {
-					// update bet info for future game
-					gameModel.setGameInfo(gameId, that._g, function(err) {
-						if (err) { throw err }
-						cb();
-					})
+  					// update bet info for future game
+  					gameController.saveGame(that._g, function(err) {
+  						if (err) { throw err }
+  						cb();
+  					})
 			    }
 			})
 		}

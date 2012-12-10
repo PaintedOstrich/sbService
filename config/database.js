@@ -2,15 +2,15 @@
  * Module dependencies.
  */
 
-// var mongoose = require('mongoose'),
+var mongoose = require('mongoose');
 var fs = require('fs');
 
 // Load all of the models
-var loadModels = function(modelPath) {
-    fs.readdirSync(modelPath).forEach(function(file) {
+var loadModels = function(schemaPath) {
+    fs.readdirSync(schemaPath).forEach(function(file) {
     	try
 		{
-			require(modelPath + file);
+			require(schemaPath + file)(mongoose);
 		}
   		catch(err)
 		{

@@ -14,6 +14,10 @@
  var resMes = require('../user_modules/responseMessages');
  var verifyFBLogin = require('../user_modules/fb/verifyFBLogin');
 
+ var User = require('mongoose').model('User');
+ var Bet = require('mongoose').model('Bet');
+ var Game = require('mongoose').model('Game');
+
 // handles master login method for user and returns all their information
 var login = function(signedreq, cb) {
 	var data = verifyFBLogin.verify(signedreq, process.env.FACEBOOK_SECRET);
@@ -56,123 +60,79 @@ var getBaseUserInfo = function(uid, cb) {
 }
 
 var initUser = function(uid, name, email, balance, cb) {
-	try {
-		userModel.userExists(uid, function(err, doesExist) {
-			if (err) {
-				throw err;
-			}
-			else if (doesExist){
-				cb(errorHandler.errorCodes.userAlreadyExists)
-			}
-			else {
-				userModel.updateUserBalance(uid, balance, function(err, newBalance) {		
-					userModel.setUserName(uid, name, function(err){
-						var parts = name.split(' ');
-						var firstname = parts[0];
-						var lastname = parts.slice(1).join(' ');
-
-						var newUserInfo = {
-							'$first_name':firstname,
-							'uid':uid,
-							'$last_name': lastname,
-							balance: newBalance,
-							'$created': new Date(),
-							'$email': email,
-						}
-
-						// mix Panel Logging
-						mixpanel.people.set(uid, newUserInfo);
-						
-						cb(null, newUserInfo)
-					})
-				})
-
-			}
-		})
-	}
-	catch (err) {
-		cb(err)
-	}
-}
-
-var filters = ['current', 'past', 'pendingUserAccept', 'pendingOtherAccept'];
-// Retrieve all user bets
-// @params: uid, [filter ,] cb
-var getUserBets = function(uid, filter, cb) {	
-	// return just specific filter result
-	try {
-		var useOneFilter = true;
-
-		// check if user only wants one type of result
-		if (typeof filter === "function") {
-			// return all results since no filter requested
-			cb = filter;
-			useOneFilter = false;
+	User.find({uid:uid}, function(err, user){
+		if (user.uid){
+			cb(errorHandler.errorCodes.userAlreadyExists)
 		}
-		else if (typeof filter === "undefined") {
-			useOneFilter = false;
-		}
-		else if (filter && filters.indexOf(filter) === -1)
-		{		
-			// return all results if filter doesn't exist
-			useOneFilter = false;
-		}
+		else {
+			// process user name 
+				var parts = name.split(' ');
+				var firstname = parts[0];
+				var lastname = parts.slice(1).join(' ');
 
-		var result = {};
-		userModel.getUserBets(uid, function(err, data) {
-			if (useOneFilter) {
-				result[filter] = filterResults(filter, uid, data)
-			}
-			else
-			{
+			// save user
+			var user = new User({
+				uid: uid,
+				firstname : firstname,
+				lastname : lastname,
+				fullname : name,
+				balance  : balance,
+			}).save();
 				
-				for (var i = 0; i<filters.length; i++) {
-					result[filters[i]] = filterResults(filters[i], uid, data);
-				}
+			// send user to mixpanel also
+			var newUserInfo = {
+				'$first_name':firstname,
+				'uid':uid,
+				'$last_name': lastname,
+				balance: balance,
+				'$created': new Date(),
+				'$email': email,
 			}
 
-			gameController.getAssocBetInfo(data, function(err, assocGameInfo) {
-				result['gameInfo'] = assocGameInfo;
-				cb(null, result);	
-			})
-		})
-	}
-	catch(err) {
-		cb(err)
-	}
+			// mix Panel Logging
+			mixpanel.people.set(uid, newUserInfo);
+					
+			cb(null, newUserInfo)
+		}
+	})
 }
+
+// Retrieve all user bets
+var getUserBets = function(uid, cb) {	
+	var query = Bet.find();
+	query.or({initFBId:uid}, {callFBId:uid}).exec(function(err, bets){
+
+		filterResults(uid, bets, cb);
+	})
+}
+
 
 // Filters data into four different types past/current/userAccept/pendingAccept
-var filterResults = function(filterType, uid, data) {
-	var results = [];   
+var filterResults = function(uid, bets, cb) {
+	var result = {
+		'current' : [],
+		'past' : [],
+		'pendingUserAccept' : [],
+		'pendingOtherAccept' : [],
+	};
+	for (var index in bets) {
+		var bet = bets[index];
 
-	for(var index in data) {
-		var bet = data[index]
-
-		if (filterType === 'current') { 
-			if(bet.ended === 'false' && bet.called === 'true') {
-			     results.push(bet)
-			}
+		if (bet.called == false && bet.ended == false && bet.callFBId == uid){
+			result.pendingUserAccept.push(bet);
 		}
-		else if(filterType === 'past') {
-			if(bet.ended === 'true')
-			{
-		    results.push(bet)
-			}   
+		else if(bet.ended == true && bet.called == true) {
+			result.past.push(bet);
 		}
-		else if (filterType === 'pendingUserAccept') {
-			if(bet.callFBId === uid && bet.called === 'false') {
-		    results.push(bet)
-			}                         
+		else if(bet.ended == false && bet.called == true) {
+			result.current.push(bet);
 		}
-		else if (filterType === 'pendingOtherAccept') {
-			if(bet.initFBId === uid && bet.called === 'false') {
-		    results.push(bet)
-			}  
-		}               
+		else if(bet.ended == false && bet.called == false && bet.initFBId == uid) {
+			result.pendingOtherAccept.push(bet);
+		}
 	}
-
-	return results;
+ 		
+ 	cb(null, result)
 }
 
 module.exports = {

@@ -48,18 +48,14 @@ var userHandle = function(app) {
 				})
 			}
 		})
-    });
+   });
 
 	app.get('/api/user/:uid/bets', function(req, res) {
-		// can pass in one of four options as query type ?filter = 
+		// returns bets in four categories
 		// past/current/userAccept/pendingAccept
-		var url_parts = url.parse(req.url, true);
-		var query = url_parts.query;
-
-		var filter = query.filter;
 		var uid = req.params.uid;
 
-		userController.getUserBets(uid, filter, function(err, data)
+		userController.getUserBets(uid, function(err, data)
 		{
 			if(err) {
 				errorHandler.send(res, err)

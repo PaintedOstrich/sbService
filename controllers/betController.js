@@ -16,6 +16,9 @@
 
  var mixpanel = require('../config/mixPanelConfig');
 	
+var mongoose = require('mongoose');
+var Bet = mongoose.model('Bet');
+
 // upates All bets after game won
 var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
 	try {
@@ -106,9 +109,8 @@ var makeBet = function(betInfo, cb) {
 		betInfo.called = false;
 		betInfo.ended = false;
 		betInfo.timeKey = new Date().getTime();
-		var betKey = betModel.getBetKey(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.timeKey);
 
-		try	{
+		try {
 			//make sure bet amount is greater than 0 otherwise return
 			if (betInfo.betAmount <= 0) {
 				cb(errorHandler.errorCodes.betZeroOrNegative);
@@ -140,7 +142,7 @@ var makeBet = function(betInfo, cb) {
 								cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
 							}
 							else {
-								setBetInfo(betKey, betInfo, cb);
+								setBetInfo(betInfo, cb);
 
 								// log bet
 								mixpanel.trackMadeBet(betInfo);
@@ -158,22 +160,18 @@ var makeBet = function(betInfo, cb) {
 }
 
 // Set Bet Info 
-var setBetInfo = function(betKey, betInfo, cb) {
-	// save bet info with unique hash key
-	betModel.saveBet(betKey, betInfo, function(err) {
-		// add to user list of bets
-		betModel.addBetForUsers(betKey, betInfo.initFBId, betInfo.callFBId, function(err) {
-			// update user balance
+var setBetInfo = function(betInfo, cb) {
+	var bet = new Bet(betInfo).save(function(err){
+		if (err) cb(err);
+		else {
 			userModel.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {
 				// add to list of most recent bets
 				betStatsController.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, function(err) {
 					// add bet to list of bets per this game
-					gameModel.addBetForGame(betKey, betInfo.gameId, function(err) {
-						cb(null, {balance:updatedMoney})
-					})
+					cb(null, {balance:updatedMoney})
 				})	
 			})
-		})
+		}
 	})
 }
 
@@ -182,10 +180,10 @@ var setCallInfo = function(betKey, betInfo, cb) {
 	// set bet called = true
     betModel.setCalledForBet(betKey, function(err){
 		// update new user balance
-		userModel.updateUserBalance(betInfo.callFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {           
-		    // add to list of bets per game		 
-	        cb(null, {balance:updatedMoney})
-		});
+			userModel.updateUserBalance(betInfo.callFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {           
+			    // add to list of bets per game		 
+		        cb(null, {balance:updatedMoney})
+			});
     });
 }
 

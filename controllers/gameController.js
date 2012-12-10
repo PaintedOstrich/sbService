@@ -8,18 +8,33 @@
  var resMes = require('../user_modules/responseMessages')
  var gameModel = require('../models/gameModel')
  var cUtil = require('../user_modules/cUtil');
+
+ var mongoose = require('mongoose');
+ var Game = mongoose.model('Game');
   
+var saveGame = function(newGameInfo, cb){
+  var query = Game.find();
+  debugger;
+  query.and([{header: newGameInfo.header}, {gdate : newGameInfo.gdate}]).exec(function(err, oldGameInfo){
+    // console.log(oldGameInfo);
+    console.log(typeof oldGameInfo._id);
+    console.log(oldGameInfo._id);
+    console.log(oldGameInfo.gdate);
+    console.log(oldGameInfo);
+    if (oldGameInfo._id){
+      console.log('found old game ' + oldGameInfo.header);
+      //update existing game
+       Game.update({_id: oldGameInfo._id}, newGameInfo, cb)
+    }
+    else {
+      new Game(newGameInfo).save(cb);
+    }  
+  })
+}
+
 var getGames = function(sport, cb)
 {
-  try
-  {
-  	var fields = ['gid','gdate', 'header', 'team1Name', 'team1Id', 'team2Name', 'team2Id', 'sport', 'wagerCutoff', 'spreadTeam1', 'spreadTeam2']; 
-    gameModel.getGamesForSport(sport,fields,cb)
-  }
-  catch(err)
-  {
-    cb(err)
-  }
+  Game.find({wagerCutoff: {$gte: Date.now()}}, cb);
 }
 
 // gets game date and team names for each game a user has bet on
@@ -40,4 +55,5 @@ module.exports =
 {
   getGames : getGames,
   getAssocBetInfo : getAssocBetInfo,
+  saveGame : saveGame
 }
