@@ -15,30 +15,33 @@
   
 var saveGame = function(newGameInfo, cb){
   var query = Game.find();
-  console.log('adding : \n' + newGameInfo.header + "\n" + newGameInfo.lastUpdate)
   var gameDate = new Date(newGameInfo.gdate);
-  query.and([{header: newGameInfo.header}, {gdate : newGameInfo.gdate}]).exec(function(err, oldGameInfo){
+  query.and([{header: newGameInfo.header}, {gdate : gameDate}]).exec(function(err, oldGameInfo){
     if (oldGameInfo.length){
       // found old game
       // makes update if this update is sooner;
 
       if (oldGameInfo[0].lastUpdate < new Date(newGameInfo.lastUpdate)){
-         console.log('newer update')
+        // newer update
+        // since game id changes, remove it, so all bets will have the original game id
+        // -----> STUPID PICK MON API ----> caused so much extra work!!!
+         delete(newGameInfo.gid);
          Game.findByIdAndUpdate(oldGameInfo[0]._id, newGameInfo, cb)
        }
       else {
-        console.log('older update')
+        // older update, don't do anything
         cb()
        }
     }
     else {
       var teamNames = [newGameInfo.team1Name,newGameInfo.team2Name];
-      console.log('first time adding game\n' + newGameInfo.header + '   ' + newGameInfo.gdate);
+      // adding new game, get team names
       gameModel.getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
         // get unique team ids for these games, to pass to client  
         newGameInfo['team1Id'] = teamNamesToIds[newGameInfo.team1Name];
         newGameInfo['team2Id'] = teamNamesToIds[newGameInfo.team2Name];
 
+        // save game info
         new Game(newGameInfo).save(cb);
       })
     }  
@@ -47,7 +50,21 @@ var saveGame = function(newGameInfo, cb){
 
 var getGames = function(sport, cb)
 {
-  Game.find({wagerCutoff: {$gte: Date.now()}}, cb);
+  var fields = {
+    'gid':1,
+    'gdate':1,
+    'header':1, 
+    'team1Name':1,
+    'team1Id':1,
+    'team2Name':1,
+    'team2Id':1,
+    'sport':1,
+    'wagerCutoff':1, 
+    'spreadTeam1':1, 
+    'spreadTeam2':1,
+    '_id':0
+  }; 
+  Game.find({wagerCutoff: {$gte: Date.now()}}, fields, cb);
 }
 
 // gets game date and team names for each game a user has bet on

@@ -10,7 +10,7 @@ var createJobs = function()
 	    		console.log('error checking update:' + err);
 	    	}
 	    	else {
-	    		console.log('check update complete:success')
+	    		// console.log('check update complete:success')
 	    	}
 	    })
 	    
@@ -37,6 +37,23 @@ var createJobs = function()
 	  true /* Start the job right now */,
 	  "America/Los_Angeles" /* Time zone of this job. */
 	);
+
+	// run full update after push
+	if (process.env.NODE_ENV === 'production') {
+		runFullUpdate();
+	}
 }
+
+var runFullUpdate = function(){
+ pickmonapi.updateAllGames(function(err) {
+  	if (err) {
+  		console.log('error updating all games on server spinup:' + err);
+  	}
+  	else {
+  		console.log('update all games on server spinup:success')
+  	}
+  })
+}
+
 
 module.exports = createJobs;

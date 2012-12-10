@@ -86,9 +86,9 @@ var parseGame = function(item, cb) {
 // Helper functions specific to this xml feed and element location
 var pickMonitorGame = function(game) {	
 	// initialize private variables to properties of game
-	this._g = {};
+	  this._g = {};
 
-	this._g.gid=game.id[0];
+	  this._g.gid=game.id[0];
     this._g.gdate=game.gamedate[0];
     this._g.header=game.header[0];
     this._g.team1Name=game.team1[0]['name'][0];
@@ -128,10 +128,7 @@ pickMonitorGame.prototype.process = function(cb) {
 	    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
     		if (err) { throw err; }
 
-    		// console.log('game id is ' + gameId)
-
 		    // on ended games
-        console.log('is final score' + that._g.header + that._g.gdate);
 		    if (that.isFinalScore()) {
 		    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
 		    		console.log('game has been procesed:' + hasBeenProcessed)
@@ -143,9 +140,8 @@ pickMonitorGame.prototype.process = function(cb) {
 			    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
 			    		// if something happens and there is an error in the middle of processing games, this field will not be set,
 			    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
-			    		
 
-              // betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
+              betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
               cb();
 		    		}
 		    		else {
@@ -157,7 +153,7 @@ pickMonitorGame.prototype.process = function(cb) {
 		    }
 		    else if (that.isGameInProcess()) {
 		    	// do nothing
-		    	console.log('is in-process game');
+		    	// console.log('is in-process game');
 		    	cb()
 		    }
 		    else {
