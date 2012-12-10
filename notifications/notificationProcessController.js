@@ -11,51 +11,78 @@
  */   
 
 var util = require('util')
-var nconf = require('nconf')
+var datetime = require('../user_modules/datetime');
 
+var notificationPostController = require('./notificationPostController')();
+var notificationQueueModel = require('./notificationQueueModel')();
+var templateProcessor = require('./templateProcessor');
 
-// var notificationPostController = require('./notificationPostController')();
-
-var NotificationProcessController = function(){
-  var creatives = nconf.get('creative');
-  this.notificationPriorities = creatives.notificationPriority;
-
-  var notifQueueConfig = nconf.get('notifQueueConfig');
+var NotificationProcessController = function(options){
+  options = options || {};
 
   // user will not receive two notifications within this time
-  this.minTimeBetweenNotifications = notifQueueConfig.minTimeBetweenNotifications || 4*60;
-
+  this.minTimeBetweenNotifications = options.minTimeBetweenNotifications || 4*60;
 }
-
-/* returns an array of the highest prioirity updates for each user
- * @param: notifs is an array of
-  ['userid':  
-    [
-      {
-        actionType: 'wonBet',
-        against : '12345',
-        amount  : '0.30'
-      },
-    ]
-  ], 
-  .... next user
- *
- */
-
 
 /*
  *  Sends notifcations if they have not already been sent
  */ 
+NotificationProcessController.prototype.sendNotifications = function(cb) {
+  console.log('here0')
+  console.log(util.inspect(notificationQueueModel))
+  notificationQueueModel.getAllNotifications(function(err, idsToNotifications) {
+    console.log('here1')
+    var uids = [];
+    for (var id in idsToNotifications) {
+      uids.push(id);
+    }
 
+    console.log('ids to not: ' +idsToNotifications)
+
+    notificationQueueModel.getLastUserUpdates(uids, function(err, lastUpdateTimes) {
+      var notified = [];
+      var notNotified = [];
+
+      console.log('last update ' + lastUpdateTimes)
+
+      for (var id in idsToNotifications){
+        // check that user should receive update
+        var lastUpdate = new Date(lastUpdateTimes[id]);
+
+        if (!lastUpdateTimes[id] || lastUpdate.isXMinutesBeforeNow(this.minTimeBetweenNotifications)){
+          // add user to sending list
+          notified.push(id);
+          var notifToSend = templateProcessor.generateNotification(idsToNotifications[id]);
+          if (notifToSend) {
+            // notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag, function(err, success) {
+              // FIXME Add href tag
+            notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, function(err, success) {
+              if (err) {
+                console.log(err);
+              }
+            })
+          }
+        }
+        else {
+          // user should wait to be notified
+
+          notNotified.push(id);
+        }
+      }
+
+      notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
+    });
+  });
+}
 
 /* 
  *  Init function to make this a global singleton and retain state
  */  
  var notifProcessController;
 
- var createProcessController = function(){
+ var createProcessController = function(options){
     if (!notifProcessController){
-      notifProcessController = new NotificationProcessController();
+      notifProcessController = new NotificationProcessController(options);
     }
     
     return notifProcessController;

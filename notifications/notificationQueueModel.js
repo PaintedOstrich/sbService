@@ -176,6 +176,19 @@ NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(
     console.log(e.stack);
   }
 }
+
+/* 
+ * gets times as string where last users were notified  
+ *  (batch request)
+ */
+NotificationModel.prototype.getLastUserUpdates = function(listOfUsers, cb) {
+  try {
+    base.getMultiKeyValueAsObject(listOfUsers, this.getgetLastUserNotifKey, cb);  
+  }
+  catch(e){
+    console.log(e.stack);
+  }
+}
   
 /* 
  *  Init function to make this a global singleton and retain state

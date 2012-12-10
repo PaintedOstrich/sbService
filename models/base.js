@@ -214,11 +214,46 @@ var getMembersOfMultipleSets = function(keys, getHashKeyFromKey, cb) {
 	}
 }
 
+// gets multiple values for the hash function and returns
+var getMultiKeyValueAsObject = function(keys, getHashKeyFromKey, cb) {
+	var finishedCount = 0;
+	var totalCount = keys.length;
+
+	// if no keys, return
+	if (totalCount == 0)
+	{
+		cb();
+	}
+
+	var allValues = {};
+	for (var index in keys)
+	{
+		var id = keys[index];
+		var hkey = getHashKeyFromKey(id);
+
+		redClient.get(hkey, function(id)
+		{
+			// pass callback using closure to key unique betid in scope per call
+			return function(err, value)
+			{
+				if (err) cb(err);
+				finishedCount++;
+
+				allValues[id] = value;
+				if (finishedCount == totalCount)
+				{	
+					cb(null, allValues)
+				}
+			};
+		}(id));
+	}
+}
 
 module.exports =
 {
 	getMultiHashSetsAsObject : getMultiHashSetsAsObject,
 	getMultiHashSets : getMultiHashSets, 
 	setMultiHashSetItems : setMultiHashSetItems,
-	getMembersOfMultipleSets : getMembersOfMultipleSets
+	getMembersOfMultipleSets : getMembersOfMultipleSets, 
+	getMultiKeyValueAsObject : getMultiKeyValueAsObject
 }

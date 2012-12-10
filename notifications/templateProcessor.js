@@ -20,6 +20,10 @@ else {
 /* template processor */
 var templateProcessor = {};
 
+/*
+ * Generates a user notification from user notifs 
+ */
+
 templateProcessor.generateNotification = function(userNotifs) {
   try {
     var highestPriorityNotifs = this._getHighestPriorityNotifs(userNotifs);

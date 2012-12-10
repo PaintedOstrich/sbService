@@ -27,7 +27,9 @@ var NotificationPostController = function(options){
   };
 
   if(!this.params.access_token) {
-    throw new Error("MUST SET FACEBOOK_APP_ACCESS_TOKEN as ENV variable");
+    // FIXME remove later
+    this.params.access_token = '462000917156397|FFd81qrBClJ6D-nWKZ9v8sFZDc0';
+    // throw new Error("MUST SET FACEBOOK_APP_ACCESS_TOKEN as ENV variable");
   }
 }
 

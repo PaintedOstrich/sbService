@@ -18,71 +18,87 @@ var fs    = require('fs'),
     nconf = require('nconf');   
 
 nconf.add('notifications', { type: 'file', file: __dirname +'/mocks/mockNotificationConfig.json' });
+var creatives = nconf.get('creative');
+var notifQueueConfig = nconf.get('notifQueueConfig');
+
+var  options = {
+  creatives :creatives,
+  notifQueueConfig : notifQueueConfig
+};
+
+
+var mockQueueModel = require('./mocks/mockQueueModel');
 var SandboxedModule = require('sandboxed-module');
 
-// var notifProcessModel = SandboxedModule.require('../notificationProcessController', {
-//     // requires : { 
-//     //     '../config/redisConfig' : redClientMock,
-//     // }
-// })()
-var notificationProcessController = require('../notificationProcessController')();
+// delay loading so config is set
+var notifPostController = require('../notificationPostController');
 
-var mockUserNotifResult =  { 
-  '1': [ 
-    {
-      actionType: 'wonBet',
-      against: '12345',
-      amount: '0.30' 
-    },
-    {
-      actionType: 'wonBet',
-      against: '123',
-      amount: '1.30' 
+notifProcessController = SandboxedModule.require('../notificationProcessController', {
+    requires : { 
+        './notificationQueueModel' : mockQueueModel,
+        './notificationPostController' : notifPostController
     }
-  ],
-  '2': [
-    {
-      actionType: 'wonBet',
-      against: '12345',
-      amount: '0.30' 
-    },
-    {
-      actionType: 'lostBet',
-      against: '3483',
-      amount: '1.30' 
-    },
-  ],
-  '3': [],
-  '4': [
-    {
-      actionType: 'lostBet',
-      against: '12345',
-      amount: '0.30' 
-    },
-    {
-      actionType: 'doesNotExist',
-      against: '12345',
-      amount: '0.30' 
-    },
-  ]
-}
+})(options)
 
-var highestPriorities = { '1': 
-   [ { actionType: 'wonBet', against: '12345', amount: '0.30' },
-     { actionType: 'wonBet', against: '123', amount: '1.30' } ],
-  '2': [ { actionType: 'wonBet', against: '12345', amount: '0.30' } ],
-  '3': [],
-  '4': [ { actionType: 'lostBet', against: '12345', amount: '0.30' } ] };
+console.log(util.inspect(notifProcessController))
 
 queueSuite.addBatch({
-  'test that process controller returns most significant updates': {
+  'test whole notification system': {
     topic: function() {
-        return notificationProcessController.getHighestPriorityUpdate(mockUserNotifResult);
+        return notifProcessController.sendNotifications(this.callback);
       },      
-     'Notifications Processed Correctly': function (actualHighestPriorities) {
-        assert.deepEqual(actualHighestPriorities, highestPriorities)
+     'Notifications Processed Correctly': function (result) {
+        console.log('done')
     },
   }
 });
 
-queueSuite.run();
+// queueSuite.run()
+// console.log(util.inspect(notifProcessModel))
+
+// var mockUserNotifResult =  { 
+//   '1': [ 
+//     {
+//       actionType: 'wonBet',
+//       against: '12345',
+//       amount: '0.30' 
+//     },
+//     {
+//       actionType: 'wonBet',
+//       against: '123',
+//       amount: '1.30' 
+//     }
+//   ],
+//   '2': [
+//     {
+//       actionType: 'wonBet',
+//       against: '12345',
+//       amount: '0.30' 
+//     },
+//     {
+//       actionType: 'lostBet',
+//       against: '3483',
+//       amount: '1.30' 
+//     },
+//   ],
+//   '3': [],
+//   '4': [
+//     {
+//       actionType: 'lostBet',
+//       against: '12345',
+//       amount: '0.30' 
+//     },
+//     {
+//       actionType: 'doesNotExist',
+//       against: '12345',
+//       amount: '0.30' 
+//     },
+//   ]
+// }
+
+// var highestPriorities = { '1': 
+//    [ { actionType: 'wonBet', against: '12345', amount: '0.30' },
+//      { actionType: 'wonBet', against: '123', amount: '1.30' } ],
+//   '2': [ { actionType: 'wonBet', against: '12345', amount: '0.30' } ],
+//   '3': [],
+//   '4': [ { actionType: 'lostBet', against: '12345', amount: '0.30' } ] };

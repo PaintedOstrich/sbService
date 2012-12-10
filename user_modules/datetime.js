@@ -9,3 +9,10 @@ Date.prototype.isBefore = function(date2)
 {
 	return this < date2
 }
+
+
+Date.prototype.isXMinutesBeforeNow = function(minutes)
+{
+  var d = new Date();
+  return (d - this) > (minutes * 60 *1000);
+}

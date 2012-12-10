@@ -13,6 +13,10 @@ RedClientMock.prototype.smembers = function(key, cb) {
   cb(null, this.keysToResponses[key])
 }
 
+RedClientMock.prototype.smembers = function(key, cb) {
+  cb(null, this.keysToResponses[key])
+}
+
 // create new mock object 
 var init = function(keysToResponses) {
   return new RedClientMock(keysToResponses);
