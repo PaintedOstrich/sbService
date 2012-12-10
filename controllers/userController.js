@@ -97,6 +97,11 @@ var initUser = function(uid, name, email, balance, cb) {
 	})
 }
 
+// increments user balance by new amount
+var updateUserBalance = function(uid, amountToIncrement, cb) {
+	User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb);
+}
+
 // Retrieve all user bets
 var getUserBets = function(uid, cb) {	
 	var query = Bet.find();
@@ -140,4 +145,5 @@ module.exports = {
 	initUser: initUser,
 	login:login,
 	getBaseUserInfo : getBaseUserInfo,
+	updateUserBalance : updateUserBalance,
 }

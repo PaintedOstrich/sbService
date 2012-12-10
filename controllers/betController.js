@@ -8,7 +8,8 @@
  var betModel = require('../models/betModel');
  var gameModel = require('../models/gameModel');
  var userModel = require('../models/userModel')
- var betStatsController = require('../controllers/betStatsController');
+
+ var gameController = require('./gameController');
 
  var cUtil = require('../user_modules/cUtil');
  var datetime = require('../user_modules/datetime');
@@ -22,23 +23,34 @@ var Game = mongoose.model('Game');
 var User = mongoose.model('User');
 
 // upates All bets after game won
-var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
+var processEndBets = function(gameHeader, gameDate, winnerName, isWinnerTeam1, cb) {
 	try {
 		// ratio of winnings to amount bet
 		var winnerTeamId = gameModel.getUniqueTeamId(winnerName, function(err, winnerTeamId) {
-			if (err) {
+			if (err || !winnerTeamId) {
+				cb();
 				console.log('team id must exist on this bet already')
 			}
 			else {
-				var processEndBetFn = endBet(gameId, winnerTeamId, isWinnerTeam1);
-				gameModel.getBetsForGame(gameId, function(err, betIds) {
-					async.forEach(betIds, processEndBetFn,function(err) {
-						if(err) {
-							cb(err)
-						}
-						else {
-							gameModel.setProcessGameComplete(gameId, cb);
-						}
+				gameController.getGameIdFromInfo(gameHeader, gameDate, function(err, game) {
+					if(!game){
+						// processing game before server was up and stored game
+						console.log('processing ebt we dont have')
+						return cb();
+					}
+
+					// we have game, so process
+					var gid = game.gid;
+					var processEndBetFn = endBet(gid, winnerTeamId, isWinnerTeam1);
+					getBetsForGame(game, function(err, bets) {
+						async.forEach(bets, processEndBetFn,function(err) {
+							if(err) {
+								cb(err)
+							}
+							else {
+								gameController.setProcessGameComplete(gameId, cb);
+							}
+						})
 					})
 				})
 			}
@@ -52,20 +64,35 @@ var processEndBets = function(gameId, winnerName, isWinnerTeam1,  cb) {
 
 /* ends individual bet, awarding user winnings and changes 
  * both bet ended to true and each 
+ * return function in closure so can be used with async for each
  */
 var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
-	return function processEndBet(betKey, cb) {
-		betModel.getBetInfo(betKey, function(err, betInfo) {
-			// calculate which user one and the winnings ratio from the bet spread
-			var winnerFBId = winnerGameId === betInfo.initTeamBet ? betInfo.initFBId : betInfo.callFBId;
-			var winSpread = isWinnerTeam1 ? betInfo.spreadTeam1 : betInfo.spreadTeam2;
-			var winRatio = calcWinRatio(winSpread);
-			// update user winnings with 
-			updateWinnings(winnerFBId, betInfo.betAmount, winRatio, function(err) {
-				// mark bet as ended
-				betModel.setEndedForBet(betKey, cb)
-			})
-		})
+	return function processEndBet(bet, cb) {
+			if (bet.processed){
+				// bet already processed
+				// this would be run twice if an error occured somewhere between user processing all bets
+				cb()
+			}
+			else if (!bet.called) {
+				// user never called bet so lets give money back
+				userController.updateUserBalance(bet.initFBId, bet.betAmount, function(err) {
+					bet.update({processed: true}, null, cb)
+				})
+			}
+			else {
+				// user won valid bet
+				// calculate which user one and the winnings ratio from the bet spread
+				var winnerFBId = winnerGameId == bet.initTeamBet ? bet.initFBId : bet.callFBId;
+				var winSpread = isWinnerTeam1 ? bet.spreadTeam1 : bet.spreadTeam2;
+				var winRatio = calcWinRatio(winSpread);
+				// update user winnings with 
+				var userWinnings = bet.betAmount + parseFloat(bet.betAmount * winRatio);
+				userController.updateUserBalance(winnerFBId, userWinnings, function(err) {
+					// mark bet as ended
+					bet.update({processed: true}, null, cb)
+				})
+			}
+		
 	}
 }
 
@@ -81,6 +108,13 @@ var calcWinRatio = function(winSpread) {
 		return Math.abs(odds)/100.0;
 	}
 }
+
+/* Gets all bets per given gid
+ *
+ */
+ var getBetsForGame = function(gameId, cb){
+ 		Bet.find({gid : gameId}, cb);
+ }
 
 // makes a batch bet for multiple users.
 // some bets may go through, and others may be returned as error.  For example, a user may have enough funds to bet 1 of 2 users.
@@ -109,7 +143,7 @@ var makeBet = function(betInfo, cb) {
 	else {
 		// bet has all parameters, try and process
 		betInfo.called = false;
-		betInfo.ended = false;
+		betInfo.processed = false;
 		betInfo.timeKey = new Date().getTime();
 
 		try {

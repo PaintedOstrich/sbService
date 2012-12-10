@@ -38,6 +38,9 @@ var isOnlyNumber = function(str)
  * Waits for callback from one array entry to process next
  */
 var processSeriesAsync = function(list, func, cb) {
+	if (DEVELOPMENT){
+		// console.log('processing ' + list.length + ' items async');
+	}
 	if (typeof list !== 'object'){
 		console.log('processSeriesAsync must be passed arraylist')
 		return false;
@@ -55,6 +58,10 @@ var processSeriesAsync = function(list, func, cb) {
 }
 
 var processHelperAsync = function(list, func, totalCount, currentIndex, cb) {
+	if(DEVELOPMENT) {
+		// console.log('processing ' + currentIndex + '\n' + list[currentIndex]);
+	}
+	
 	func(list[currentIndex], function(err){
 		if (err) {
 			console.log('cb' + cb);

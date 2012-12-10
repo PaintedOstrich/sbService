@@ -141,8 +141,7 @@ pickMonitorGame.prototype.process = function(cb) {
 			    		// if something happens and there is an error in the middle of processing games, this field will not be set,
 			    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
 
-              betController.processEndBets(that._g.gid, that._g.winner, isWinnerTeam1, cb);
-              cb();
+              betController.processEndBets(that._g.header, that._g.gdate, that._g.winner, isWinnerTeam1, cb);
 		    		}
 		    		else {
 		    			// do nothing, since game has already been processed for all bets

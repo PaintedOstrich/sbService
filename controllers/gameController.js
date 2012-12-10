@@ -48,6 +48,32 @@ var saveGame = function(newGameInfo, cb){
   })
 }
 
+// gets game info from header and date
+// this necessary since api doesn't pass us unique game ids.
+var getGameIdFromInfo = function(header, date, cb){
+  if (typeof date !== 'object'){
+    date = new Date(date);
+    if (date == 'Invalid Date') {
+      console.warn('passed invalid date to getGameIdFromInfo')
+      cb('Invalid Date');
+    }
+  }
+  fields = {
+    'gid':1
+  }
+  
+  var query = Game.findOne(null, fields);
+  query.and([{header: header}, {gdate : date}]).exec(cb);
+}
+
+/*
+ * updates game complete flag to true
+ * @param: game - > mongoose model instance
+ */ 
+var setProcessGameComplete = function(game, cb) {
+  game.update({processed:true}, null, cb)
+}
+
 var getGames = function(sport, cb)
 {
   var fields = {
@@ -85,5 +111,7 @@ module.exports =
 {
   getGames : getGames,
   getAssocBetInfo : getAssocBetInfo,
-  saveGame : saveGame
+  saveGame : saveGame, 
+  getGameIdFromInfo : getGameIdFromInfo,
+  setProcessGameComplete : setProcessGameComplete,
 }

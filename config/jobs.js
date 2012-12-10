@@ -38,8 +38,8 @@ var createJobs = function()
 	  "America/Los_Angeles" /* Time zone of this job. */
 	);
 
-	// run full update after push
-	if (process.env.NODE_ENV === 'production') {
+	// run full update after push             // for quick debug access
+	if (process.env.NODE_ENV === 'production' || true) {
 		runFullUpdate();
 	}
 }
