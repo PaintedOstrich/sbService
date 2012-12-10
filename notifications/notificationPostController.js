@@ -37,7 +37,7 @@ var NotificationPostController = function(options){
 var hasCorrectParams = function(uid, template, creativeRef) {
   if(!uid || !template || !creativeRef) {
     console.warn('notificationPostController: Param Missing: must pass uid and template and creativeRef to notifications')
-    return false;;
+    return false;
   }
   else if(typeof uid !== "string" || typeof template !== "string" || typeof creativeRef !== "string") {
     console.warn('notificationPostController: must pass uid and template and creativeRef as strings to notifications');
