@@ -168,7 +168,7 @@ var makeBet = function(betInfo, cb) {
 						cb(errorHandler.errorCodes.gameDoesNotExist);
 					} 
 					// make sure odss are the same
-					else if (!isBetInfoCorrect(gameInfo, betInfo)) {
+					else if (!isBetInfoCorrect(betInfo, gameInfo)) {
 						var errorInfo = {
 							oldOdds: betInfo,
 							newOdds: gameInfo

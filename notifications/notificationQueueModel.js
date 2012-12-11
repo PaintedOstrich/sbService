@@ -107,7 +107,7 @@ NotificationModel.prototype._compressNotification = function(actionType, fields)
   else {
     for (var name in fields) {
       if(fields[name]) {
-        compress += '_' + name + '|' + fields[name];  
+        compress += ':' + name + '|' + fields[name];  
       }
       else {
         if (DEVELOPMENT) {
@@ -129,7 +129,7 @@ NotificationModel.prototype._compressNotification = function(actionType, fields)
 NotificationModel.prototype._decompressNotification = function(compressedString) {
   var decompress = {};
 
-  var pairs = compressedString.split('_');
+  var pairs = compressedString.split(':');
 
   // iterate through each pair and create object;
   for (var index in pairs) { 

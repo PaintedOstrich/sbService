@@ -8,7 +8,7 @@ var notifController = {};
 notifController.enqueueBetAccepted = function(toNotifyId, otherUserId, betId){
   var fields = {
     user    : otherUserId,
-    betId   : betId
+    '_id'   : betId
   };
 
   notificationHandle.queue(toNotifyId, 'betAccepted' , fields);
@@ -17,18 +17,19 @@ notifController.enqueueBetAccepted = function(toNotifyId, otherUserId, betId){
 notifController.enqueueBetLoss = function(toNotifyId, otherUserId, betId, teamBetFor){
   var fields = {
     user    : otherUserId,
-    betId   : betId,
+    '_id'   : betId,
     team    : teamBetFor
   };
   
   notificationHandle.queue(toNotifyId, 'lostBet' , fields);
 }
 
-notifController.enqueueBetWon= function(toNotifyId, otherUserId, betId, amount ){
+notifController.enqueueBetWon= function(toNotifyId, otherUserId, betId, teamBetFor, amount ){
   var fields = {
     user        : otherUserId,
-    betId       : betId,
-    amount      : amount
+    '_id'       : betId,
+    amount      : amount,
+    team        : teamBetFor
   };
   
   notificationHandle.queue(toNotifyId, 'wonBet' , fields);
@@ -37,7 +38,7 @@ notifController.enqueueBetWon= function(toNotifyId, otherUserId, betId, amount )
 notifController.enqueueBetPrompt = function(toNotifyId, otherUserId, betId, teamToBetFor, amount){
   var fields = {
     user        : otherUserId,
-    betId       : betId,
+    '_id'       : betId,
     team        : teamToBetFor,
     amount      : amount
   };

@@ -89,6 +89,12 @@
       "betAccepted" : 1,
       "lostBet": 5
     },
+     "hrefTag" : {
+      "betPrompted" : "showbet",
+      "wonBet" : "showbet",
+      "betAccepted" : "showbet",
+      "lostBet": "showbet"
+    },
     "creativeKeys" : [
       "@user",
       "@amount",

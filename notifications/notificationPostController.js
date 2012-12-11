@@ -49,23 +49,21 @@ var hasCorrectParams = function(uid, template, creativeRef) {
 
 // href and callback are optional
 NotificationPostController.prototype.sendNotification = function(uid, template, creativeRef, hrefTag, cb) {
-
   if(hasCorrectParams(uid, template, creativeRef))
-  {
-
+  {    
     var fields = this.params;
+
+    fields.template = template;
+    fields.ref = creativeRef;
 
     if (typeof hrefTag === 'function') {
       cb = hrefTag || function(){}
     } 
     else {
       // append special tag on redirect to be interpreted on client, like #bet:id to show specific bet
-      fields.href += hrefTag;
+      fields.href = hrefTag;
       cb = cb || function(){};
     }
-        
-    fields.template = template;
-    fields.ref = creativeRef;
       
     // An object of options to indicate where to post to
     var post_options = this.request_options;
@@ -96,7 +94,8 @@ NotificationPostController.prototype.sendNotification = function(uid, template, 
     post_req.end();
   }
   else {
-    cb('incorrect params');
+    cb( 'incorrect params')
+    console.log('fb notifications post controller: incorrect params');
   }
 }
       

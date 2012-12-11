@@ -14,7 +14,6 @@ if (!creative) {
 else {
   var creativeKeys = creative.creativeKeys;
   var masterTemplates = creative.templates;
-  var notificationPriorities = creative.notificationPriority;
 }
 
 /* template processor */
@@ -30,54 +29,13 @@ templateProcessor.generateNotification = function(userNotifs) {
       return false;
     }
 
-    var highestPriorityNotifs = this._getHighestPriorityNotifs(userNotifs);
     var actionType = userNotifs[0].actionType;
-    return this._getTemplateForNotification(highestPriorityNotifs, actionType)
+    return this._getTemplateForNotification(userNotifs, actionType)
   }
   catch(e) {
     console.log('error generating notification : \n' +e.stack)
     return false;
   }
-}
-
-/*
- * GETS HIGHEST PRIORITY LIST OF NOTIFICATIONS
- */
-templateProcessor._getHighestPriorityNotifs = function(userNotifs){
- var currentHighPriority = -1;
- var  pendingNotifs = [];
-
-    // iterate through lal notifications per user
-  for (var itemIndex in userNotifs) {
-
-    var notif = userNotifs[itemIndex];
-  
-    var priority = this._getPriorityOfNotif(notif);
-
-    if (priority > currentHighPriority) {
-      pendingNotifs = [notif];
-      currentHighPriority = priority;
-    }
-    else if (priority == currentHighPriority) {
-      pendingNotifs.push(notif);
-    }
-  }
-
-    // returns single individuals pending user
-    return pendingNotifs;
-}
-
-/* get the priority of this notification 
- * Notif = notification object
- */
-templateProcessor._getPriorityOfNotif = function(notif) {
-  var priority = notificationPriorities[notif.actionType];
-  if (!priority) {
-    priority = 0;
-    console.warn(notif.actionType + ' does not have priority value');
-  }
-
-  return priority;
 }
 
 /*

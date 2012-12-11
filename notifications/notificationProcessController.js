@@ -12,11 +12,13 @@
 
 var util = require('util')
 var datetime = require('../user_modules/datetime');
+var nconf = require('nconf')
+var creative = nconf.get('creative');
 
 var notificationPostController = require('./notificationPostController')();
 var notificationQueueModel = require('./notificationQueueModel')();
 var templateProcessor = require('./templateProcessor');
-
+var notificationPriorities = creative.notificationPriority;
 var NotificationProcessController = function(options){
   options = options || {};
 
@@ -28,6 +30,8 @@ var NotificationProcessController = function(options){
  *  Sends notifcations if they have not already been sent
  */ 
 NotificationProcessController.prototype.sendNotifications = function(cb) {
+  var that = this;
+
   notificationQueueModel.getAllNotifications(function(err, idsToNotifications) {
     var uids = [];
     for (var id in idsToNotifications) {
@@ -39,8 +43,6 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
       var notNotified = [];
       lastUpdateTimes = lastUpdateTimes || {};
 
-      
-
       for (var id in idsToNotifications){
         // check that user should receive update
         var lastUpdate = new Date(lastUpdateTimes[id]);
@@ -49,18 +51,24 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
           // add user to sending list
           notified.push(id);
 
-          var notifToSend = templateProcessor.generateNotification(idsToNotifications[id]);
+          // get the highest priority notifications
+          var highestPriorityNotifs = that._getHighestPriorityNotifs(idsToNotifications[id]);
+
+          var notifToSend = templateProcessor.generateNotification(highestPriorityNotifs);
           if (notifToSend) {
-            // notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag, function(err, success) {
+
+            var hrefTag = that._tryGenerateHrefTag(highestPriorityNotifs);
+
               // FIXME Add href tag
             if (DEVELOPMENT) {
-              console.log('sending notification to ' + id + ' with creative : ' + notifToSend.creativeRef + '\n' + notifToSend.template);
+              console.log('sending notification to ' + id + ' with creative : ' + notifToSend.creativeRef + ' href:' + hrefTag +  '\n' + notifToSend.template);
             }
-            notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, function(err, success) {
-              if (err) {
-                console.log(err);
-              }
-            })
+            if (hrefTag){
+              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag);
+            }
+            else {
+              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef);
+            }
           }
         }
         else {
@@ -73,9 +81,84 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         }
       }
 
-      notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
+      // notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
     });
   });
+}
+
+/*
+ * Tries to generate the hrefTag for the notification
+ * this will happen if the notif list contains at least 1 _id property, and the actionType has an action for the hrefTag
+ */
+NotificationProcessController.prototype._tryGenerateHrefTag = function(userNotifs) {
+  var listOfIds = [];
+  console.log(util.inspect(userNotifs));
+
+  // double check that htis is defined
+  if (!userNotifs || !userNotifs.length){
+    return;
+  }
+
+  var hrefAction = creative.hrefTag[userNotifs[0].actionType];
+  if (!hrefAction) {
+    console.log('hrefTag is not defined for ' + userNotifs[0].actionType);
+    return;
+  }
+
+  for (var i = 0; i < userNotifs.length; i++) {
+    if (userNotifs[i]._id) {
+      listOfIds.push(userNotifs[i]._id);
+    }
+  }
+
+  console.log('list of ids' + listOfIds)
+  var hrefTag = '?' + hrefAction + '=' + listOfIds.toString();
+  return hrefTag;
+}
+
+/*
+ * GETS HIGHEST PRIORITY LIST OF NOTIFICATIONS
+ */
+NotificationProcessController.prototype._getHighestPriorityNotifs = function(userNotifs){
+  var currentHighPriority = -1;
+  var  pendingNotifs = [];
+
+  if (!userNotifs || !userNotifs.length)
+  {
+    return pendingNotifs;
+  }
+
+    // iterate through lal notifications per user
+  for (var itemIndex in userNotifs) {
+
+    var notif = userNotifs[itemIndex];
+  
+    var priority = this._getPriorityOfNotif(notif);
+
+    if (priority > currentHighPriority) {
+      pendingNotifs = [notif];
+      currentHighPriority = priority;
+    }
+    else if (priority == currentHighPriority) {
+      pendingNotifs.push(notif);
+    }
+  }
+
+    // returns single individuals pending user
+    return pendingNotifs;
+}
+
+/* get the priority of this notification 
+ * Notif = notification object
+ */
+NotificationProcessController.prototype._getPriorityOfNotif = function(notif) {
+  var priority = notificationPriorities[notif.actionType];
+  if (!priority) {
+    priority = 0;
+    console.warn(notif.actionType + ' does not have priority value');
+  }
+
+  return priority;
 }
 
 /* 
