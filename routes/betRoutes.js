@@ -42,10 +42,9 @@ var bet = function(app) {
     });
 
     // Call a bet (Accept)
-    app.post('/api/bet/call', function(req, res) {
+    app.post('/api/bet/:betid/call', function(req, res) {
         var query = req.body;
-        
-        betController.callBet(query, function(err,data)
+        betController.callBet(req.params.betid, function(err,data)
         {
             if (err) errorHandler.send(res,err)
             else
@@ -55,7 +54,7 @@ var bet = function(app) {
         });
     });
 
-     app.get('/api/bet/recent', function(req, res) {
+    app.get('/api/bet/recent', function(req, res) {
         betStatsModel.getRecentBets(function(err, data)
         {
             if (err) {

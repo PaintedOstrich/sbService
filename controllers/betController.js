@@ -10,6 +10,8 @@
  var userModel = require('../models/userModel')
 
  var gameController = require('./gameController');
+ var userController = require('./userController');
+ var betStatsController = require('./betStatsController')
 
  var cUtil = require('../user_modules/cUtil');
  var datetime = require('../user_modules/datetime');
@@ -152,7 +154,7 @@ var makeBet = function(betInfo, cb) {
 				cb(errorHandler.errorCodes.betZeroOrNegative);
 			}
 			else {
-				Game.find({uid:betInfo.gameId}, function(err, gameInfo) {
+				Game.find({gid:betInfo.gameId}, function(err, gameInfo) {
 					// error handling if game doesn't exist
 					if (!gameInfo.length) {
 						cb(errorHandler.errorCodes.gameDoesNotExist);
@@ -166,24 +168,34 @@ var makeBet = function(betInfo, cb) {
 
 						cb(errorHandler.createErrorMessage(errorHandler.errorCodes.outOfDate, errorInfo))
 					}
+					else if (isPastWagerCutoff(gameInfo.wagerCutoff)) {
+						console.log('past wager cutoff');
+						cb(errorHandler.createErrorMessage(errorHandler.errorCodes.pastWagerCutoff, errorInfo))
+					}
 					else {
-						doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
-							if (amountNeeded)
-							{
-								// user doesn't have money to make bet
-								var data = {
-									amountNeeded:amountNeeded
+						if (!userController.isUserInApp(betInfo.callFBId)){
+							// if user is not in app, don't charge
+							cb('user not in app');
+						}
+						else {
+							doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
+								if (amountNeeded)
+								{
+									// user doesn't have money to make bet
+									var data = {
+										amountNeeded:amountNeeded
+									}
+
+									cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
 								}
+								else {
+									setBetInfo(betInfo, cb);
 
-								cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
-							}
-							else {
-								setBetInfo(betInfo, cb);
-
-								// log bet
-								mixpanel.trackMadeBet(betInfo);
-							}
-						})
+									// log bet
+									mixpanel.trackMadeBet(betInfo);
+								}
+							})
+						}
 					}
 				})
 			}
@@ -200,7 +212,7 @@ var setBetInfo = function(betInfo, cb) {
 	var bet = new Bet(betInfo).save(function(err){
 		if (err) cb(err);
 		else {
-			userModel.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {
+			userController.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {
 				// add to list of most recent bets
 				betStatsController.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, function(err) {
 					// add bet to list of bets per this game
@@ -211,16 +223,52 @@ var setBetInfo = function(betInfo, cb) {
 	})
 }
 
+// Calls a user bet
+var callBet = function(betid, cb) {
+	if (!betid) {
+		cb(errorHandler.errorCodes.missingParameters);
+	}
+
+	Bet.findOne({_id:betid}, function(err, bet) {			
+	// also checks if bet exists or this field will not be present
+		if (!bet) {
+			cb(errorHandler.errorCodes.betDoesNotExist)
+		}
+		else if (bet.called) {
+			cb(errorHandler.errorCodes.betAlreadyCalled)
+		}
+		else {
+			doesUserHaveSufficientFunds(bet.callFBId, parseFloat(bet.betAmount), function(amountNeeded, currentUserBalalance) {
+				if (amountNeeded)
+				{
+					// user doesn't have money to make bet
+					var data = {
+						amountNeeded:amountNeeded
+					}
+
+					cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
+				}
+				else {
+					setCallInfo(bet, cb);
+
+					// log bet
+					mixpanel.trackCallBet(bet);
+				}
+			})
+		}
+	})	
+}
+
 // Set Call Info
-var setCallInfo = function(betKey, betInfo, cb) {
+var setCallInfo = function(bet, cb) {
 	// set bet called = true
-    betModel.setCalledForBet(betKey, function(err){
-		// update new user balance
-			userModel.updateUserBalance(betInfo.callFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {           
-			    // add to list of bets per game		 
-		        cb(null, {balance:updatedMoney})
-			});
-    });
+  bet.update({called:true}, function(err){
+  		// update new user balance
+		userController.updateUserBalance(bet.callFBId, -parseFloat(bet.betAmount), function(err, updatedMoney) {           
+		    // add to list of bets per game		 
+	        cb(null, {balance:updatedMoney})
+		});
+  })
 }
 
 // User Has Sufficient Funds
@@ -234,6 +282,15 @@ var doesUserHaveSufficientFunds = function(uid, amountNeeded, cb) {
 			cb(amountNeeded - currentUserBalalance);
 		}
 	})
+}
+
+var isPastWagerCutoff = function(wagerCutoff) {
+	// check that bet is before wager cutoff
+	var now = new Date();
+	var wagerCutoff = new Date(wagerCutoff);
+	console.log('wager cutoff' + wagerCutoff.toString);
+	console.log('time check' +  now.isBefore(wagerCutoff));
+	return now.isBefore(wagerCutoff);
 }
 
 // Function verifies that 'bet' request has all parameters
@@ -310,73 +367,9 @@ var isBetInfoCorrect = function(betInfo, gameInfo)
 		}
 	}
 
-	// check that bet is before wager cutoff
-	var now = new Date();
-	var wagerCutoff = new Date(betInfo.wagerCutoff);
-	
-	return now.isBefore(wagerCutoff);
+	return true;
 }
 
-// Calls a user bet
-var callBet = function(query, cb) {
-	if (typeof query !== 'object') {
-		cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, 'must post call parameters'));
-	}
-
-	var gameId = query.gameId;
-	var initFBId = query.initFBId;
-	var callFBId = query.callFBId;
-	var betTag = query.betTag;
-
-	if (!gameId || !initFBId || !callFBId || !betTag)
-	{
-		var details = {
-			request:'needs all these parameters',
-			params : ['gameId', 'initFBId', 'callFBId', 'betTag']
-		}
-		cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, details));
-	}
-	else
-	{
-		var betKey = betModel.getBetKey(gameId, initFBId, callFBId, betTag);
-
-		try
-		{
-			// also checks if bet exists or this field will not be present
-			betModel.getBetInfo(betKey, function(err, betInfo) {
-				if (!betInfo) {
-					cb(errorHandler.errorCodes.betDoesNotExist)
-				}
-				else if (betInfo.called === 'true') {
-					cb(errorHandler.errorCodes.betAlreadyCalled)
-				}
-				else {
-					doesUserHaveSufficientFunds(betInfo.callFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
-						if (amountNeeded)
-						{
-							// user doesn't have money to make bet
-							var data = {
-								amountNeeded:amountNeeded
-							}
-
-							cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
-						}
-						else {
-							setCallInfo(betKey, betInfo, cb);
-
-							// log bet
-							mixpanel.trackCallBet(betInfo);
-						}
-					})
-				}
-			})
-		}
-		catch(err)
-		{
-			cb(err)
-		}
-	}
-}
  
 module.exports =
 {

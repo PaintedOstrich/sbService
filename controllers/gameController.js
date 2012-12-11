@@ -61,8 +61,22 @@ var getGameIdFromInfo = function(header, date, cb){
   fields = {
     'gid':1
   }
-  
+
   var query = Game.findOne(null, fields);
+  query.and([{header: header}, {gdate : date}]).exec(cb);
+}
+
+// gets all game info from header and date
+var getGameFromInfo = function(header, date, cb){
+   if (typeof date !== 'object'){
+    date = new Date(date);
+    if (date == 'Invalid Date') {
+      console.warn('passed invalid date to getGameIdFromInfo')
+      cb('Invalid Date');
+    }
+  }
+
+  var query = Game.findOne();
   query.and([{header: header}, {gdate : date}]).exec(cb);
 }
 
@@ -114,4 +128,5 @@ module.exports =
   saveGame : saveGame, 
   getGameIdFromInfo : getGameIdFromInfo,
   setProcessGameComplete : setProcessGameComplete,
+  getGameFromInfo : getGameFromInfo,
 }

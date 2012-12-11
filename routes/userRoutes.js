@@ -12,15 +12,15 @@ var userHandle = function(app) {
     // Get Current User's balance 
     app.get('/api/user/:uid/balance', function(req, res) {
 		var uid = req.params.uid;
-		userModel.getUserBalance(uid, function(err, data) {
-			if (err) {
-				errorHandler.send(res, err)
-			} 
-			else {
-				data = data || 0;
-				res.send(data)
-			}
-		});
+			userController.getUserBalance(uid, function(err, data) {
+				if (err) {
+					errorHandler.send(res, err)
+				} 
+				else {
+					data = data || 0;
+					res.send(data)
+				}
+			});
     });
 
     /* Check if user is correctly logged in, and return batch info

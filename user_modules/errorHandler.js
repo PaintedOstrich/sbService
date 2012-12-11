@@ -48,6 +48,9 @@ var errorCodes =
   'outOfDate' : {
     reason:'outOfDate'
   },
+  'pastWagerCutoff': {
+    reason:'pastWagerCutoff'
+  },
   'insufficientFunds' : {
     reason :'insufficientFunds'
   },

@@ -59,6 +59,17 @@ var getBaseUserInfo = function(uid, cb) {
 	}
 }
 
+// gets user balance
+var getUserBalance = function(uid, cb){
+	var fields = {
+		'balance':1,
+		'uid':1,
+		'fullname':1
+	}
+
+	User.findOne({uid:uid}, fields, cb)
+}
+
 var initUser = function(uid, name, email, balance, cb) {
 	User.find({uid:uid}, function(err, user){
 		if (user.uid){
@@ -97,7 +108,10 @@ var initUser = function(uid, name, email, balance, cb) {
 	})
 }
 
-// increments user balance by new amount
+var isUserInApp= function (uid){
+	return true;
+}
+// increments user balance by new amount (an decremetn also)
 var updateUserBalance = function(uid, amountToIncrement, cb) {
 	User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb);
 }
@@ -106,7 +120,6 @@ var updateUserBalance = function(uid, amountToIncrement, cb) {
 var getUserBets = function(uid, cb) {	
 	var query = Bet.find();
 	query.or({initFBId:uid}, {callFBId:uid}).exec(function(err, bets){
-
 		filterResults(uid, bets, cb);
 	})
 }
@@ -123,17 +136,20 @@ var filterResults = function(uid, bets, cb) {
 	for (var index in bets) {
 		var bet = bets[index];
 
-		if (bet.called == false && bet.ended == false && bet.callFBId == uid){
+		if (!bet.called && !bet.processed && bet.callFBId == uid){
 			result.pendingUserAccept.push(bet);
 		}
-		else if(bet.ended == true && bet.called == true) {
+		else if(bet.processed && bet.called) {
 			result.past.push(bet);
 		}
-		else if(bet.ended == false && bet.called == true) {
+		else if(!bet.processed && bet.called) {
 			result.current.push(bet);
 		}
-		else if(bet.ended == false && bet.called == false && bet.initFBId == uid) {
+		else if(!bet.processed && !bet.called && bet.initFBId == uid) {
 			result.pendingOtherAccept.push(bet);
+		}
+		else {
+			console.log('bad bet\n' + bet );
 		}
 	}
  		
@@ -146,4 +162,6 @@ module.exports = {
 	login:login,
 	getBaseUserInfo : getBaseUserInfo,
 	updateUserBalance : updateUserBalance,
+	getUserBalance : getUserBalance,
+	isUserInApp : isUserInApp,
 }

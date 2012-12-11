@@ -125,30 +125,22 @@ pickMonitorGame.prototype.process = function(cb) {
   try {
 		if (that._g.gid && that._g.header && that._g.gdate) {
 			var date = new Date(that._g.gdate);
-	    gameModel.getGameIdFromHeaderAndDate(that._g.gid, that._g.header, date, function(err, gameId) {
-    		if (err) { throw err; }
+	    gameController.getGameFromInfo(that._g.header, date, function(err, game) {
+		    // if game is ended and we have it in record
+		    if (game && that.isFinalScore()) {
+		    	if(game.processed){
+		    		var isWinnerTeam1 = that._g.winner === that._g.team1Name;
+		    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
+		    		// if something happens and there is an error in the middle of processing games, this field will not be set,
+		    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
 
-		    // on ended games
-		    if (that.isFinalScore()) {
-		    	gameModel.gameHasBeenProcessed(gameId, function(err, hasBeenProcessed) {
-		    		console.log('game has been procesed:' + hasBeenProcessed)
-		    		if (hasBeenProcessed === "false") {
-			    		console.log("winner is " + util.inspect(that._g.winner, true, 3));
-
-			    		var isWinnerTeam1 = that._g.winner === that._g.team1Name;
-
-			    		// get all bet games and process each winner. set hasbeenProcessed to false once all games are processed.
-			    		// if something happens and there is an error in the middle of processing games, this field will not be set,
-			    		// and next update will try and finish processing by checking each individual game to make sure it has not been processed before upating user balances
-
-              betController.processEndBets(that._g.header, that._g.gdate, that._g.winner, isWinnerTeam1, cb);
-		    		}
-		    		else {
-		    			// do nothing, since game has already been processed for all bets
-		    			console.log('already processed')
-		    			cb()
-		    		}
-		    	})
+            betController.processEndBets(that._g.header, that._g.gdate, that._g.winner, isWinnerTeam1, cb);
+	    		}
+	    		else {
+	    			// do nothing, since game has already been processed for all bets
+	    			// console.log('already processed')
+	    			cb()
+	    		}
 		    }
 		    else if (that.isGameInProcess()) {
 		    	// do nothing
