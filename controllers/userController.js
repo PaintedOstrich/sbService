@@ -119,7 +119,7 @@ var updateUserBalance = function(uid, amountToIncrement, cb) {
 // Retrieve all user bets
 var getUserBets = function(uid, cb) {	
 	var query = Bet.find();
-	query.or({initFBId:uid}, {callFBId:uid}).exec(function(err, bets){
+	query.or([{initFBId:uid}, {callFBId:uid}]).exec(function(err, bets){
 		filterResults(uid, bets, cb);
 	})
 }

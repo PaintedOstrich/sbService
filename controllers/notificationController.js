@@ -14,10 +14,11 @@ notifController.enqueueBetAccepted = function(toNotifyId, otherUserId, betId){
   notificationHandle.queue(toNotifyId, 'betAccepted' , fields);
 }
 
-notifController.enqueueBetLoss = function(toNotifyId, otherUserId, betId){
+notifController.enqueueBetLoss = function(toNotifyId, otherUserId, betId, teamBetFor){
   var fields = {
     user    : otherUserId,
-    betId   : betId
+    betId   : betId,
+    team    : teamBetFor
   };
   
   notificationHandle.queue(toNotifyId, 'lostBet' , fields);

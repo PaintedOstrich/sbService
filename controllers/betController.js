@@ -25,10 +25,10 @@ var Game = mongoose.model('Game');
 var User = mongoose.model('User');
 
 // upates All bets after game won
-var processEndBets = function(gameHeader, gameDate, winnerName, isWinnerTeam1, cb) {
+var processEndBets = function(gameHeader, gameDate, winningTeamName, isWinnerTeam1, cb) {
 	try {
 		// ratio of winnings to amount bet
-		var winnerTeamId = gameModel.getUniqueTeamId(winnerName, function(err, winnerTeamId) {
+		var winnerTeamId = gameModel.getUniqueTeamId(winningTeamName, function(err, winnerTeamId) {
 			if (err || !winnerTeamId) {
 				cb();
 				console.log('team id must exist on this bet already')
@@ -42,9 +42,14 @@ var processEndBets = function(gameHeader, gameDate, winnerName, isWinnerTeam1, c
 					}
 
 					// we have game, so process
-					var gid = game.gid;
-					var processEndBetFn = endBet(gid, winnerTeamId, isWinnerTeam1);
+					// get team names
+					
+					var losingTeamName = game.team1Id == winnerTeamId ? game.team1Name : game.team2Name;
+
+					// generate process function
+					var processEndBetFn = endBet(winningTeamName, losingTeamName, winnerTeamId, isWinnerTeam1);
 					getBetsForGame(game, function(err, bets) {
+						// process each bet
 						async.forEach(bets, processEndBetFn,function(err) {
 							if(err) {
 								cb(err)
@@ -68,7 +73,7 @@ var processEndBets = function(gameHeader, gameDate, winnerName, isWinnerTeam1, c
  * both bet ended to true and each 
  * return function in closure so can be used with async for each
  */
-var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
+var endBet = function(winningTeamName, losingTeamName, winnerTeamId, isWinnerTeam1) {
 	return function processEndBet(bet, cb) {
 			if (bet.processed){
 				// bet already processed
@@ -83,9 +88,6 @@ var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
 			}
 			else {
 				// user won valid bet
-				// calculate which user one and the winnings ratio from the bet spread
-				var winnerFBId = winnerGameId == bet.initTeamBetId ? bet.initFBId : bet.callFBId;
-				var loserFBId = winnerGameId != bet.initTeamBetId ? bet.initFBId : bet.callFBId;
 				var winSpread = isWinnerTeam1 ? bet.spreadTeam1 : bet.spreadTeam2;
 				var winRatio = calcWinRatio(winSpread);
 				// update user winnings with 
@@ -93,9 +95,8 @@ var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
 				userController.updateUserBalance(winnerFBId, userWinnings, function(err) {
 					
 					// send notifications to users
-					notificationController.enqueueBetWon(winnerFBId, loserFBId, bet._id, bet.betAmount);
-					notificationController.enqueueBetLost(loserFBId, winnerFBId, bet._id);
-
+					notificationController.enqueueBetWon(winnerFBId, loserFBId, bet._id, winningTeamName, bet.betAmount);
+					notificationController.enqueueBetLost(loserFBId, winnerFBId, losingTeamName, bet._id);
 					
 					// mark bet as ended
 					bet.update({processed: true}, null, cb)
@@ -183,6 +184,10 @@ var makeBet = function(betInfo, cb) {
 						console.warn('user tried to bet themself '+ betInfo.initFBId);
 						cb(errorHandler.errorCodes.cannotBetYourself);
 					}
+					else if (betInfo.initTeamBetId != gameInfo.team1Id && betInfo.initTeamBetId != gameInfo.team2Id){
+						console.warn('tried to bet on team not in game'+ betInfo.initTeamBetId);
+						cb(errorHandler.errorCodes.missingParameters);
+					}
 					else {
 						if (!userController.isUserInApp(betInfo.callFBId)){
 							// if user is not in app, don't charge
@@ -201,15 +206,11 @@ var makeBet = function(betInfo, cb) {
 								}
 								else {
 									setBetInfo(betInfo, function(err, savedBet){
-													// log bet
-										console.log('saved bet ' + util.inspect(savedBet))
+										// log bet
 										mixpanel.trackMadeBet(betInfo);
 
 										// send notification to user in app that they were challenged to a bet
-										console.log(util.inspect(gameInfo));
-										console.log('init team bet : '+ betInfo.initTeamBetId);
 										var teamNameForCaller = (betInfo.initTeamBetId == gameInfo.team1Id) ? gameInfo.team1Name : gameInfo.team2Name;
-										console.log('team name ' + teamNameForCaller);
 										notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
 									})
 

@@ -73,7 +73,7 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         }
       }
 
-      // notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
+      notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
     });
   });
 }

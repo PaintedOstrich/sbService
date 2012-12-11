@@ -76,7 +76,7 @@
             "creativeRef" : "betPromted1" 
           },
           {
-            "template" : "@user challenged you to bet on the @team",
+            "template" : "@user challenged you to a bet on the @team",
             "creativeRef" : "betPromted2" 
           }
         ],

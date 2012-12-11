@@ -46,9 +46,6 @@ var errorCodes =
     // trying to create user which already exists
     reason:'userAlreadyExists'
   },
-  'missingParamaters' : {
-    reason:'missingParameters'
-  },
   'outOfDate' : {
     reason:'outOfDate'
   },
