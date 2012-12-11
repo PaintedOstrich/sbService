@@ -22,7 +22,7 @@ var NotificationPostController = function(options){
   };
 
   this.params = {
-    href :'https://apps.facebook.com/swaggerbetsdev/',
+    href :'https://apps.facebook.com',
     access_token : options.access_token || process.env.FACEBOOK_APP_ACCESS_TOKEN,
   };
 

@@ -26,6 +26,10 @@ var templateProcessor = {};
 
 templateProcessor.generateNotification = function(userNotifs) {
   try {
+    if (!userNotifs|| !userNotifs.length){
+      return false;
+    }
+
     var highestPriorityNotifs = this._getHighestPriorityNotifs(userNotifs);
     var actionType = userNotifs[0].actionType;
     return this._getTemplateForNotification(highestPriorityNotifs, actionType)
@@ -101,7 +105,7 @@ templateProcessor._getTemplateForNotification = function(bestNotifs, actionType)
 
   // try all options from most relavent to get a fitting template for actionType
   while(!template) {
-    var currTemplateList = templatesForAction[templateIndex];
+    var currTemplateList = templatesForAction[templateIndex] || [];
     while(currTemplateList.length > 0) {
       var rand = Math.floor(Math.random() * currTemplateList.length);
       // randomly get creative from this list

@@ -25,6 +25,10 @@ var errorCodes =
   {
   reason:'missingParameters'
   },  
+  'cannotBetYourself':
+  {
+  reason:'cannotBetYourself'
+  },  
   // invalid signed fb request
   'invalidSignedRequest':
   {

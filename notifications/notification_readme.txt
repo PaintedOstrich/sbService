@@ -16,3 +16,111 @@ There should always be one creative per type that does not require additional pa
 
 {TODO} the client should should be able to receive an extension /link or #link with parameters to show these notifications upon landing in the app
 
+You can specify options from 4 of the same notifications down to 0 in the config file.
+
+It should look like the following in the correct json format:
+
+
+{
+  "creative":{
+    "templates" : {
+      "wonBet" : {
+        "1" : [
+          {
+            "template" : "Congratulations, you won a bet",
+            "creativeRef" : "wonBet1"
+          },
+          {
+            "wonBet2" : "Congratulations, you won @amount on a bet",
+            "creativeRef" : "wonBet2"
+          },
+          {
+            "wonBet3" : "Congratulations, you beat @user and won a bet",
+            "creativeRef" : "wonBet3"
+          }
+        ],
+        "2" : [
+          {
+            "template" : "Congratulations, you won @count bets",
+            "creativeRef" : "wonBet4"
+          },
+          {
+            "template" : "Congratulations, you beat @user and @user in bets",
+            "creativeRef" : "wonBet5" 
+          }
+        ],
+        "3" : [
+          {
+             "template" : "Congratulations, you beat @user and @user, and @count other in bets",
+             "creativeRef" : "wonBet7"
+          }
+        ],
+        "4" : [
+          {
+            "template" : "Congratulations, you beat @user and @user, and @count others in bets",
+            "creativeRef" : "wonBet8" 
+          },
+          {
+            "template" : "Congratulations, you won @amount in @count bets",
+            "creativeRef" : "wonBet9" 
+          }
+        ] 
+      },
+      "lostBet" : {
+        "1" : [
+          {
+            "template" : "You just lost a bet. Bet again and improve your odds!",
+            "creativeRef" : "lostBet1" 
+          },
+          {
+            "template" : "You lost a bet on the @team.  Challenge @user again!",
+            "creativeRef" : "lostBet2" 
+          }
+        ]
+      },
+       "betAccepted" : {
+        "1" : [
+          {
+            "template" : "@user accepted your bet",
+            "creativeRef" : "betAccepted1" 
+          }
+        ],
+        "2" : [
+         {
+            "template" : "@user and @user accepted your bets",
+            "creativeRef" : "betAccepted2" 
+          }
+        ]
+      },
+       "betPrompted" : {
+        "1" : [
+          {
+            "template" : "@user challenged you to a bet!",
+            "creativeRef" : "betPromted1" 
+          },
+          {
+            "template" : "@user challenged you to bet on the @team",
+            "creativeRef" : "betPromted2" 
+          }
+        ],
+        "2" : [ ]
+      }
+    },
+    "notificationPriority" : {
+      "betPrompted" : 10,
+      "wonBet" : 9,
+      "betAccepted" : 1,
+      "lostBet": 5
+    },
+    "creativeKeys" : [
+      "@user",
+      "@amount",
+      "@count",
+      "@team"
+    ]
+  },
+  "notifQueueConfig" : {
+    "minTimeBetweenNotifications" : 240
+  }
+}
+

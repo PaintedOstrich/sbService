@@ -18,7 +18,7 @@
         ],
         "2" : [
           {
-            "template" : "Congratulations, you won a bet",
+            "template" : "Congratulations, you won @count bets",
             "creativeRef" : "wonBet4"
           },
           {
@@ -28,10 +28,6 @@
         ],
         "3" : [
           {
-            "template" : "Congratulations, you won a bet",
-            "creativeRef" : "wonBet6"
-          },
-          {
              "template" : "Congratulations, you beat @user and @user, and @count other in bets",
              "creativeRef" : "wonBet7"
           }
@@ -40,31 +36,64 @@
           {
             "template" : "Congratulations, you beat @user and @user, and @count others in bets",
             "creativeRef" : "wonBet8" 
+          },
+          {
+            "template" : "Congratulations, you won @amount in @count bets",
+            "creativeRef" : "wonBet9" 
           }
         ] 
       },
       "lostBet" : {
         "1" : [
           {
-            "template" : "Congratulations, you lost a bets",
+            "template" : "You just lost a bet. Bet again and improve your odds!",
             "creativeRef" : "lostBet1" 
           },
           {
-            "template" : "Congratulations, you lost a bets",
+            "template" : "You lost a bet on the @team.  Challenge @user again!",
             "creativeRef" : "lostBet2" 
+          }
+        ]
+      },
+       "betAccepted" : {
+        "1" : [
+          {
+            "template" : "@user accepted your bet",
+            "creativeRef" : "betAccepted1" 
+          }
+        ],
+        "2" : [
+         {
+            "template" : "@user and @user accepted your bets",
+            "creativeRef" : "betAccepted2" 
+          }
+        ]
+      },
+       "betPrompted" : {
+        "1" : [
+          {
+            "template" : "@user challenged you to a bet!",
+            "creativeRef" : "betPromted1" 
+          },
+          {
+            "template" : "@user challenged you to bet on the @team",
+            "creativeRef" : "betPromted2" 
           }
         ],
         "2" : [ ]
       }
     },
     "notificationPriority" : {
-      "wonBet" : 10,
+      "betPrompted" : 10,
+      "wonBet" : 9,
+      "betAccepted" : 1,
       "lostBet": 5
     },
     "creativeKeys" : [
       "@user",
       "@amount",
-      "@count"
+      "@count",
+      "@team"
     ]
   },
   "notifQueueConfig" : {

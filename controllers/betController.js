@@ -12,7 +12,7 @@
  var gameController = require('./gameController');
  var userController = require('./userController');
  var betStatsController = require('./betStatsController')
-
+ var notificationController = require('./notificationController')
  var cUtil = require('../user_modules/cUtil');
  var datetime = require('../user_modules/datetime');
  var errorHandler = require('../user_modules/errorHandler');
@@ -84,12 +84,19 @@ var endBet = function(winnerGameId, winnerTeamId, isWinnerTeam1) {
 			else {
 				// user won valid bet
 				// calculate which user one and the winnings ratio from the bet spread
-				var winnerFBId = winnerGameId == bet.initTeamBet ? bet.initFBId : bet.callFBId;
+				var winnerFBId = winnerGameId == bet.initTeamBetId ? bet.initFBId : bet.callFBId;
+				var loserFBId = winnerGameId != bet.initTeamBetId ? bet.initFBId : bet.callFBId;
 				var winSpread = isWinnerTeam1 ? bet.spreadTeam1 : bet.spreadTeam2;
 				var winRatio = calcWinRatio(winSpread);
 				// update user winnings with 
 				var userWinnings = bet.betAmount + parseFloat(bet.betAmount * winRatio);
 				userController.updateUserBalance(winnerFBId, userWinnings, function(err) {
+					
+					// send notifications to users
+					notificationController.enqueueBetWon(winnerFBId, loserFBId, bet._id, bet.betAmount);
+					notificationController.enqueueBetLost(loserFBId, winnerFBId, bet._id);
+
+					
 					// mark bet as ended
 					bet.update({processed: true}, null, cb)
 				})
@@ -154,9 +161,9 @@ var makeBet = function(betInfo, cb) {
 				cb(errorHandler.errorCodes.betZeroOrNegative);
 			}
 			else {
-				Game.find({gid:betInfo.gameId}, function(err, gameInfo) {
+				Game.findOne({gid:betInfo.gameId}, function(err, gameInfo) {
 					// error handling if game doesn't exist
-					if (!gameInfo.length) {
+					if (!gameInfo) {
 						cb(errorHandler.errorCodes.gameDoesNotExist);
 					} 
 					// make sure odss are the same
@@ -171,6 +178,10 @@ var makeBet = function(betInfo, cb) {
 					else if (isPastWagerCutoff(gameInfo.wagerCutoff)) {
 						console.log('past wager cutoff');
 						cb(errorHandler.createErrorMessage(errorHandler.errorCodes.pastWagerCutoff, errorInfo))
+					}
+					else if (betInfo.initFBId == betInfo.callFBId){
+						console.warn('user tried to bet themself '+ betInfo.initFBId);
+						cb(errorHandler.errorCodes.cannotBetYourself);
 					}
 					else {
 						if (!userController.isUserInApp(betInfo.callFBId)){
@@ -189,10 +200,21 @@ var makeBet = function(betInfo, cb) {
 									cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
 								}
 								else {
-									setBetInfo(betInfo, cb);
+									setBetInfo(betInfo, function(err, savedBet){
+													// log bet
+										console.log('saved bet ' + util.inspect(savedBet))
+										mixpanel.trackMadeBet(betInfo);
 
-									// log bet
-									mixpanel.trackMadeBet(betInfo);
+										// send notification to user in app that they were challenged to a bet
+										console.log(util.inspect(gameInfo));
+										console.log('init team bet : '+ betInfo.initTeamBetId);
+										var teamNameForCaller = (betInfo.initTeamBetId == gameInfo.team1Id) ? gameInfo.team1Name : gameInfo.team2Name;
+										console.log('team name ' + teamNameForCaller);
+										notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
+									})
+
+									// return no error
+									cb(null, 'success');
 								}
 							})
 						}
@@ -209,14 +231,14 @@ var makeBet = function(betInfo, cb) {
 
 // Set Bet Info 
 var setBetInfo = function(betInfo, cb) {
-	var bet = new Bet(betInfo).save(function(err){
+	var bet = new Bet(betInfo).save(function(err, savedBet) {
 		if (err) cb(err);
 		else {
 			userController.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {
 				// add to list of most recent bets
 				betStatsController.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, function(err) {
 					// add bet to list of bets per this game
-					cb(null, {balance:updatedMoney})
+					cb(null, savedBet)
 				})	
 			})
 		}
@@ -253,6 +275,9 @@ var callBet = function(betid, cb) {
 
 					// log bet
 					mixpanel.trackCallBet(bet);
+
+					// send notification
+					notificationController.enqueueBetAccepted(bet.initFBId, bet.callFBId, bet._id);
 				}
 			})
 		}
@@ -288,9 +313,7 @@ var isPastWagerCutoff = function(wagerCutoff) {
 	// check that bet is before wager cutoff
 	var now = new Date();
 	var wagerCutoff = new Date(wagerCutoff);
-	console.log('wager cutoff' + wagerCutoff.toString);
-	console.log('time check' +  now.isBefore(wagerCutoff));
-	return now.isBefore(wagerCutoff);
+	return wagerCutoff.isBefore(now);
 }
 
 // Function verifies that 'bet' request has all parameters
@@ -301,12 +324,12 @@ var isMissingParameter = function(query)
 	if(query.type === "straight")
 	{
 		// process straight bet
-		requiredParams.push("initTeamBet")
+		requiredParams.push("initTeamBetId")
 	}
 	else if(query.type === "spread")
 	{
 		// process bet on spread
-		requiredParams.push("spreadTeam1", "spreadTeam2", "initTeamBet")
+		requiredParams.push("spreadTeam1", "spreadTeam2", "initTeamBetId")
 	}
 	else if(query.type === "score")
 	{

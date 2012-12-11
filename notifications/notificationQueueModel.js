@@ -2,8 +2,9 @@
  *  This Model queues notifications and sends to facebook canvas app
  *  It also follows rules
  */
-var redClient = require('../config/redisConfig');
+var redClient = require('../config/redisConfig')();
 
+var util = require('util')
 var base = require('../models/base');
 var gamesModel = require('../models/gameModel');
 
@@ -34,19 +35,23 @@ var NotificationModel = function() {
 /* gets Info for all users pending notifications */
 NotificationModel.prototype.getAllNotifications = function(cb) {
   var that = this;
+  var allNotifs = {};
   try {
     that.getUsersPendingNotification(function(err, users) {
       that.getNotificationsForUsers(users, function(err, idsToNotifications) {
         // decompress stored notifications
-        console.log('idsToNotifications' + idsToNotifications );
         for (var grouping in idsToNotifications) {
-          for (var notifs in grouping) {
-            idsToNotifications[grouping[notifs]] = that._decompressNotification(grouping[notifs]);
+          allNotifs[grouping] = [];
+          var group = idsToNotifications[grouping];
+
+          for (var i = 0; i< group.length; i++) {
+
+           allNotifs[grouping].push(that._decompressNotification(group[i]));
           }
         }
 
         // call back notifications
-        cb(null, idsToNotifications);
+        cb(null, allNotifs);
       }) 
     }) 
   }
@@ -63,11 +68,12 @@ NotificationModel.prototype.getNotificationsForUsers = function(uids, cb){
 
 /* switches store from db1 to db2, in essence putting a lock on this data set */
 NotificationModel.prototype._switchCollectors = function(){
-  var inactiveCollector = this.inactiveCollector;
-  var currentCollector = this.currentCollector;
+  // turn off while testing
+  // var inactiveCollector = this.inactiveCollector;
+  // var currentCollector = this.currentCollector;
 
-  this.currentCollector = inactiveCollector;
-  this.inactiveCollector = currentCollector;
+  // this.currentCollector = inactiveCollector;
+  // this.inactiveCollector = currentCollector;
 }
 
 /* get users awaiting notifications and switch databse */
@@ -84,6 +90,11 @@ NotificationModel.prototype.getUsersPendingNotification = function(cb){
   }
 }
 
+NotificationModel.prototype.addUserToPendingList = function(uid, cb) {
+  cb = cb || function(){};
+  redClient.sadd(this.currentCollector, uid, cb);
+}
+
 /* Compresses info about a user action as a string for that user in a hashset, string is deliminate by '|' 
  * ActionType : corresponding Creative action
  * fields : wanted info for creatives
@@ -95,7 +106,15 @@ NotificationModel.prototype._compressNotification = function(actionType, fields)
   }
   else {
     for (var name in fields) {
-      compress += '_' + name + '|' + fields[name];
+      if(fields[name]) {
+        compress += '_' + name + '|' + fields[name];  
+      }
+      else {
+        if (DEVELOPMENT) {
+          console.warn(actionType + ' notification field: ' + name + ' is undefined');
+        }
+      }
+      
     }
   }
 
@@ -127,11 +146,14 @@ NotificationModel.prototype._decompressNotification = function(compressedString)
  * ActionType : corresponding Creative action
  * fields : key|value 'object array' of wanted info for creatives
  */
-NotificationModel.prototype.queueNotification = function(uid, actionType, fields) {
+NotificationModel.prototype.queueNotification = function(uid, actionType, fields) { 
   var notifKey = this.getUserNotifsKey(uid);
   var compressed = this._compressNotification(actionType,fields);
+  var that = this;
   try {
-    redClient.sadd(notifKey, compressed);  
+    redClient.sadd(notifKey, compressed);
+    that.addUserToPendingList(uid);
+    console.log('added ' + compressed + ' to   ' + notifKey)  
   }
   catch(e) {
     console.log(e.stack);
@@ -161,16 +183,22 @@ NotificationModel.prototype.setUsersHaveBeenNotified= function(notifiedMembers) 
  *       clear locked (inactive) key, and add other user to active set
  */
 NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(notifiedMembers, membersNotNotified) {
+  notifiedMembers = notifiedMembers || [ ];
+  membersNotNotified = membersNotNotified || [ ];
   var that = this;
   try {
     // delete set from which most users notified
     redClient.del(that.inactiveCollector);
 
     // add unnotified users to actives set
-    redClient.sadd(that.activeCollector, membersNotNotified);
+    if (membersNotNotified.length) {
+      redClient.sadd(that.activeCollector, membersNotNotified);
+    }
 
     // delete pending notification list for each user
-    that.setUsersHaveBeenNotified(notifiedMembers);
+    if (notifiedMembers.length){
+      that.setUsersHaveBeenNotified(notifiedMembers);  
+    }
   }  
   catch(e) {
     console.log(e.stack);
@@ -183,7 +211,7 @@ NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(
  */
 NotificationModel.prototype.getLastUserUpdates = function(listOfUsers, cb) {
   try {
-    base.getMultiKeyValueAsObject(listOfUsers, this.getgetLastUserNotifKey, cb);  
+    base.getMultiKeyValueAsObject(listOfUsers, this.getLastUserNotifKey, cb);  
   }
   catch(e){
     console.log(e.stack);

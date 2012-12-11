@@ -28,22 +28,18 @@ var NotificationProcessController = function(options){
  *  Sends notifcations if they have not already been sent
  */ 
 NotificationProcessController.prototype.sendNotifications = function(cb) {
-  console.log('here0')
-  console.log(util.inspect(notificationQueueModel))
   notificationQueueModel.getAllNotifications(function(err, idsToNotifications) {
-    console.log('here1')
     var uids = [];
     for (var id in idsToNotifications) {
       uids.push(id);
     }
 
-    console.log('ids to not: ' +idsToNotifications)
-
     notificationQueueModel.getLastUserUpdates(uids, function(err, lastUpdateTimes) {
       var notified = [];
       var notNotified = [];
+      lastUpdateTimes = lastUpdateTimes || {};
 
-      console.log('last update ' + lastUpdateTimes)
+      
 
       for (var id in idsToNotifications){
         // check that user should receive update
@@ -52,10 +48,14 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         if (!lastUpdateTimes[id] || lastUpdate.isXMinutesBeforeNow(this.minTimeBetweenNotifications)){
           // add user to sending list
           notified.push(id);
+
           var notifToSend = templateProcessor.generateNotification(idsToNotifications[id]);
           if (notifToSend) {
             // notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag, function(err, success) {
               // FIXME Add href tag
+            if (DEVELOPMENT) {
+              console.log('sending notification to ' + id + ' with creative : ' + notifToSend.creativeRef + '\n' + notifToSend.template);
+            }
             notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, function(err, success) {
               if (err) {
                 console.log(err);
@@ -65,12 +65,15 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         }
         else {
           // user should wait to be notified
+          if (DEVELOPMENT){
+            console.log('not sending user: ' + id + ' notification because recently notified\n ' + lastUpdate);
+          }
 
           notNotified.push(id);
         }
       }
 
-      notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
+      // notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
     });
   });
 }

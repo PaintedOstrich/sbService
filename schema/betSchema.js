@@ -16,7 +16,7 @@ module.exports = function(mongoose)
       , spreadTeam1    : Number
       , spreadTeam2    : Number
       , called         : Boolean
-      , processed          : Boolean
+      , processed      : Boolean
       , winningUser    : String
       , date       : { type: Date, default: Date.now }    
     });

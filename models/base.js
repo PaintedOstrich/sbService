@@ -7,7 +7,6 @@ var redClient = require('../config/redisConfig')()
 // iterates through a number of object properties and sets them
 var setMultiHashSetItems = function(hkey, namesAndValues, cb)
 {
-	console.log("hkey:" +hkey);
 	var finishedCount = 0;
 	var totalCount = cUtil.getNumElements(namesAndValues)
 	for (var keyName in namesAndValues)
