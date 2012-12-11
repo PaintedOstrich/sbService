@@ -48,10 +48,9 @@ var createJobs = function()
 }
 
 var setupNotificationJob = function(){
-	notifHandle.send();
 	var job = new cronJob('01 * * * * *', function(){
 	    // Check for updates every minute
-	   // notifHandle.send();
+	   notifHandle.send();
 	    
 	  }, function () {
 	    // This function is executed when the job stops

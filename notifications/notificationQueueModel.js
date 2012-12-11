@@ -68,12 +68,11 @@ NotificationModel.prototype.getNotificationsForUsers = function(uids, cb){
 
 /* switches store from db1 to db2, in essence putting a lock on this data set */
 NotificationModel.prototype._switchCollectors = function(){
-  // turn off while testing
-  // var inactiveCollector = this.inactiveCollector;
-  // var currentCollector = this.currentCollector;
+  var inactiveCollector = this.inactiveCollector;
+  var currentCollector = this.currentCollector;
 
-  // this.currentCollector = inactiveCollector;
-  // this.inactiveCollector = currentCollector;
+  this.currentCollector = inactiveCollector;
+  this.inactiveCollector = currentCollector;
 }
 
 /* get users awaiting notifications and switch databse */

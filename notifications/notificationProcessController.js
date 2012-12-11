@@ -14,16 +14,16 @@ var util = require('util')
 var datetime = require('../user_modules/datetime');
 var nconf = require('nconf')
 var creative = nconf.get('creative');
+var notifQueueConfig = nconf.get('notifQueueConfig');
 
 var notificationPostController = require('./notificationPostController')();
 var notificationQueueModel = require('./notificationQueueModel')();
 var templateProcessor = require('./templateProcessor');
 var notificationPriorities = creative.notificationPriority;
-var NotificationProcessController = function(options){
-  options = options || {};
+var NotificationProcessController = function(){
 
   // user will not receive two notifications within this time
-  this.minTimeBetweenNotifications = options.minTimeBetweenNotifications || 4*60;
+  this.minTimeBetweenNotifications = notifQueueConfig.minTimeBetweenNotifications || 4*60;
 }
 
 /*
