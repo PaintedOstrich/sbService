@@ -1,5 +1,5 @@
 //  Post User Bet
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"100002980043079","callFBId":"737835647","betAmount":"1.10","typead","gameId":"435438","initTeamBetId":"13","spreadTeam1":"-125","spreadTeam2":"115"}'  http://127.0.0.1:5000/api/bet
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"100002980043079","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"-125","spreadTeam2":"115"}'  http://127.0.0.1:5000/api/bet
 
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"21","callFBId":"20","betAmount":"1.10","type":"spread","gameId":"428962","initTeamBetId":"1","spreadTeam1":"-108","spreadTeam2":"-102"}'  http://sportsbetsservice.herokuapp.com/api/bet
 

@@ -68,7 +68,8 @@ templateProcessor._getTemplateForNotification = function(bestNotifs, actionType)
       var rand = Math.floor(Math.random() * currTemplateList.length);
       // randomly get creative from this list
       var currTemplateObj = currTemplateList.splice(rand, 1)[0];
- 
+      
+      // try to generate template with notification information 
       var currTemplate = this.generateSportsTemplate(currTemplateObj.template, bestNotifs);
 
       if (currTemplate) {
@@ -89,8 +90,6 @@ templateProcessor._getTemplateForNotification = function(bestNotifs, actionType)
    
   // uid, template, creativeRef, hrefTag,
 }
-
- 
 
 /* 
  * GENERATE ACTUAL TEMPLATE FROM NOTIFICATION LIST

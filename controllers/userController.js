@@ -32,12 +32,24 @@ var login = function(signedreq, cb) {
 // gets all user info on startup
 var getBaseUserInfo = function(uid, cb) {
 	try {
-		User.findOne({uid:uid}, function(err, user){
+		var fields = {
+			balance:1,
+			fullname:1
+		}
+
+		User.findOne({uid:uid}, fields, function(err, user){
 			if(user){
 				// get user 
 				getUserBets(uid, function(err, bets) {
-					baseInfo.bets = bets;
-					cb(null, baseInfo)
+					debugger;
+					user.field = 'asdf'
+					console.log(util.inspect(user, true, 3))
+					var resp = {
+						user:user,
+						bets :bets
+					}
+					
+					cb(null, resp)
 				})
 			}
 			else {

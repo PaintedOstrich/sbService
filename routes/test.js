@@ -21,29 +21,26 @@ var update = function(app) {
 		var getTeamNames = query.getTeamNames == 1 ? true : false;
 
 		pickmonapi.updateAllGames(function(err) {
-            if (err) {
-                res.send(err)
-            }
-            else {
-                res.send('ok')
-            }
-        });
+        if (err) {
+          res.send(err)
+        }
+        else {
+          res.send('ok')
+        }
+      });
     });
 
       app.get('/api/test/getuserinfo/:uid', function(req, res) {
-        var url_parts = url.parse(req.url, true);
-        var query = url_parts.query;
-    
-        var getTeamNames = query.getTeamNames == 1 ? true : false;
+        var uid = req.params.uid;
 
-        pickmonapi.updateAllGames(function(err) {
-            if (err) {
-                res.send(err)
-            }
-            else {
-                res.send('ok')
-            }
-        });
+        userController.getBaseUserInfo(uid, function(err, baseInfo) {
+          if (err) {
+              errorHandler.send(res, err);
+          }
+          else {
+              res.send(baseInfo)
+          }
+        })
     });
 
 
@@ -53,11 +50,11 @@ var update = function(app) {
     	userModel.updateUserBalance(req.params.userid, req.params.amount, function(err, result)
     	{
     		if (err) {
-                res.send(err);
-            } 
-            else {
-                res.send(result);    
-            }
+          res.send(err);
+        } 
+        else {
+          res.send(result);    
+        }
     	})
     });
 
@@ -66,15 +63,15 @@ var update = function(app) {
         var query = url_parts.query;
         userController.initUser(query.fbid, query.name, query.email, query.money, function(err, data)
         {
-            if (err)
-            {
-                errorHandler.send(res, err)  
-            } 
-            else
-            {
-                res.send(data); 
-            }
-            
+          if (err)
+          {
+            errorHandler.send(res, err)  
+          } 
+          else
+          {
+            res.send(data); 
+          }
+          
         });
     });   
 }

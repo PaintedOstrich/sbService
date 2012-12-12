@@ -40,7 +40,6 @@ var getBetUpdates = function(shouldDoFullUpdate, cb) {
 
     	// FIXME restler failing tests and not autoparsing
     	try {
-    		debugger;
     		// Did api call auto parse result?
 			var parser = new xml2js.Parser();
 			parser.parseString(data, function (err, result) {
