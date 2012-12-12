@@ -31,22 +31,14 @@ var login = function(signedreq, cb) {
 
 // gets all user info on startup
 var getBaseUserInfo = function(uid, cb) {
-	var baseInfo = {uid : uid};
 	try {
-		userModel.userExists(uid, function(err, doesExist) {
-			if (doesExist) {
-				// get user balance
-				userModel.getUserBalance(uid, function(err, balance) {
-					baseInfo.balance = balance;
-
-					// get user 
-					getUserBets(uid, function(err, bets) {
-						baseInfo.bets = bets;
-						cb(null, baseInfo)
-					})
-
+		User.findOne({uid:uid}, function(err, user){
+			if(user){
+				// get user 
+				getUserBets(uid, function(err, bets) {
+					baseInfo.bets = bets;
+					cb(null, baseInfo)
 				})
-
 			}
 			else {
 				// new User

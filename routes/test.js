@@ -30,6 +30,23 @@ var update = function(app) {
         });
     });
 
+      app.get('/api/test/getuserinfo/:uid', function(req, res) {
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+    
+        var getTeamNames = query.getTeamNames == 1 ? true : false;
+
+        pickmonapi.updateAllGames(function(err) {
+            if (err) {
+                res.send(err)
+            }
+            else {
+                res.send('ok')
+            }
+        });
+    });
+
+
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {

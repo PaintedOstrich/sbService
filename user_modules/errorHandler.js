@@ -46,6 +46,10 @@ var errorCodes =
     // trying to create user which already exists
     reason:'userAlreadyExists'
   },
+  'userDoesNotExist' : {
+    // referencing user which doesn't exist
+    reason:'userDoesNotExist'
+  },
   'outOfDate' : {
     reason:'outOfDate'
   },

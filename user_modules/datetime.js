@@ -13,6 +13,13 @@ Date.prototype.isBefore = function(date2)
 
 Date.prototype.isXMinutesBeforeNow = function(minutes)
 {
-  var d = new Date();
-  return (d - this) > (minutes * 60 *1000);
+  minutes = parseInt(minutes);
+  if (minutes !== minutes){
+    console.warn('Date.isXMinutesBeforeNow: @param: minutes is NaN');
+    return true;
+  }
+  
+  var d = Date.now();
+
+  return (d - this) > (parseInt(minutes) * 60 *1000);
 }

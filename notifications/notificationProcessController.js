@@ -45,9 +45,9 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
 
       for (var id in idsToNotifications){
         // check that user should receive update
-        var lastUpdate = new Date(lastUpdateTimes[id]);
+        var lastUpdate = new Date(parseInt(lastUpdateTimes[id]));
 
-        if (!lastUpdateTimes[id] || lastUpdate.isXMinutesBeforeNow(this.minTimeBetweenNotifications)){
+        if (!lastUpdateTimes[id] || lastUpdate.isXMinutesBeforeNow(that.minTimeBetweenNotifications)){
           // add user to sending list
           notified.push(id);
 
@@ -59,10 +59,11 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
 
             var hrefTag = that._tryGenerateHrefTag(highestPriorityNotifs);
 
-              // FIXME Add href tag
             if (DEVELOPMENT) {
               console.log('sending notification to ' + id + ' with creative : ' + notifToSend.creativeRef + ' href:' + hrefTag +  '\n' + notifToSend.template);
             }
+
+            // send notification, with href if present
             if (hrefTag){
               notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag);
             }
@@ -73,7 +74,7 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         }
         else {
           // user should wait to be notified
-          if (DEVELOPMENT){
+          if (DEVELOPMENT) {
             console.log('not sending user: ' + id + ' notification because recently notified\n ' + lastUpdate);
           }
 
@@ -81,7 +82,7 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
         }
       }
 
-      // notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
+      notificationQueueModel.updateNotificationQueueAfterRequestsSent(notified, notNotified);
     });
   });
 }
@@ -92,7 +93,6 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
  */
 NotificationProcessController.prototype._tryGenerateHrefTag = function(userNotifs) {
   var listOfIds = [];
-  console.log(util.inspect(userNotifs));
 
   // double check that htis is defined
   if (!userNotifs || !userNotifs.length){
@@ -111,7 +111,6 @@ NotificationProcessController.prototype._tryGenerateHrefTag = function(userNotif
     }
   }
 
-  console.log('list of ids' + listOfIds)
   var hrefTag = '?' + hrefAction + '=' + listOfIds.toString();
   return hrefTag;
 }

@@ -70,6 +70,7 @@ templateProcessor._getTemplateForNotification = function(bestNotifs, actionType)
       var currTemplateObj = currTemplateList.splice(rand, 1)[0];
  
       var currTemplate = this.generateSportsTemplate(currTemplateObj.template, bestNotifs);
+
       if (currTemplate) {
         // we have successfully generatee a tepmlate
         currTemplateObj.template = currTemplate;
@@ -81,6 +82,7 @@ templateProcessor._getTemplateForNotification = function(bestNotifs, actionType)
 
     if(templateIndex == 0) {
       console.warn('error generating template for action type: ' + actionType);
+      console.log('for actions \n' + util.inspect(bestNotifs));
       return false;
     }
   }

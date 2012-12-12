@@ -194,6 +194,7 @@ var makeBet = function(betInfo, cb) {
 							cb('user not in app');
 						}
 						else {
+							
 							doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
 								if (amountNeeded)
 								{
@@ -300,6 +301,11 @@ var setCallInfo = function(bet, cb) {
 // User Has Sufficient Funds
 var doesUserHaveSufficientFunds = function(uid, amountNeeded, cb) {
 	User.findOne({uid:uid}, {'balance':1}, function(err, userInfo){
+		if (!userInfo){
+			// init bet user doesn't exist
+			return cb(errorHandler.errorCodes.userDoesNotExist)
+		}
+
 		var currentUserBalalance = parseFloat(userInfo.balance);	
 		if (currentUserBalalance >= amountNeeded) {
 			cb(null, currentUserBalalance)

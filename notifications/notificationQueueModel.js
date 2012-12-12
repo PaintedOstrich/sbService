@@ -152,7 +152,7 @@ NotificationModel.prototype.queueNotification = function(uid, actionType, fields
   try {
     redClient.sadd(notifKey, compressed);
     that.addUserToPendingList(uid);
-    console.log('added ' + compressed + ' to   ' + notifKey)  
+    console.log('added ' + compressed + ' to   ' + notifKey  + '\n currentCollector: ' + that.currentCollector)  
   }
   catch(e) {
     console.log(e.stack);
@@ -164,7 +164,7 @@ NotificationModel.prototype.queueNotification = function(uid, actionType, fields
 */
 NotificationModel.prototype.setUsersHaveBeenNotified= function(notifiedMembers) {
   var that = this;
-  var now = new Date();
+  var now = Date.now()
   try {
     for (var index in notifiedMembers) {
       var uid = notifiedMembers[index];
@@ -184,6 +184,7 @@ NotificationModel.prototype.setUsersHaveBeenNotified= function(notifiedMembers) 
 NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(notifiedMembers, membersNotNotified) {
   notifiedMembers = notifiedMembers || [ ];
   membersNotNotified = membersNotNotified || [ ];
+  
   var that = this;
   try {
     // delete set from which most users notified
@@ -191,7 +192,7 @@ NotificationModel.prototype.updateNotificationQueueAfterRequestsSent = function(
 
     // add unnotified users to actives set
     if (membersNotNotified.length) {
-      redClient.sadd(that.activeCollector, membersNotNotified);
+      redClient.sadd(that.currentCollector, membersNotNotified);
     }
 
     // delete pending notification list for each user
