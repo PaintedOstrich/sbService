@@ -68,8 +68,10 @@ var combineBetInfo = function(bets, games, users) {
 		var info = {
 			amount : amount,
 			player1 : initName,
+			player1FBId: bet.initFBId,
 			player1Bet : initTeamName,
 			player2 : otherName,
+			player2FBId : bet.callFBId,
 			player2Bet :otherTeamName
 		}
 
