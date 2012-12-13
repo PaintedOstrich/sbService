@@ -29,17 +29,30 @@ var update = function(app) {
       });
     });
 
-      app.get('/api/test/getuserinfo/:uid', function(req, res) {
-        var uid = req.params.uid;
+    app.get('/api/test/getbetgameinfo/:uid', function(req, res){
+       var uid = req.params.uid;
 
-        userController.getBaseUserInfo(uid, function(err, baseInfo) {
-          if (err) {
-              errorHandler.send(res, err);
-          }
-          else {
-              res.send(baseInfo)
-          }
-        })
+      userController.getGameInfoForUserBets(uid, function(err, baseInfo) {
+        if (err) {
+            errorHandler.send(res, err);
+        }
+        else {
+            res.send(baseInfo)
+        }
+      })
+    })
+
+    app.get('/api/test/getuserinfo/:uid', function(req, res) {
+      var uid = req.params.uid;
+
+      userController.getBaseUserInfo(uid, function(err, baseInfo) {
+        if (err) {
+            errorHandler.send(res, err);
+        }
+        else {
+            res.send(baseInfo)
+        }
+      })
     });
 
 

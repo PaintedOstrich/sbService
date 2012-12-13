@@ -11,7 +11,9 @@ var gameModel = require('./gameModel');
 var recentBetsAllKey = 'recentbets|all';
 var totalRecentStored = 20;
 
-
+/******
+*******    THIS IS NOT BEING USED BUT A GOOD EXAMPLE OF HOW TO DO A CACHE IN REDIS FOR A GIVEN ITEM
+******/
 
 // gets most recent sports bets
 // will return null entries if less than 20 total bets have been made

@@ -42,7 +42,7 @@ var saveGame = function(newGameInfo, cb){
         newGameInfo['team2Id'] = teamNamesToIds[newGameInfo.team2Name];
 
         // save game info
-        new Game(newGameInfo).save(cb);
+        (new Game(newGameInfo)).save(cb);
       })
     }  
   })

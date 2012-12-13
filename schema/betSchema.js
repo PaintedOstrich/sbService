@@ -2,7 +2,7 @@
   *   Defines Bet Schema
   */
 
-var cUtil = require('../user_modules/cUtil')
+var mUtil = require('../user_modules/mongoUtil')
 
 module.exports = function(mongoose)
 {
@@ -13,7 +13,7 @@ module.exports = function(mongoose)
         initFBId       : String 
       , callFBId       : String 
       , type           : String 
-      , betAmount      : {type : Number, get: cUtil.trimToTwoDecimalPlaces}
+      , betAmount      : {type : Number, get: mUtil.trimToTwoDecimalPlaces}
       , gameId         : String 
       , initTeamBetId  : String  
       , spreadTeam1    : Number

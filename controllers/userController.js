@@ -7,6 +7,7 @@
  var async = require('async');
  var errorHandler = require('../user_modules/errorHandler')
  var gameController = require('./gameController')
+ var betController = require('./betController')
 
  var fbHandle = require('../user_modules/fb/fbHandle')();
  var mixpanel = require('../config/mixPanelConfig');
@@ -32,15 +33,20 @@ var getBaseUserInfo = function(uid, cb) {
 			if(user){
 				// get user bets as well
 				getUserBets(uid, function(err, bets) {
-					// have to create a new user, since mongoose model is read only
-					// FIXME
-					var returnUser = {
-						name    : user.name,
-						balance : user.balance,
-						uid     : user.uid,
-						bets 	  : bets
-					}
-					cb(null, returnUser)
+					// get game info for corresponding bets
+					getGameInfoForUserBets(uid, function(err, gameInfo) {
+							// have to create a new user, since mongoose model is read only
+						// FIXME
+						var returnUser = {
+							name     : user.name,
+							balance  : user.balance,
+							uid      : user.uid,
+							bets     : bets,
+							gameInfo : gameInfo
+						}
+
+						cb(null, returnUser)
+					})
 				})
 			}
 			else {
@@ -106,8 +112,11 @@ var initUser = function(uid, cb) {
 
 					// populate fake bets object to keep front end response consistent
 					getUserBets(uid, function(err, bets) {
-						returnInfo.bets = bets;
-						cb(null, returnInfo)
+						getGameInfoForUserBets(uid, function(err, gameInfo) {
+							returnInfo.bets = bets;
+							returnInfo.gameInfo = gameInfo;
+							cb(null, returnInfo);
+						})
 					})
 				}
 			})
@@ -116,6 +125,24 @@ var initUser = function(uid, cb) {
 	catch(e) {
 		cb(e)
 	}
+}
+
+var getGameInfoForUserBets = function(uid, cb) {
+	Bet.distinct('gameId', { $or: [{initFBId : uid}, {callFBId : uid }] }, function(err, gameIds){
+		var fields = {
+			gdate     : 1,
+			gid       : 1,
+			header    : 1,
+			team1Name : 1,
+			team2Name : 1,
+			winner    : 1,
+			_id       : 0
+		}
+		
+		Game.find({ gid : { $in : gameIds } }, fields, function(err, gameInfo) {
+			cb(null, gameInfo)
+		})
+	})
 }
 
 var isUserInApp= function (uid){
@@ -183,4 +210,5 @@ module.exports = {
 	updateUserBalance : updateUserBalance,
 	getUserBalance : getUserBalance,
 	isUserInApp : isUserInApp,
+	getGameInfoForUserBets : getGameInfoForUserBets
 }

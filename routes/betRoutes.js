@@ -6,7 +6,7 @@
  var util = require('util')
 
  var betController = require('../controllers/betController')
- var betStatsModel = require('../models/betStatsModel');
+ var betStatsController = require('../controllers/betStatsController');
  var errorHandler = require('../user_modules/errorHandler')
  var resMes = require('../user_modules/responseMessages')
 
@@ -58,7 +58,7 @@ var bet = function(app) {
     });
 
     app.get('/api/bet/recent', function(req, res) {
-        betStatsModel.getRecentBets(function(err, data)
+        betStatsController.getRecentBets(5, function(err, data)
         {
             if (err) {
                 errorHandler.send(res, err);

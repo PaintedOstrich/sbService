@@ -2,7 +2,7 @@
   *   Defines User Schema
   */
 
-var cUtil = require('../user_modules/cUtil')
+var mUtil = require('../user_modules/mongoUtil')
 
 module.exports = function(mongoose)
 {
@@ -14,10 +14,16 @@ module.exports = function(mongoose)
       , lastname      : String
       , name          : String 
       , username      : String
-      , balance       : { type: Number, default: 0.00, get: cUtil.trimToTwoDecimalPlaces}
+      , balance       : { type: Number, default: 0.00, get: mUtil.trimToTwoDecimalPlaces}
       , joined        : { type: Date, default: Date.now }    
     });
 
     mongoose.model('User', User);
 }
 
+/*
+ * Current bug in mongoose so getters/casting not always being applied in the correct order 
+ *     sometimes balance is not truncated to two decimal places
+ *
+ *     http://stackoverflow.com/questions/10492041/mongoose-getters-not-being-applied-in-most-straightforward-case
+ */
