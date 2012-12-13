@@ -10,7 +10,8 @@ module.exports = function(mongoose)
       , firstname     : String 
       , lastname      : String
       , fullname      : String 
-      , balance       : Number
+      , username      : String
+      , balance       : { type: Number, default: 0 }
       , joined        : { type: Date, default: Date.now }    
     });
 

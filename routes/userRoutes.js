@@ -7,6 +7,7 @@
  var userController = require('../controllers/userController')
  var userModel = require('../models/userModel')
  var errorHandler = require('../user_modules/errorHandler')
+ var fbHandle = require('../user_modules/fb/fbHandle');
 
 var userHandle = function(app) {
     // Get Current User's balance 
@@ -28,15 +29,16 @@ var userHandle = function(app) {
 	 *  Current Balance 
 	 *  
 	 */
-    app.get('/api/user/login/:signedrequest', function(req, res) {
-		userController.login(req.params.signedrequest,function(err, data)
+  app.post('/api/user/login/:signedrequest', function(req, res) {
+  	var token = req.body;
+
+		fbHandle.login(req.params.signedrequest, token ,function(err, uid)
 		{
 			if (err) {
 				errorHandler.send(res, err)
 			}
 			else
 			{
-				var uid = data.user_id;
 				// get desired base login info to start up app
 				userController.getBaseUserInfo(uid, function(err, baseInfo) {
 					if (err) {
@@ -48,7 +50,7 @@ var userHandle = function(app) {
 				})
 			}
 		})
-   });
+  });
 
 	app.get('/api/user/:uid/bets', function(req, res) {
 		// returns bets in four categories

@@ -33,7 +33,23 @@ var errorCodes =
   'invalidSignedRequest':
   {
      reason:'invalidSignedRequest'
-  },  
+  }, 
+  // invalidAccessToken passed in login
+  'invalidAccessToken':
+  {
+     reason:'invalidAccessToken'
+  }, 
+  // invalidAccessToken passed in login
+  'invalidAccessToken':
+  {
+     reason:'invalidAccessToken'
+  }, 
+  // error accessing graph
+  'graphAccessError':
+  {
+     reason:'graphAccessError'
+  }, 
+
   'betZeroOrNegative':
   {
     reason:'betZeroOrNegative'
