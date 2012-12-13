@@ -7,7 +7,7 @@
  var userController = require('../controllers/userController')
  var userModel = require('../models/userModel')
  var errorHandler = require('../user_modules/errorHandler')
- var fbHandle = require('../user_modules/fb/fbHandle');
+ var fbHandle = require('../user_modules/fb/fbHandle')();
 
 var userHandle = function(app) {
     // Get Current User's balance 
@@ -30,7 +30,7 @@ var userHandle = function(app) {
 	 *  
 	 */
   app.post('/api/user/login/:signedrequest', function(req, res) {
-  	var token = req.body;
+  	var token = req.body.token;
 
 		fbHandle.login(token, req.params.signedrequest, function(err, uid)
 		{
@@ -41,6 +41,7 @@ var userHandle = function(app) {
 			{
 				// get desired base login info to start up app
 				userController.getBaseUserInfo(uid, function(err, baseInfo) {
+					console.log(util.inspect(baseInfo))
 					if (err) {
 						errorHandler.send(res, err);
 					}

@@ -8,6 +8,8 @@
  var errorHandler = require('../user_modules/errorHandler')
  var userModel = require('../models/userModel')
  var gameController = require('./gameController')
+
+ var fbHandle = require('../user_modules/fb/fbHandle')();
  var mixpanel = require('../config/mixPanelConfig');
 
  var cUtil = require('../user_modules/cUtil');
@@ -23,22 +25,24 @@ var getBaseUserInfo = function(uid, cb) {
 		var fields = {
 			balance:1,
 			uid:1,
-			fullname:1,
+			name:1,
 			_id:0
 		}
 
 		User.findOne({uid:uid}, fields, function(err, user){
+			console.log(util.inspect(user, false, 1))
 			if(user){
-				// get user 
+				// get user bets as well
 				getUserBets(uid, function(err, bets) {
-					// debugger;
-					// user.field = 'asdf'
-					// console.log(util.inspect(user, true, 3))
-					// user.prototype = Object.prototype.
-					// user.bets = {}
-					// user.bets = bets
-					
-					cb(null, user);
+					// have to create a new user, since mongoose model is read only
+					// FIXME
+					var returnUser = {
+						name    : user.name,
+						balance : user.balance,
+						uid     : user.uid,
+						bets 	  : bets
+					}
+					cb(null, returnUser)
 				})
 			}
 			else {
@@ -69,30 +73,34 @@ var initUser = function(uid, cb) {
 		User.findOne({uid:uid}, function(err, user){
 			if (user){
 				// don't initialize if already exists
+				console.log('user already exists')
 				return cb(errorHandler.errorCodes.userAlreadyExists)
 			}
 
 			fbHandle.getBaseUserInfo(uid, function(err, userData) {
+				// could we get user info?				
 				if (err || !userData) {
 					cb(errorHandler.errorCodes.graphAccessError)
 					console.log('error accessing graph for user ' + uid + '\n ERROR: ' +err)
 				}
 				else {
 					// save user
-					var user = new User({
+					var newUser = new User({
 						uid       : userData.id,
 						firstname : userData.first_name,
-						lastname : userData.last_name,
-						fullname : userData.name,
-						username : userData.username,
-						gender	 :  userData.gender
-					}).save();
+						lastname  : userData.last_name,
+						name      : userData.name,
+						username  : userData.username,
+						gender	  :  userData.gender
+					})
+
+					newUser.save()
 						
 					// send user to mixpanel also
 					var newUserInfo = {
 						'$first_name':userData.first_name,
 						'uid':userData.id,
-						fullname: userData.name,
+						name: userData.name,
 						'$last_name': userData.last_name,
 						balance: 0,
 						'$created': new Date(),
@@ -103,7 +111,17 @@ var initUser = function(uid, cb) {
 					// mix Panel Logging
 					mixpanel.people.set(uid, newUserInfo);
 							
-					cb(null, newUserInfo)
+					var returnInfo = {
+						name : newUser.name,
+						balance : newUser.balance,
+						uid     : newUser.uid,
+					}		
+
+					// populate fake bets object to keep front end response consistent
+					getUserBets(uid, function(err, bets) {
+						returnInfo.bets = bets;
+						cb(null, returnInfo)
+					})
 				}
 			})
 		})

@@ -149,13 +149,11 @@ Handle.prototype.getAppAccessToken = function(uid, shortToken, cb) {
 }
 
 /*
- *  
- *  Probably won't be called in production, but useful for setup
+ *  Gets base user info, with no fields.
+ *  This is pretty much whatever the user makes available without extra permissions
  */
 Handle.prototype.getBaseUserInfo = function(uid, cb) {
-  this.graphGetWrapper(uid, function(err, data) {
-    console.log(data)
-  })
+  this.graphGetWrapper(uid, cb);
 }
 
 
