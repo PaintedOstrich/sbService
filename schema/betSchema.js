@@ -1,6 +1,9 @@
  /*
   *   Defines Bet Schema
   */
+
+var cUtil = require('../user_modules/cUtil')
+
 module.exports = function(mongoose)
 {
     var Schema = mongoose.Schema
@@ -10,7 +13,7 @@ module.exports = function(mongoose)
         initFBId       : String 
       , callFBId       : String 
       , type           : String 
-      , betAmount      : Number 
+      , betAmount      : {type : Number, get: cUtil.trimToTwoDecimalPlaces}
       , gameId         : String 
       , initTeamBetId  : String  
       , spreadTeam1    : Number

@@ -37,7 +37,7 @@ var processEndBets = function(gameHeader, gameDate, winningTeamName, isWinnerTea
 				gameController.getGameIdFromInfo(gameHeader, gameDate, function(err, game) {
 					if(!game){
 						// processing game before server was up and stored game
-						console.log('processing ebt we dont have')
+						console.log('processing bet we dont have')
 						return cb();
 					}
 
@@ -129,19 +129,57 @@ var calcWinRatio = function(winSpread) {
 // makes a batch bet for multiple users.
 // some bets may go through, and others may be returned as error.  For example, a user may have enough funds to bet 1 of 2 users.
 var makeBetBatch = function(betInfoMult, cb) {
-	// try {
-	// 	var callFBIds = bet.callFBIds;
-	// 	if (!callFBIds || typeof callFBIds != "object"){
-	// 			cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, "callFBIds not array"))
-	// 	}
-	// 	else {
-	// 		betInfo = betInfoMult;
-	// 		// remove callFBIds,
-	// 		delete betInfo.callFBIds;
+	try {
+		var callFBIds = betInfoMult.callFBIds;
+		console.log(util.inspect(callFBIds))
+		console.log(typeof callFBIds)
+		if (!callFBIds || typeof callFBIds != "object"){
+				console.log('here0')
+				cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, "callFBIds not array"))
+		}
+		else {
+			console.log('here')
+			//does user have sufficient funds to make all these bets?
+			var totalBetAmount = parseFloat(betInfoMult.betAmount) * callFBIds.length;
+			doesUserHaveSufficientFunds(betInfoMult.initFBId, totalBetAmount, function(amountNeeded, currentUserBalalance) {
+				if (amountNeeded)
+				{
+					// user doesn't have money to make bet
+					var data = {
+						amountNeeded:amountNeeded
+					}
 
-	// 		for ()
-	// 	}
-	// }
+					cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
+				}
+				else {
+					var betInfo = betInfoMult;
+					// remove callFBIds,
+					delete betInfo.callFBIds;
+					console.log('here2')
+					var makeBetBatchFun = makeBetBatchHelper(betInfo);
+
+					// process each bet asynchronously, returning an error on the bet if present
+					// process bets in series, so each async, but bet 2 does not get processed until bet 1 ends
+					cUtil.processSeriesAsync(callFBIds, makeBetBatchFun, cb);
+				}
+			})
+		}
+	}
+	catch(e) {
+		console.log('here error')
+		cb(e)
+	}
+}
+
+/* 
+ * Helper function to allow series iteration on each bet item
+ * Returns betInfo, and a function to assign each callFBid to the betObject since that is expected by the makeBet function
+ */
+var makeBetBatchHelper = function(betInfo) {
+	return function(callFBId, cb){
+		betInfo.callFBId = callFBId;
+		makeBet(betInfo, cb);
+	}
 }
 
 // processes bet params and makes sure all required fields are present, then makes bet
@@ -404,6 +442,7 @@ var isBetInfoCorrect = function(betInfo, gameInfo)
 module.exports =
 {
 	makeBet: makeBet,	
+	makeBetBatch : makeBetBatch,
 	callBet: callBet,
 	processEndBets : processEndBets,
 } 

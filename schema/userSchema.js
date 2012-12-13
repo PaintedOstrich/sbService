@@ -1,6 +1,9 @@
  /*
- *   *   Defines User Schema
- *     */
+  *   Defines User Schema
+  */
+
+var cUtil = require('../user_modules/cUtil')
+
 module.exports = function(mongoose)
 {
     var Schema = mongoose.Schema
@@ -11,7 +14,7 @@ module.exports = function(mongoose)
       , lastname      : String
       , name          : String 
       , username      : String
-      , balance       : { type: Number, default: 0 }
+      , balance       : { type: Number, default: 0.00, get: cUtil.trimToTwoDecimalPlaces}
       , joined        : { type: Date, default: Date.now }    
     });
 

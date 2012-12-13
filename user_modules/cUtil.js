@@ -57,14 +57,12 @@ var processSeriesAsync = function(list, func, cb) {
 	}
 }
 
+/*
+ *  Processes individual items, stopping if an error is found
+ */
 var processHelperAsync = function(list, func, totalCount, currentIndex, cb) {
-	if(DEVELOPMENT) {
-		// console.log('processing ' + currentIndex + '\n' + list[currentIndex]);
-	}
-	
 	func(list[currentIndex], function(err){
 		if (err) {
-			console.log('cb' + cb);
 			console.log('calling back error: '+ err);
 			cb(err);
 		} 
@@ -80,10 +78,16 @@ var processHelperAsync = function(list, func, totalCount, currentIndex, cb) {
 	})
 }
 
+/* trims a number to 2 decimal places */
+var trimToTwoDecimalPlaces = function(num) {
+  return num.toFixed(2);
+}
+
 
 module.exports = 
 {
 	getNumElements : getNumElements,
 	isOnlyNumber : isOnlyNumber,
 	processSeriesAsync : processSeriesAsync,
+	trimToTwoDecimalPlaces : trimToTwoDecimalPlaces,
 }

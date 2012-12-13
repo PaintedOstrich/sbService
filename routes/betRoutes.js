@@ -21,6 +21,7 @@ var bet = function(app) {
                 errorHandler.send(res, err)
             }
             else {
+                data = data || {'succes':true}
                 res.send(data)
             }
         });
@@ -30,12 +31,13 @@ var bet = function(app) {
     app.post('/api/bet/batch', function(req, res) {
         var query = req.body;
         
-        betController.makeBetBetch(query, function(err, data)
+        betController.makeBetBatch(query, function(err, data)
         {
             if(err) {
                 errorHandler.send(res, err)
             }
             else {
+                data = data || {'succes':true}
                 res.send(data)
             }
         });
@@ -49,6 +51,7 @@ var bet = function(app) {
             if (err) errorHandler.send(res,err)
             else
             {
+                data = data || {'succes':true}
                 res.send(data)
             }
         });
