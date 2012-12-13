@@ -271,10 +271,8 @@ var setBetInfo = function(betInfo, cb) {
 		else {
 			userController.updateUserBalance(betInfo.initFBId, -parseFloat(betInfo.betAmount), function(err, updatedMoney) {
 				// add to list of most recent bets
-				betStatsController.setRecentBet(betInfo.gameId, betInfo.initFBId, betInfo.callFBId, betInfo.betAmount, function(err) {
-					// add bet to list of bets per this game
-					cb(null, savedBet)
-				})	
+				// add bet to list of bets per this game
+				cb(null, savedBet)
 			})
 		}
 	})
