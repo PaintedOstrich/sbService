@@ -62,8 +62,8 @@ Handle.prototype.graphGetWrapper = function(uid, fields, cb) {
 /*
  * Verifies user and gets and saves new longterm access token
  */
-Handle.prototype.login = function(signedRequest, shortToken, cb) {
-  var data = verifyFBLogin.verify(signedreq, this.secret);
+Handle.prototype.login = function(shortToken, signedRequest, cb) {
+  var data = verifyFBLogin.verify(signedRequest, this.secret);
   if (data) {
     if (!shortToken) {
       return cb(errorHandler.errorCodes.accessTokenRequired)
@@ -71,12 +71,12 @@ Handle.prototype.login = function(signedRequest, shortToken, cb) {
 
     var uid = data.user_id;
     // get and save long token
-    getLongToken(uid, shortToken, function(err, token) {
+    this.getLongToken(uid, shortToken, function(err, token) {
       if (!err && token){
-        tokenHandler.saveUserToken(uid, token);  
+        tokenHandler.saveUserToken(uid, token);
         cb(null, uid);
       } else {
-        cb(errorHandler.errorCodes.in)
+        cb(errorHandler.errorCodes.invalidAccessToken)
       } 
     });
   }

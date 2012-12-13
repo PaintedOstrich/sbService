@@ -32,7 +32,7 @@ var userHandle = function(app) {
   app.post('/api/user/login/:signedrequest', function(req, res) {
   	var token = req.body;
 
-		fbHandle.login(req.params.signedrequest, token ,function(err, uid)
+		fbHandle.login(token, req.params.signedrequest, function(err, uid)
 		{
 			if (err) {
 				errorHandler.send(res, err)

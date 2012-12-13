@@ -31,11 +31,12 @@ var getBaseUserInfo = function(uid, cb) {
 			if(user){
 				// get user 
 				getUserBets(uid, function(err, bets) {
-					debugger;
-					user.field = 'asdf'
-					console.log(util.inspect(user, true, 3))
-					user.prototype = Object.prototype.
-					user.bets = bets
+					// debugger;
+					// user.field = 'asdf'
+					// console.log(util.inspect(user, true, 3))
+					// user.prototype = Object.prototype.
+					// user.bets = {}
+					// user.bets = bets
 					
 					cb(null, user);
 				})
@@ -43,7 +44,7 @@ var getBaseUserInfo = function(uid, cb) {
 			else {
 				// new User
 				console.log('initializing user');
-
+				initUser(uid, cb);
 			}
 		})
 	}
