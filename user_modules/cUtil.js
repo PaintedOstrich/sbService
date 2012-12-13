@@ -80,6 +80,7 @@ var processHelperAsync = function(list, func, totalCount, currentIndex, cb) {
 
 /* trims a number to 2 decimal places */
 var trimToTwoDecimalPlaces = function(num) {
+	console.log('fixing number')
   return num.toFixed(2);
 }
 

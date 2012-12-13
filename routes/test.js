@@ -9,7 +9,6 @@
 
  var pickmonapi = require('../controllers/pickmonapi')
  var userController = require('../controllers/userController')
- var userModel = require('../models/userModel');
 
 var update = function(app) {    
     // return all games for all sports

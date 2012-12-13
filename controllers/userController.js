@@ -6,7 +6,6 @@
  var util = require('util')
  var async = require('async');
  var errorHandler = require('../user_modules/errorHandler')
- var userModel = require('../models/userModel')
  var gameController = require('./gameController')
 
  var fbHandle = require('../user_modules/fb/fbHandle')();
@@ -30,7 +29,6 @@ var getBaseUserInfo = function(uid, cb) {
 		}
 
 		User.findOne({uid:uid}, fields, function(err, user){
-			console.log(util.inspect(user, false, 1))
 			if(user){
 				// get user bets as well
 				getUserBets(uid, function(err, bets) {
@@ -55,17 +53,6 @@ var getBaseUserInfo = function(uid, cb) {
 	catch(err) {
 		cb(err)
 	}
-}
-
-// gets user balance
-var getUserBalance = function(uid, cb){
-	var fields = {
-		'balance':1,
-		'uid':1,
-		'fullname':1
-	}
-
-	User.findOne({uid:uid}, fields, cb)
 }
 
 var initUser = function(uid, cb) {
@@ -139,6 +126,17 @@ var updateUserBalance = function(uid, amountToIncrement, cb) {
 	User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb);
 }
 
+// gets user balance
+var getUserBalance = function(uid, cb){
+	var fields = {
+		'balance':1,
+		'uid':1,
+		'fullname':1
+	}
+
+	User.findOne({uid:uid}, fields, cb)
+}
+
 // Retrieve all user bets
 var getUserBets = function(uid, cb) {	
 	var query = Bet.find();
@@ -146,7 +144,6 @@ var getUserBets = function(uid, cb) {
 		filterResults(uid, bets, cb);
 	})
 }
-
 
 // Filters data into four different types past/current/userAccept/pendingAccept
 var filterResults = function(uid, bets, cb) {

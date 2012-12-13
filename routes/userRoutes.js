@@ -5,7 +5,6 @@
  var util = require('util')
 
  var userController = require('../controllers/userController')
- var userModel = require('../models/userModel')
  var errorHandler = require('../user_modules/errorHandler')
  var fbHandle = require('../user_modules/fb/fbHandle')();
 

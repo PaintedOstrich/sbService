@@ -5,9 +5,7 @@
  var util = require('util')
  var async = require('async')
  var resMes = require('../user_modules/responseMessages')
- var betModel = require('../models/betModel');
  var gameModel = require('../models/gameModel');
- var userModel = require('../models/userModel')
 
  var gameController = require('./gameController');
  var userController = require('./userController');
@@ -131,14 +129,11 @@ var calcWinRatio = function(winSpread) {
 var makeBetBatch = function(betInfoMult, cb) {
 	try {
 		var callFBIds = betInfoMult.callFBIds;
-		console.log(util.inspect(callFBIds))
-		console.log(typeof callFBIds)
+
 		if (!callFBIds || typeof callFBIds != "object"){
-				console.log('here0')
 				cb(errorHandler.createErrorMessage(errorHandler.errorCodes.missingParameters, "callFBIds not array"))
 		}
 		else {
-			console.log('here')
 			//does user have sufficient funds to make all these bets?
 			var totalBetAmount = parseFloat(betInfoMult.betAmount) * callFBIds.length;
 			doesUserHaveSufficientFunds(betInfoMult.initFBId, totalBetAmount, function(amountNeeded, currentUserBalalance) {
@@ -155,7 +150,6 @@ var makeBetBatch = function(betInfoMult, cb) {
 					var betInfo = betInfoMult;
 					// remove callFBIds,
 					delete betInfo.callFBIds;
-					console.log('here2')
 					var makeBetBatchFun = makeBetBatchHelper(betInfo);
 
 					// process each bet asynchronously, returning an error on the bet if present
@@ -166,7 +160,7 @@ var makeBetBatch = function(betInfoMult, cb) {
 		}
 	}
 	catch(e) {
-		console.log('here error')
+		console.log('possible malformed bat betch request\n'+ util.inspect(betInfoMult))
 		cb(e)
 	}
 }

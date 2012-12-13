@@ -104,7 +104,7 @@ var getGames = function(sport, cb)
     'spreadTeam2':1,
     '_id':0
   }; 
-  Game.find({wagerCutoff: {$gte: Date.now()}}, fields, cb);
+  Game.find({wagerCutoff: {$gte: Date.now()}, sport:sport}, fields, cb);
 }
 
 // gets game date and team names for each game a user has bet on

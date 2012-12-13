@@ -5,7 +5,6 @@
 var redClient = require('../config/redisConfig')()
 
 var cUtil = require('../user_modules/cUtil');
-var user = require('./userModel');
 var base = require('./base');
 var gameModel = require('./gameModel');
 
