@@ -160,8 +160,8 @@ var makeBetBatch = function(betInfoMult, cb) {
 		}
 	}
 	catch(e) {
-		console.log('possible malformed bat betch request\n'+ util.inspect(betInfoMult))
-		cb(e)
+		console.log('possible malformed bat betch request\n'+ util.inspect(betInfoMult) + '\n' + e)
+		cb(errorHandler.errorCodes.missingParameters)
 	}
 }
 
@@ -258,7 +258,8 @@ var makeBet = function(betInfo, cb) {
 		}
 		catch(err)
 		{
-			cb(err);
+			console.log('possible malformed bat request\n'+ util.inspect(betInfo) + '\n' + err)
+			cb(errorHandler.errorCodes.missingParameters)
 		}
 	} 	
 }
