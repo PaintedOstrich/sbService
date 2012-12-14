@@ -33,7 +33,8 @@ fbSendSuite.addBatch({
       'Error message received in response since unauthed user': function(error, data)
       {
         // oauth message code
-          assert.notStrictEqual(data.code, 200);
+        console.log(data)
+        assert.notStrictEqual(data.code, 200);
       }
     },
    'send notifcation to authed user': {
@@ -55,6 +56,7 @@ fbSendSuite.addBatch({
          notif.sendNotification(authedFBUser, template, creative, this.callback )
       },
        'User should get request': function (error, data) {
+          console.log(data)
           assert.isTrue(data.success);
       },
     },

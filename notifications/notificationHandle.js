@@ -25,6 +25,9 @@ There should always be one creative per type that does not require additional pa
 */
 var util = require('util')
 
+// logging
+var mixpanel = require('../config/mixPanelConfig');
+
 var NotifProcessController = require('./notificationProcessController');
 var notifProcessController = new NotifProcessController();
 var NotifQueue = require('./notificationQueueModel');
@@ -37,7 +40,9 @@ module.exports = {
    *  
    */
   send : function(){
-    notifProcessController.sendNotifications(arguments)
+    notifProcessController.sendNotifications( function(err, logInfo) {
+      logInfo && mixpanel.trackSentNotification(logInfo);
+    });
   },
 
   /*

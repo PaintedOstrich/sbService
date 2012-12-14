@@ -7,6 +7,8 @@ var verify = require('../verifyFBLogin');
 var Handle = require('../fbHandle');
 var tokenHandler = require('../tokenHandler')
 
+var userController = require('../../../controllers/userController')
+
 var options = {
   // development app credentials
   FACEBOOK_APP_ID : '462000917156397',
@@ -31,6 +33,8 @@ var badUID = '7737835647';
 // var signedRequest = ''
 var code = 'AQCZXlE1R9VS8IzaeWiVCBwktSnS9-GQ1LlicXSq6RlMYP1os5KOEzEIoznjdEgq3LzRN5AJv_a2SCKIR1rFWtt9Dq53bF0BeFPqTYVK8rxDzYxlcuILmVxaY8I_Wix8T21gaFw4lHEUwFqGYn5PFcf1Pcq-jBQlwQ7K-9ZDZEPkUfvU9qYoZjsShpY6XSFPHoL8po0FfdsqNCEBMezAV5bu';
 
+
+
 // tokenHandler.saveUserToken(badUID, accesToken)
 // handle.getLongToken(parkerUID, accesToken, function(err, token) {
 //   // set access token to redis
@@ -41,5 +45,7 @@ var code = 'AQCZXlE1R9VS8IzaeWiVCBwktSnS9-GQ1LlicXSq6RlMYP1os5KOEzEIoznjdEgq3LzR
 // handle.getBaseUserInfo(badUID, console.log);
 // console.log(verify.verify(signedRequest, options.FACEBOOK_SECRET))
 
-handle.login(diId, signedRequest, console.log)
+// handle.login(diId, signedRequest, console.log)
+
+userController.getBaseUserInfo(parkerUID, console.log)
 // handle.getAppAccessToken(accesToken, parkerUID, console.log);

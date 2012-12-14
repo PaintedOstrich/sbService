@@ -23,7 +23,7 @@ var NotificationPostController = function(options){
 
   this.params = {
     href :'https://apps.facebook.com',
-    access_token : options.access_token || process.env.FACEBOOK_APP_ACCESS_TOKEN,
+    access_token : process.env.FACEBOOK_APP_ACCESS_TOKEN || options.access_token,
   };
 
   if(!this.params.access_token) {

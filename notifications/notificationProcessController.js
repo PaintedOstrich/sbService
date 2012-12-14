@@ -63,12 +63,34 @@ NotificationProcessController.prototype.sendNotifications = function(cb) {
               console.log('sending notification to ' + id + ' with creative : ' + notifToSend.creativeRef + ' href:' + hrefTag +  '\n' + notifToSend.template);
             }
 
+            var logInfo = {
+              uid: id,
+              creative: notifToSend.creative
+            }
             // send notification, with href if present
             if (hrefTag){
-              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag);
+              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef, hrefTag, function(err, data){
+                if (data.success){
+
+                  cb(null, logInfo)
+                }
+                else {
+                  console.log('error sending notification to '+ id + '\n' + util.inspect(data));
+                  cb(data)
+                }
+              });
             }
             else {
-              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef);
+              notificationPostController.sendNotification(id, notifToSend.template, notifToSend.creativeRef,function(err, data){
+                 if (data.success){
+
+                  cb(null, logInfo)
+                }
+                else {
+                  console.log('error sending notification to '+ id + '\n' + util.inspect(data));
+                  cb(data)
+                }
+              })
             }
           }
         }

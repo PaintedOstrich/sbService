@@ -102,6 +102,7 @@ var initUser = function(uid, cb) {
 					}
 
 					// mix Panel Logging
+					mixpanel.track('install', {uid:userData.id});
 					mixpanel.people.set(uid, newUserInfo);
 							
 					var returnInfo = {

@@ -10,8 +10,8 @@ var express = require('express')
 var app = express();
 
 // // set global environment variable
-DEVELOPMENT = process.env.NODE_ENV === "development" ? true : false;
-
+DEVELOPMENT = process.env.NODE_ENV !== "production" ? true : false;
+console.log('is development:' +DEVELOPMENT)
 // // Configuration
 require('./config/serverSettings')(app);
 

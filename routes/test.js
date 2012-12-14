@@ -55,7 +55,6 @@ var update = function(app) {
       })
     });
 
-
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/user/giveusermoney/:userid/:amount', function(req, res) {
