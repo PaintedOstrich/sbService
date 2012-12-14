@@ -96,6 +96,10 @@ var endBet = function(winningTeamName, losingTeamName, winnerTeamId, isWinnerTea
 					notificationController.enqueueBetWon(winnerFBId, loserFBId, bet._id, winningTeamName, bet.betAmount);
 					notificationController.enqueueBetLost(loserFBId, winnerFBId, losingTeamName, bet._id);
 					
+					// log users won and lost bets
+					mixpanel.trackWonBet(winnerFBId, bet._id, bet.gameId, amount);
+					mixpanel.trackLostBet(loserFBId, bet._id, bet.gameId, amount);
+					
 					// mark bet as ended
 					bet.update({processed: true}, null, cb)
 				})

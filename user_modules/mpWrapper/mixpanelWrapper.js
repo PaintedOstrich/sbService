@@ -72,6 +72,29 @@ var wrapMixPanelWithMethods = function(mixpanel){
     mixpanel.track('notification', toSave)
   }
 
+  // track won bet
+  mixpanel.trackWonBet = function(winnerFBId, betid, gameId, amount) { 
+    var toSave = {
+      'uid': winnerFBId,
+      'bet' : betid,
+      'gameId' : gameId,
+      'amount' : amount
+    }
+     
+    mixpanel.track('wonBet', toSave)
+  }
+
+  mixpanel.trackLostBet = function(loserFBId, betid, gameId, amount) {
+    var toSave = {
+      'uid': loserFBId,
+      'bet' : betid,
+      'gameId' : gameId,
+      'amount' : amount
+    }
+     
+    mixpanel.track('lostBet', toSave)
+
+  }
 // end wrap mix panel
   return mixpanel;
 }
