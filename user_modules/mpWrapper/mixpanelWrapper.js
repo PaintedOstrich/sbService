@@ -84,15 +84,27 @@ var wrapMixPanelWithMethods = function(mixpanel){
     mixpanel.track('wonBet', toSave)
   }
 
-  mixpanel.trackLostBet = function(loserFBId, betid, gameId, amount) {
+  mixpanel.trackLostBet = function(loserFBId, betId, gameId, amount) {
     var toSave = {
       'uid': loserFBId,
-      'bet' : betid,
+      'bet' : betId,
       'gameId' : gameId,
       'amount' : amount
     }
      
     mixpanel.track('lostBet', toSave)
+
+  }
+
+  mixpanel.trackConfirmBetRequest = function(uid, betId, gameId, amount) {
+    var toSave = {
+      'uid': uid,
+      'bet' : betId,
+      'gameId' : gameId,
+      'amount' : amount
+    }
+     
+    mixpanel.track('betRequestConfirm', toSave)
 
   }
 // end wrap mix panel

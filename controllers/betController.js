@@ -234,8 +234,11 @@ var confirmBetRequest = function(query, cb) {
 				  notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
 
 				  // set user claimed free bet to true
-				  user.claimedFreeBet = true
+				  user.claimedFreeBet = true;
 				  user.save();
+
+				  // log bet made through this api
+				  mixpanel.trackConfirmBetRequest(uid, savedBet._id, savedBet.gameId, savedBet.amount);
 
 				  cb(null, savedBet)
 				})
