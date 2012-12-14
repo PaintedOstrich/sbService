@@ -9,21 +9,18 @@ module.exports = function(mongoose)
     var Schema = mongoose.Schema
       , ObjectId = Schema.ObjectId;
 
-    var Bet = new Schema({
+    var BetRequest = new Schema({
         initFBId       : String 
-      , callFBId       : String 
-      , type           : String 
+      , type           : {type : String, default: 'spread'}
       , betAmount      : {type : Number, get: mUtil.trimToTwoDecimalPlaces}
       , gameId         : String 
       , initTeamBetId  : String  
       , spreadTeam1    : Number
       , spreadTeam2    : Number
-      , called         : Boolean
-      , processed      : Boolean
-      , winningUser    : String
-      , isRequestBet   : Boolean
-      , date       : { type: Date, default: Date.now }    
+      , date           : { type: Date, default: Date.now }
+      , numRequestsSent : Number
+      , callFBIds      : [String]    
     });
 
-    mongoose.model('Bet', Bet);
+    mongoose.model('BetRequest', BetRequest);
 }

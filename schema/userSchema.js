@@ -15,7 +15,8 @@ module.exports = function(mongoose)
       , name          : String 
       , username      : String
       , balance       : { type: Number, default: 0.00, get: mUtil.trimToTwoDecimalPlaces}
-      , joined        : { type: Date, default: Date.now }    
+      , joined        : { type: Date, default: Date.now }  
+      , claimedFreeBet: Boolean
     });
 
     mongoose.model('User', User);

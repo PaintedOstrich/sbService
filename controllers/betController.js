@@ -21,6 +21,8 @@ var mongoose = require('mongoose');
 var Bet = mongoose.model('Bet');
 var Game = mongoose.model('Game');
 var User = mongoose.model('User');
+var BetRequest = mongoose.model('BetRequest');
+var ObjectId = mongoose.Types.ObjectId;
 
 // upates All bets after game won
 var processEndBets = function(gameHeader, gameDate, winningTeamName, isWinnerTeam1, cb) {
@@ -99,7 +101,7 @@ var endBet = function(winningTeamName, losingTeamName, winnerTeamId, isWinnerTea
 					// log users won and lost bets
 					mixpanel.trackWonBet(winnerFBId, bet._id, bet.gameId, amount);
 					mixpanel.trackLostBet(loserFBId, bet._id, bet.gameId, amount);
-					
+
 					// mark bet as ended
 					bet.update({processed: true}, null, cb)
 				})
@@ -127,6 +129,121 @@ var calcWinRatio = function(winSpread) {
  var getBetsForGame = function(gameId, cb){
  		Bet.find({gid : gameId}, cb);
  }
+
+/*
+ * Saves a bet in request-Pending and returns a string for the user request
+ * 
+ */
+ var makeBetRequest = function(betRequestFields, cb){
+ 	var gameId = betRequestFields.gameId;
+ 	var initFBId = betRequestFields.initFBId;
+ 	var initTeamBetId = betRequestFields.initTeamBetId;
+
+ 	if (!gameId || !initTeamBetId || !initFBId){
+ 		return cb(errorHandler.errorCodes.missingParameters);
+ 	}
+
+ 	Game.findOne({gid:gameId}, function(err, gameInfo) {
+		// error handling if game doesn't exist
+		if (!gameInfo) {
+			cb(errorHandler.errorCodes.gameDoesNotExist);
+		}
+		else if (gameInfo.team1Id != initTeamBetId && gameInfo.team2Id != initTeamBetId) {
+			console.warn('tried to bet on team not in game '+ betInfo.initTeamBetId);
+			cb(errorHandler.errorCodes.missingParameters);
+		}
+		else {
+			var betAmount = process.env.REQUEST_FREE_BET_AMOUNT || 0.05;
+
+			var betRequest = new BetRequest({
+				initFBId    : initFBId,
+				betAmount   : betAmount,
+				gameId      : gameId,
+				spreadTeam1 : gameInfo.spreadTeam1,
+				spreadTeam2 : gameInfo.spreadTeam2,
+				initTeamBetId : initTeamBetId
+			})
+
+			betRequest.save(function(err, betRequestObj) {
+				var betKey = {
+					requestKey : betRequestObj._id
+				}
+
+				cb(null, betKey);
+			});
+		} 
+ })
+}
+
+/*
+ * Confirms free bet for user
+ *	 This should be called after a user coming in from a bet request watches an advertisment
+ *   Will return errors if user doesn't exist or betreqid doesn't exist
+ *   Bet success if game is past wager cutoff
+ *			Suggested logic on error is to prompt user to make a new bet
+ */
+var confirmBetRequest = function(query, cb) {
+ 	var betReqId = query.betReqId;
+ 	var uid = query.uid;
+ 	
+ 	if(!betReqId || !uid) {
+ 		return cb(errorHandler.errorCodes.missingParameters);
+ 	}
+
+ 	// db.betrequests.findOne({_id: ObjectId('50caab32a4fc244b07000001')})
+ 	BetRequest.findById(betReqId, function(err, betRequest) {
+ 		if(!betRequest){
+ 			return cb(errorHandler.errorCodes.betRequestNotExist)
+ 		}
+
+ 		User.findOne({uid:uid}, function(err, user) {
+ 			if(!user){
+ 				return cb(errorHandler.errorCodes.userDoesNotExist)
+ 			}
+
+ 			// if user already claimed free bet return error
+ 			if(user.claimedFreeBet) {
+ 				return cb(errorHandler.errorCodes.userAlreadyClaimedFreeBet)
+ 			}
+
+ 			Game.findOne({gid:betRequest.gameId}, function(err, game) {
+ 				if(!game){
+ 					return cb(errorHandler.errorCodes.gameDoesNotExist)
+ 				}
+
+ 				// all models are present
+ 				// try and make bet
+ 				if (isPastWagerCutoff(game.wagerCutoff)) {
+					return cb(errorHandler.errorCodes.pastWagerCutoff)
+				}
+
+				var bet = new Bet({
+			 	  initFBId       : betRequest.initFBId, 
+       	  callFBId       : uid, 
+       	  type           : betRequest.type,
+       	  betAmount      : betRequest.betAmount,
+       	  gameId         : betRequest.gameId,
+       	  initTeamBetId  : betRequest.initTeamBetId,
+       	  spreadTeam1    : betRequest.spreadTeam1,
+       	  spreadTeam2    : betRequest.spreadTeam2
+				})
+
+				bet.save(function(err, savedBet) {
+					// send notification to user in app that they were challenged to a bet
+				  var teamNameForCaller = (savedBet.initTeamBetId == game.team1Id) ? game.team1Name : game.team2Name;
+				  notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
+
+				  // set user claimed free bet to true
+				  user.claimedFreeBet = true
+				  user.save();
+
+				  cb(null, savedBet)
+				})
+ 			})
+ 		})
+ 	})
+}
+
 
 // makes a batch bet for multiple users.
 // some bets may go through, and others may be returned as error.  For example, a user may have enough funds to bet 1 of 2 users.
@@ -187,11 +304,6 @@ var makeBet = function(betInfo, cb) {
 		cb(missingParams)
 	}
 	else {
-		// bet has all parameters, try and process
-		betInfo.called = false;
-		betInfo.processed = false;
-		betInfo.timeKey = new Date().getTime();
-
 		try {
 			//make sure bet amount is greater than 0 otherwise return
 			if (betInfo.betAmount <= 0) {
@@ -214,7 +326,7 @@ var makeBet = function(betInfo, cb) {
 					}
 					else if (isPastWagerCutoff(gameInfo.wagerCutoff)) {
 						console.log('past wager cutoff');
-						cb(errorHandler.createErrorMessage(errorHandler.errorCodes.pastWagerCutoff, errorInfo))
+						cb(errorHandler.errorHandler.errorCodes.pastWagerCutoff)
 					}
 					else if (betInfo.initFBId == betInfo.callFBId){
 						console.warn('user tried to bet themself '+ betInfo.initFBId);
@@ -247,12 +359,12 @@ var makeBet = function(betInfo, cb) {
 										mixpanel.trackMadeBet(betInfo);
 
 										// send notification to user in app that they were challenged to a bet
-										var teamNameForCaller = (betInfo.initTeamBetId == gameInfo.team1Id) ? gameInfo.team1Name : gameInfo.team2Name;
-										notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
-									})
+										// send notification that user accepted bet
+										notificationController.enqueueBetAccepted(savedBet.initFBId, savedBet.callFBId, savedBet._id);
 
-									// return no error
-									cb(null, 'success');
+										// return no error
+										cb(null, savedBet);
+									})
 								}
 							})
 						}
@@ -442,4 +554,6 @@ module.exports =
 	makeBetBatch : makeBetBatch,
 	callBet: callBet,
 	processEndBets : processEndBets,
+	makeBetRequest : makeBetRequest,
+	confirmBetRequest : confirmBetRequest
 } 

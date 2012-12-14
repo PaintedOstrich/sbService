@@ -15,6 +15,10 @@ var errorCodes =
   	// Game being accessed does not exist
   	reason:'gameDoesNotExist'
   },
+  'userAlreadyClaimedFreeBet': {
+    // user cannot claim more than one free bet from bet requests
+    reason: 'userAlreadyClaimedFreeBet'
+  },
   // set debug error different than production error details
   'updateBalanceError':
   {
@@ -25,6 +29,11 @@ var errorCodes =
   {
   reason:'missingParameters'
   },  
+  // bet request does not exist
+  'betRequestNotExist':
+  {
+    reason:'betRequestNotExist'
+  },
   'cannotBetYourself':
   {
   reason:'cannotBetYourself'
@@ -49,7 +58,6 @@ var errorCodes =
   {
      reason:'graphAccessError'
   }, 
-
   'betZeroOrNegative':
   {
     reason:'betZeroOrNegative'

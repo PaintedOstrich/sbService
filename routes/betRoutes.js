@@ -57,6 +57,32 @@ var bet = function(app) {
         });
     });
 
+    // Bet Request (for inviting user not already in the app);
+    app.post('/api/bet/request', function(req, res) {
+        var query = req.body;
+        betController.makeBetRequest(query, function(err,requestString)
+        {
+            if (err) errorHandler.send(res,err)
+            else
+            {
+                res.send(requestString)
+            }
+        });
+    });
+
+    // set users receiving bet request
+    app.post('/api/bet/request/confirm', function(req, res) {
+        var query = req.body;
+        betController.confirmBetRequest(query, function(err,success)
+        {
+            if (err) errorHandler.send(res,err)
+            else
+            {
+                res.send(success)
+            }
+        });
+    });
+
     app.get('/api/bet/recent', function(req, res) {
         betStatsController.getRecentBets(5, function(err, data)
         {

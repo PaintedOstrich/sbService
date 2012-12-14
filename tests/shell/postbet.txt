@@ -1,5 +1,5 @@
 //  Post User Bet
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"100","spreadTeam2":"115"}'  http://127.0.0.1:5000/api/bet
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"100","spreadTeam2":"-120"}'  http://127.0.0.1:5000/api/bet
 
 //  Post User Bet Batch
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"737835647","callFBIds":["123","1234"],"betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"-103","spreadTeam2":"-107"}'  http://127.0.0.1:5000/api/bet/batch
@@ -17,3 +17,11 @@ curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POS
 
 // post login
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"token":"AAAGkLZCiNki0BAOStZBy6nZAeQyZBtE9RSo197ZCwsoKXZCLmaB2UAxxEZCZB9QY9ZBgXzjELkDHXCgIDKZCkZBQpWlC1OU1EsMwSOdT0oiIFZAhOAZDZD"}' http://127.0.0.1:5000/api/user/login/25uTuKdMWfhVPtkf4tgK6zuy-95UYRz4gcudwtZ3T6g.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImNvZGUiOiJBUUQ4Nm5uWlRqdG9LNjh3N004LWJlb29VUDJjaGdYOEVxeGF3MEplMkZhU05lNTNIVUQwdHo0Zm45eDlHUzFRMkVHNFBxbU5lSmFqeS1La0tMM0sxVVFkTmhzNFRSUHNyV0VkUzlBaVhWbFAyZm1WTWhxc3EyczBiNXg0dk5fSjIyYnRWSEpteEgydVhUSW5RZnhSS2UtUmJNcFY2VHQtQTc0WldLX3BLdTVZQUFFR2p3dkZpU0hlNXVKTUx1VndKX2xBMjhqZGZzN3QzaU05WFRabDFycXEiLCJpc3N1ZWRfYXQiOjEzNTUzNzYzODUsInVzZXJfaWQiOiI3NTk4Njg5MTcifQ
+
+
+// post bet request
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"gameId":"435460", "initFBId":"759868917", "initTeamBetId":"16"}' http://127.0.0.1:5000/api/bet/request
+
+// post bet request confirm
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"betReqId":"50caab32a4fc244b07000001", "uid":"759868917"}' http://127.0.0.1:5000/api/bet/request/confirm
+

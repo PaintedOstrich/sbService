@@ -14,7 +14,6 @@ var mixpanel = process.env.NODE_ENV == "production" ? Mixpanel.init('01a1b72f289
 // wrap mixpanel with custom functions
 var mixpanel = wrapMixpanel(mixpanel);
 
-console.log(util.inspect(mixpanel))
 module.exports = mixpanel;
 
 
