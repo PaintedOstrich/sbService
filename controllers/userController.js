@@ -61,6 +61,22 @@ var getBaseUserInfo = function(uid, cb) {
 	}
 }
 
+/*
+ * Returns true if the user is in the app
+ */ 
+var isUserInApp = function(uid, cb){
+	User.findOne({uid:uid}, function(err, user){
+		if (user){
+			return true;
+		}
+		else {
+			return false;
+		}
+	})
+}
+
+
+
 var initUser = function(uid, cb) {
 	try {
 		User.findOne({uid:uid}, function(err, user){

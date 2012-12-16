@@ -23,5 +23,5 @@ curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POS
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"gameId":"435460", "initFBId":"759868917", "initTeamBetId":"16"}' http://127.0.0.1:5000/api/bet/request
 
 // post bet request confirm
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"betReqId":"50caab32a4fc244b07000001", "uid":"759868917"}' http://127.0.0.1:5000/api/bet/request/confirm
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"betReqId":"50caffcad6118aed1f000001", "uid":"759868917"}' http://127.0.0.1:5000/api/bet/request/confirm
 

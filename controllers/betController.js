@@ -342,7 +342,7 @@ var makeBet = function(betInfo, cb) {
 					else {
 						if (!userController.isUserInApp(betInfo.callFBId)){
 							// if user is not in app, don't charge
-							cb('user not in app');
+							cb(errorHandler.errorCodes.userNotInApp);
 						}
 						else {
 							
