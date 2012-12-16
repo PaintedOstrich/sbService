@@ -9,6 +9,7 @@
 
  var gameController = require('./gameController');
  var userController = require('./userController');
+
  var betStatsController = require('./betStatsController')
  var notificationController = require('./notificationController')
  var cUtil = require('../user_modules/cUtil');
@@ -340,37 +341,39 @@ var makeBet = function(betInfo, cb) {
 						cb(errorHandler.errorCodes.missingParameters);
 					}
 					else {
-						if (!userController.isUserInApp(betInfo.callFBId)){
-							// if user is not in app, don't charge
-							cb(errorHandler.errorCodes.userNotInApp);
-						}
-						else {
+						userController.isUserInApp(betInfo.callFBId, function(err, isInApp) {
+							if (!isInApp) {
+								// if user is not in app, should send bet request
+								cb(errorHandler.errorCodes.userNotInApp);
+							}
+							else {
 							
-							doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
-								if (amountNeeded)
-								{
-									// user doesn't have money to make bet
-									var data = {
-										amountNeeded:amountNeeded
+								doesUserHaveSufficientFunds(betInfo.initFBId, parseFloat(betInfo.betAmount), function(amountNeeded, currentUserBalalance) {
+									if (amountNeeded)
+									{
+										// user doesn't have money to make bet
+										var data = {
+											amountNeeded:amountNeeded
+										}
+
+										cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
 									}
+									else {
+										setBetInfo(betInfo, function(err, savedBet){
+											// log bet
+											mixpanel.trackMadeBet(betInfo);
 
-									cb(errorHandler.createErrorMessage(errorHandler.errorCodes.insufficientFunds, data))
-								}
-								else {
-									setBetInfo(betInfo, function(err, savedBet){
-										// log bet
-										mixpanel.trackMadeBet(betInfo);
+											// send notification to user in app that they were challenged to a bet
+											// send notification that user accepted bet
+											notificationController.enqueueBetAccepted(savedBet.initFBId, savedBet.callFBId, savedBet._id);
 
-										// send notification to user in app that they were challenged to a bet
-										// send notification that user accepted bet
-										notificationController.enqueueBetAccepted(savedBet.initFBId, savedBet.callFBId, savedBet._id);
-
-										// return no error
-										cb(null, savedBet);
-									})
-								}
-							})
-						}
+											// return no error
+											cb(null, savedBet);
+										})
+									}
+								})
+							}
+						})
 					}
 				})
 			}

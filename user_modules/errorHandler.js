@@ -77,7 +77,6 @@ var errorCodes =
   'userNotInApp' : {
     // referencing user which doesn't exist
     reason:'userNotInApp',
-    details: 'send user app request'
   },
   'outOfDate' : {
     reason:'outOfDate'

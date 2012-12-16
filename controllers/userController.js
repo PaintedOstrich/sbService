@@ -6,8 +6,7 @@
  var util = require('util')
  var async = require('async');
  var errorHandler = require('../user_modules/errorHandler')
- var gameController = require('./gameController')
- var betController = require('./betController')
+ var gameController = require('./gameController');
 
  var fbHandle = require('../user_modules/fb/fbHandle')();
  var mixpanel = require('../config/mixPanelConfig');
@@ -67,15 +66,13 @@ var getBaseUserInfo = function(uid, cb) {
 var isUserInApp = function(uid, cb){
 	User.findOne({uid:uid}, function(err, user){
 		if (user){
-			return true;
+			cb(err, true);
 		}
 		else {
-			return false;
+			cb(err, false);
 		}
 	})
 }
-
-
 
 var initUser = function(uid, cb) {
 	try {
@@ -162,12 +159,17 @@ var getGameInfoForUserBets = function(uid, cb) {
 	})
 }
 
-var isUserInApp= function (uid){
-	return true;
-}
 // increments user balance by new amount (an decremetn also)
 var updateUserBalance = function(uid, amountToIncrement, cb) {
-	User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb);
+	isUserInApp(uid, function(err, isInApp) {
+		if (isInApp) {
+			User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb)	
+		}
+		else {
+			cb(errorHandler.errorCodes.userNotInApp)
+		}
+	})
+	
 }
 
 // gets user balance
@@ -178,7 +180,15 @@ var getUserBalance = function(uid, cb){
 		'fullname':1
 	}
 
-	User.findOne({uid:uid}, fields, cb)
+	User.findOne({uid:uid}, fields, function(err, userInfo) {
+		if (!userInfo) {
+			cb(errorHandler.errorCodes.userDoesNotExist);
+		}
+		else {
+			cb(userInfo);
+		}
+
+	})
 }
 
 // Retrieve all user bets

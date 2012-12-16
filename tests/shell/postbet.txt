@@ -1,5 +1,5 @@
 //  Post User Bet
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"100","spreadTeam2":"-120"}'  http://127.0.0.1:5000/api/bet
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435460","initTeamBetId":"13","spreadTeam1":"100","spreadTeam2":"-120"}'  http://127.0.0.1:5000/api/bet
 
 //  Post User Bet Batch
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"737835647","callFBIds":["123","1234"],"betAmount":"1.10","type":"spread","gameId":"435438","initTeamBetId":"13","spreadTeam1":"-103","spreadTeam2":"-107"}'  http://127.0.0.1:5000/api/bet/batch
