@@ -11,6 +11,9 @@
  var userController = require('../controllers/userController')
 
 var update = function(app) {    
+  if(DEVELOPMENT) {
+    console.log('adding testroutes for development');
+    
     // return all games for all sports
     // param getTeamNames=1 -> return teamId-> teamName mapping
     app.get('/api/test/updateall', function(req, res) {
@@ -84,7 +87,8 @@ var update = function(app) {
           }
           
         });
-    });   
+    }); 
+  }  
 }
 
 module.exports = update;
