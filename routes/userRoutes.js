@@ -40,7 +40,6 @@ var userHandle = function(app) {
 			{
 				// get desired base login info to start up app
 				userController.getBaseUserInfo(uid, function(err, baseInfo) {
-					console.log(util.inspect(baseInfo))
 					if (err) {
 						errorHandler.send(res, err);
 					}
