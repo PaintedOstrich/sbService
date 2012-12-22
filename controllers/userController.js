@@ -169,7 +169,6 @@ var updateUserBalance = function(uid, amountToIncrement, cb) {
 			cb(errorHandler.errorCodes.userNotInApp)
 		}
 	})
-	
 }
 
 // gets user balance

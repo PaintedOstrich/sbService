@@ -21,7 +21,7 @@ var createJobs = function()
 	  true /* Start the job right now */,
 	  "America/Los_Angeles" /* Time zone of this job. */
 	);
-
+	
 	var job = new cronJob('01 01 * * * *', function(){
 	    // Do Hourly full updates of info
 	    pickmonapi.updateAllGames(function(err) {

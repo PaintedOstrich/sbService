@@ -29,7 +29,7 @@ var updateAllGames = function(cb) {
 
 var getBetUpdates = function(shouldDoFullUpdate, cb) {	
 	var request = restler.get(sportBetApiHandler.getUrl(shouldDoFullUpdate));
-	// console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
+	console.log(sportBetApiHandler.getUrl(shouldDoFullUpdate, true));
 
     request.on('fail', function(err) {
       cb('Error: Unable to reach Pick Mon Api: ' + err);
