@@ -3,20 +3,29 @@
  *
  *  To generate live tokens: goto https://developers.facebook.com/tools/explorer/
  */
+ var path = require('path')
+ var util = require('util')
+// // Database and Model setup
+require('../../../config/database')(path.resolve(__dirname, '../../../schema/') + '/');
+
 var verify = require('../verifyFBLogin');
 var Handle = require('../fbHandle');
 var tokenHandler = require('../tokenHandler')
 
-var userController = require('../../../controllers/userController')
-
 var options = {
   // development app credentials
-  FACEBOOK_APP_ID : '462000917156397',
-  FACEBOOK_SECRET : 'c49565e99d6a6b4e1660eb40c5090cfd',
-  FACEBOOK_APP_ACCESS_TOKEN : '462000917156397|FFd81qrBClJ6D-nWKZ9v8sFZDc0'
+  // FACEBOOK_APP_ID : '462000917156397',
+  // FACEBOOK_SECRET : 'c49565e99d6a6b4e1660eb40c5090cfd',
+  // FACEBOOK_APP_ACCESS_TOKEN : '462000917156397|FFd81qrBClJ6D-nWKZ9v8sFZDc0'
+
+  //production app credentials
+  FACEBOOK_APP_ID : '354250967991883',
+  FACEBOOK_SECRET : 'db3ddf64977c6642cb8654112a19e051',
 }
 
 var handle = new Handle(options);
+
+var userController = require('../../../controllers/userController')
 
 /* app set debug value */
 DEVELOPMENT = true;
@@ -33,12 +42,11 @@ var badUID = '7737835647';
 // var signedRequest = ''
 var code = 'AQCZXlE1R9VS8IzaeWiVCBwktSnS9-GQ1LlicXSq6RlMYP1os5KOEzEIoznjdEgq3LzRN5AJv_a2SCKIR1rFWtt9Dq53bF0BeFPqTYVK8rxDzYxlcuILmVxaY8I_Wix8T21gaFw4lHEUwFqGYn5PFcf1Pcq-jBQlwQ7K-9ZDZEPkUfvU9qYoZjsShpY6XSFPHoL8po0FfdsqNCEBMezAV5bu';
 
-
-
 // tokenHandler.saveUserToken(badUID, accesToken)
 // handle.getLongToken(parkerUID, accesToken, function(err, token) {
+  // console.log(token)
 //   // set access token to redis
-//   tokenHandler.saveUserToken(parkerUID, token)
+  // tokenHandler.saveUserToken(parkerUID, token)
 // })
 // handle.login(signedRequest, accesToken, console.log);
 
@@ -47,5 +55,7 @@ var code = 'AQCZXlE1R9VS8IzaeWiVCBwktSnS9-GQ1LlicXSq6RlMYP1os5KOEzEIoznjdEgq3LzR
 
 // handle.login(diId, signedRequest, console.log)
 
-userController.getBaseUserInfo(parkerUID, console.log)
-// handle.getAppAccessToken(accesToken, parkerUID, console.log);
+// userController.getBaseUserInfo(parkerUID, console.log)
+handle.getAppAccessToken(console.log);
+
+

@@ -22,10 +22,10 @@ var tokenHandler = require('./tokenHandler');
 var Handle = function(options){
   // for testing
   options = options || {}
-
-  this.secret = process.env.FACEBOOK_SECRET || options.FACEBOOK_SECRET
-  this.app_token = process.env.FACEBOOK_APP_ACCESS_TOKEN || options.FACEBOOK_APP_ACCESS_TOKEN
-  this.app_id = process.env.FACEBOOK_APP_ID || options.FACEBOOK_APP_ID
+  
+  this.secret = options.FACEBOOK_SECRET || process.env.FACEBOOK_SECRET 
+  this.app_token = options.FACEBOOK_APP_ACCESS_TOKEN || process.env.FACEBOOK_APP_ACCESS_TOKEN 
+  this.app_id = options.FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID 
 
   if (!this.secret || !this.app_token || !this.app_id) {
     console.warn('FACEBOOK MISSING APP CONFIG');
@@ -122,7 +122,7 @@ Handle.prototype.getLongToken = function(uid, shortToken, cb) {
  *  
  *  Probably won't be called in production, but useful for setup
  */
-Handle.prototype.getAppAccessToken = function(uid, shortToken, cb) {
+Handle.prototype.getAppAccessToken = function(cb) {
   var base = 'https://graph.facebook.com/oauth/access_token?'
   var params = {
     client_id         : this.app_id,
@@ -131,6 +131,7 @@ Handle.prototype.getAppAccessToken = function(uid, shortToken, cb) {
   }            
 
   var url = base + querystring.stringify(params) 
+  console.log(url)
   request.proxy = true
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -140,6 +141,7 @@ Handle.prototype.getAppAccessToken = function(uid, shortToken, cb) {
       try {
         var fields = body.split(/=|&/)
         cb(fields[1])
+        console.log(JSON.parse(body).error)
       }
       catch(e){
         console.log('cant parse fb return: ' +e)
@@ -156,8 +158,6 @@ Handle.prototype.getBaseUserInfo = function(uid, cb) {
   this.graphGetWrapper(uid, cb);
 }
 
-
-
 var handle;
 var init = function(options) {
   if(!handle) {
@@ -166,4 +166,5 @@ var init = function(options) {
 
   return handle
 }
+
 module.exports = init;
