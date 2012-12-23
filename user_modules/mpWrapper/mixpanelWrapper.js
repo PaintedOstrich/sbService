@@ -107,6 +107,18 @@ var wrapMixPanelWithMethods = function(mixpanel){
     mixpanel.track('betRequestConfirm', toSave)
 
   }
+
+  mixpanel.trackMadeBetBatch = function(betBatch){
+      var toSave = {
+      'uid': betBatch.initFBId,
+      'gameId' : betBatch.gameId,
+      'amount' : betBatch.betAmount,
+      'numberBets' : betBatch.callFBIds.length
+    }
+     
+    mixpanel.track('betBatchMade', toSave);
+  }
+
 // end wrap mix panel
   return mixpanel;
 }

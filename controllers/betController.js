@@ -252,20 +252,23 @@ var confirmBetRequest = function(query, cb) {
        	  gameId         : betRequest.gameId,
        	  initTeamBetId  : betRequest.initTeamBetId,
        	  spreadTeam1    : betRequest.spreadTeam1,
-       	  spreadTeam2    : betRequest.spreadTeam2
+       	  spreadTeam2    : betRequest.spreadTeam2,
+       	  called         : true
 				})
 
 				bet.save(function(err, savedBet) {
 					// send notification to user in app that they were challenged to a bet
 				  var teamNameForCaller = (savedBet.initTeamBetId == game.team1Id) ? game.team1Name : game.team2Name;
-				  notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, teamNameForCaller, savedBet.betAmount);
+				  
+				  // send notification
+					notificationController.enqueueBetAccepted(bet.initFBId, bet.callFBId, savedBet._id);
 
 				  // set user claimed free bet to true
 				  user.claimedFreeBet = true;
 				  user.save();
 
 				  // log bet made through this api
-				  mixpanel.trackConfirmBetRequest(uid, savedBet._id, savedBet.gameId, savedBet.amount);
+				  mixpanel.trackConfirmBetRequest(uid, savedBet._id, savedBet.gameId, savedBet.betAmount);
 
 				  cb(null, savedBet)
 				})
@@ -313,6 +316,9 @@ var makeBetBatch = function(betInfoMult, cb) {
 	catch(e) {
 		console.log('possible malformed bat betch request\n'+ util.inspect(betInfoMult) + '\n' + e)
 		cb(errorHandler.errorCodes.missingParameters)
+
+		// log bet
+		mixpanel.trackMadeBetBatch(betInfoMult);
 	}
 }
 
@@ -391,7 +397,7 @@ var makeBet = function(betInfo, cb) {
 
 											// send notification to user in app that they were challenged to a bet
 											// send notification that user accepted bet
-											notificationController.enqueueBetAccepted(savedBet.initFBId, savedBet.callFBId, savedBet._id);
+											notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, savedBet.betAmount);
 
 											// return no error
 											cb(null, savedBet);
