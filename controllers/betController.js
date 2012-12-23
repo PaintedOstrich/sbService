@@ -468,8 +468,8 @@ var callBet = function(betid, cb) {
 // Set Call Info
 var setCallInfo = function(bet, cb) {
 	// set bet called = true
-  bet.update({called:true}, function(err){
-  		// update new user balance
+  bet.update({called:true}, function(err, bet){
+  	// update new user balance
 		userController.updateUserBalance(bet.callFBId, -parseFloat(bet.betAmount), function(err, updatedMoney) {           
 		    // add to list of bets per game		 
 	        cb(null, {balance:updatedMoney})
