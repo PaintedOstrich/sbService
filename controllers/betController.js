@@ -44,7 +44,6 @@ var processEndBets = function(gameHeader, gameDate, winningTeamName, isWinnerTea
 
 					// we have game, so process
 					// get team names
-					
 					var losingTeamName = game.team1Id == winnerTeamId ? game.team1Name : game.team2Name;
 
 					// generate process function
