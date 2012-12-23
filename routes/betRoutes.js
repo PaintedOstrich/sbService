@@ -44,7 +44,7 @@ var bet = function(app) {
     });
 
     // Call a bet (Accept)
-    app.post('/api/bet/:betid/call', function(req, res) {
+    app.post('/api/bet/call/:betid', function(req, res) {
         var query = req.body;
         betController.callBet(req.params.betid, function(err,data)
         {
@@ -92,7 +92,7 @@ var bet = function(app) {
             if (err) errorHandler.send(res,err)
             else
             {
-                sucess = sucess || {sucess:true};
+                success = success || {success:true};
                 res.send(success)
             }
         });
