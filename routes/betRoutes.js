@@ -83,6 +83,21 @@ var bet = function(app) {
         });
     });
 
+    // Decline User Bet
+    // POST: /api/bet/decline/:betid
+    // returns (success:true : or err: associate error)
+    app.post('/api/bet/decline/:betid', function(req, res) {
+        betController.declineBet(req.params.betid, function(err,success)
+        {
+            if (err) errorHandler.send(res,err)
+            else
+            {
+                sucess = sucess || {sucess:true};
+                res.send(success)
+            }
+        });
+    });
+
     app.get('/api/bet/recent', function(req, res) {
         betStatsController.getRecentBets(5, function(err, data)
         {

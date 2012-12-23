@@ -131,6 +131,32 @@ var calcWinRatio = function(winSpread) {
  		Bet.find({gid : gameId}, cb);
  }
 
+ /*
+  *  declineBet
+  *  passed in bet Id and user can decline
+  */
+ var declineBet = function(betid, cb) {
+ 
+ 	if (!betid) {
+ 		return cb(errorHandler.errorCodes.missingParameters);
+ 	}
+
+	Bet.findById(betid, function(err, bet) {
+ 		if(!bet){
+ 			console.log('betid: ' + betid + ' doesnt exist' );
+ 			return cb(errorHandler.errorCodes.betDoesNotExist)
+ 		}
+ 		else if (false) {
+ 			//FIXME check that user declining bet id is user who was inivited to bet
+ 		}
+ 		else {
+ 			bet.remove(function(err, result) {
+ 				cb(err, result)
+ 			})
+ 		}
+ 	})
+ }
+
 /*
  * Saves a bet in request-Pending and returns a string for the user request
  * 
@@ -561,5 +587,6 @@ module.exports =
 	callBet: callBet,
 	processEndBets : processEndBets,
 	makeBetRequest : makeBetRequest,
-	confirmBetRequest : confirmBetRequest
+	confirmBetRequest : confirmBetRequest,
+	declineBet : declineBet
 } 
