@@ -15,9 +15,9 @@
   
 var saveGame = function(newGameInfo, cb){
   var query = Game.find();
-  var gameDate = new Date(newGameInfo.gdate);
-  query.and([{header: newGameInfo.header}, {gdate : gameDate}]).exec(function(err, oldGameInfo){
+  query.and([{header: newGameInfo.header}, {gdate : newGameInfo.gdate}]).exec(function(err, oldGameInfo){
     if (oldGameInfo.length){
+
       // found old game
       // makes update if this update is sooner;
 

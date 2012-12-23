@@ -14,6 +14,7 @@ var betController = require('./betController');
 var gameController = require('./gameController');
 var gameModel = require('../models/gameModel');
 
+var timeConverter = require('../user_modules/timeConverter/timeConverter');
 
 /* Exported Functions */
 var checkForUpdates = function(cb) {
@@ -88,13 +89,13 @@ var pickMonitorGame = function(game) {
 	  this._g = {};
 
 	  this._g.gid=game.id[0];
-    this._g.gdate=game.gamedate[0];
+    this._g.gdate=timeConverter.convertToSecondsFromTimeString(game.gamedate[0]);
     this._g.header=game.header[0];
     this._g.team1Name=game.team1[0]['name'][0];
     this._g.team2Name=game.team2[0]['name'][0];
     this._g.sport=game.sportsubtype[0];
-    this._g.lastUpdate=game.last_update[0];
-    this._g.wagerCutoff=game.line[0]['wagercutoff'][0];
+    this._g.lastUpdate=timeConverter.convertToSecondsFromTimeString(game.last_update[0]);
+    this._g.wagerCutoff=timeConverter.convertToSecondsFromTimeString(game.line[0]['wagercutoff'][0]);
     this._g.moneyTeam1=game.line[0]['money'][0]['team1'][0];
     this._g.moneyTeam2=game.line[0]['money'][0]['team2'][0];
     this._g.moneyDraw=game.line[0]['money'][0]['draw'][0];

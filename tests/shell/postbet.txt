@@ -1,5 +1,5 @@
 //  Post User Bet
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"435460","initTeamBetId":"15","spreadTeam1":"110","spreadTeam2":"-130"}'  http://127.0.0.1:5000/api/bet
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"759868917","callFBId":"737835647","betAmount":"1.10","type":"spread","gameId":"437879","initTeamBetId":"2","spreadTeam1":"-115","spreadTeam2":"-105"}'  http://127.0.0.1:5000/api/bet
 
 //  Post User Bet Batch
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"737835647","callFBIds":["759868917"],"betAmount":"0.10","type":"spread","gameId":"435460","initTeamBetId":"15","spreadTeam1":"110","spreadTeam2":"-130"}'  http://127.0.0.1:5000/api/bet/batch
@@ -13,7 +13,7 @@ curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POS
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"initFBId":"21","callFBId":"20","betAmount":"1.10","type":"spread","gameId":"428962","initTeamBetId":"1","spreadTeam1":"-108","spreadTeam2":"-102"}'  http://sportsbetsservice.herokuapp.com/api/bet
 
 // Call User Bet
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"token":"tokeninfo"}'  http://127.0.0.1:5000/api/bet/50c67ab9c858480000000001/call
+curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"token":"tokeninfo"}'  http://127.0.0.1:5000/api/bet/call/50d76887bbae526405000001
 
 // post login
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"token":"AAAGkLZCiNki0BAOStZBy6nZAeQyZBtE9RSo197ZCwsoKXZCLmaB2UAxxEZCZB9QY9ZBgXzjELkDHXCgIDKZCkZBQpWlC1OU1EsMwSOdT0oiIFZAhOAZDZD"}' http://127.0.0.1:5000/api/user/login/25uTuKdMWfhVPtkf4tgK6zuy-95UYRz4gcudwtZ3T6g.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImNvZGUiOiJBUUQ4Nm5uWlRqdG9LNjh3N004LWJlb29VUDJjaGdYOEVxeGF3MEplMkZhU05lNTNIVUQwdHo0Zm45eDlHUzFRMkVHNFBxbU5lSmFqeS1La0tMM0sxVVFkTmhzNFRSUHNyV0VkUzlBaVhWbFAyZm1WTWhxc3EyczBiNXg0dk5fSjIyYnRWSEpteEgydVhUSW5RZnhSS2UtUmJNcFY2VHQtQTc0WldLX3BLdTVZQUFFR2p3dkZpU0hlNXVKTUx1VndKX2xBMjhqZGZzN3QzaU05WFRabDFycXEiLCJpc3N1ZWRfYXQiOjEzNTUzNzYzODUsInVzZXJfaWQiOiI3NTk4Njg5MTcifQ
@@ -24,4 +24,7 @@ curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POS
 
 // post bet request confirm
 curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"betReqId":"50caffcad6118aed1f000001", "uid":"759868917"}' http://127.0.0.1:5000/api/bet/request/confirm
+
+// decline bet
+curl -v -X POST http://127.0.0.1:5000/api/bet/decline/50c6ce67c111030000000001
 

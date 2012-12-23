@@ -8,7 +8,7 @@ module.exports = function(mongoose)
 
   var Game = new Schema({
       gid            : String 
-    , gdate          : Date 
+    , gdate          : Number 
     , header         : String 
     , team1Name      : String
     , team1Id        : String
@@ -17,10 +17,10 @@ module.exports = function(mongoose)
     , sport          : String  
     , spreadTeam1    : Number
     , spreadTeam2    : Number
-    , wagerCutoff    : Date
+    , wagerCutoff    : Number
     , winner         : String
     , processed      : Boolean
-    , lastUpdate     : Date
+    , lastUpdate     : Number
   });
 
   mongoose.model('Game', Game);

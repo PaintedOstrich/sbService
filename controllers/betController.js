@@ -25,6 +25,8 @@ var User = mongoose.model('User');
 var BetRequest = mongoose.model('BetRequest');
 var ObjectId = mongoose.Types.ObjectId;
 
+var timeConverter = require('../user_modules/timeConverter/timeConverter');
+
 // upates All bets after game won
 var processEndBets = function(gameHeader, gameDate, winningTeamName, isWinnerTeam1, cb) {
 	try {
@@ -504,9 +506,8 @@ var doesUserHaveSufficientFunds = function(uid, amountNeeded, cb) {
 
 var isPastWagerCutoff = function(wagerCutoff) {
 	// check that bet is before wager cutoff
-	var now = new Date();
-	var wagerCutoff = new Date(wagerCutoff);
-	return wagerCutoff.isBefore(now);
+	var now = timeConverter.getNowInSeconds();
+	return now > wagerCutoff;
 }
 
 // Function verifies that 'bet' request has all parameters
