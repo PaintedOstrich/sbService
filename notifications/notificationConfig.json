@@ -103,6 +103,6 @@
     ]
   },
   "notifQueueConfig" : {
-    "minTimeBetweenNotifications" : 240
+    "minTimeBetweenNotifications" : 5
   }
 }
