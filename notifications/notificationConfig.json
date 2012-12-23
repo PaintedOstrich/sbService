@@ -57,6 +57,10 @@
       },
        "betAccepted" : {
         "1" : [
+           {
+            "template" : "Your bet was accepted!",
+            "creativeRef" : "betAccepted3" 
+          },
           {
             "template" : "@user accepted your bet",
             "creativeRef" : "betAccepted1" 
