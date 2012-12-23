@@ -56,7 +56,7 @@ var userHandle = function(app) {
 		// past/current/userAccept/pendingAccept
 		var uid = req.params.uid;
 
-		userController.getUserBets(uid, function(err, data)
+		userController.getBetsAndGameInfo(uid, function(err, data)
 		{
 			if(err) {
 				errorHandler.send(res, err)

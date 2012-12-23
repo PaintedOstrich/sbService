@@ -163,7 +163,9 @@ var getGameInfoForUserBets = function(uid, cb) {
 var updateUserBalance = function(uid, amountToIncrement, cb) {
 	isUserInApp(uid, function(err, isInApp) {
 		if (isInApp) {
-			User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, cb)	
+			User.update({uid:uid}, {$inc: {balance:amountToIncrement}}, function(err, updateUser) {
+				cb(err, updateUser);
+			})	
 		}
 		else {
 			cb(errorHandler.errorCodes.userNotInApp)
@@ -194,12 +196,28 @@ var getUserBalance = function(uid, cb){
 var getUserBets = function(uid, cb) {	
 	var query = Bet.find();
 	query.or([{initFBId:uid}, {callFBId:uid}]).exec(function(err, bets){
-		filterResults(uid, bets, cb);
+		 var userBets = filterResults(uid, bets);
+		 cb(null, userBets)
+	})
+}
+
+//getBetsAndGameInfo for bets 
+var getBetsAndGameInfo = function(uid, cb) {
+	getUserBets(uid, function(err, bets) {
+		// get game info for corresponding bets
+		getGameInfoForUserBets(uid, function(err, gameInfo) {
+			var returnInfo = {
+				bets     : bets,
+				gameInfo : gameInfo
+			}
+
+			cb(null, returnInfo);
+		})
 	})
 }
 
 // Filters data into four different types past/current/userAccept/pendingAccept
-var filterResults = function(uid, bets, cb) {
+var filterResults = function(uid, bets) {
 	var result = {
 		'current' : [],
 		'past' : [],
@@ -226,11 +244,11 @@ var filterResults = function(uid, bets, cb) {
 		}
 	}
  		
- 	cb(null, result)
+  return result;
 }
 
 module.exports = {
-	getUserBets:getUserBets,
+	getBetsAndGameInfo : getBetsAndGameInfo,
 	initUser: initUser,
 	getBaseUserInfo : getBaseUserInfo,
 	updateUserBalance : updateUserBalance,

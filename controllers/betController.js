@@ -397,7 +397,9 @@ var makeBet = function(betInfo, cb) {
 
 											// send notification to user in app that they were challenged to a bet
 											// send notification that user accepted bet
-											notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, savedBet.betAmount);
+											var notifTeamName = savedBet.initTeamBetId == gameInfo.team1Id ? gameInfo.team2Name : gameInfo.team1Name;
+
+											notificationController.enqueueBetPrompt(savedBet.callFBId, savedBet.initFBId, savedBet._id, notifTeamName, savedBet.betAmount);
 
 											// return no error
 											cb(null, savedBet);
@@ -438,7 +440,7 @@ var callBet = function(betid, cb) {
 		cb(errorHandler.errorCodes.missingParameters);
 	}
 
-	Bet.findOne({_id:betid}, function(err, bet) {			
+	Bet.findOne({_id:betid}, function(err, bet) {	
 	// also checks if bet exists or this field will not be present
 		if (!bet) {
 			cb(errorHandler.errorCodes.betDoesNotExist)
@@ -474,11 +476,11 @@ var callBet = function(betid, cb) {
 // Set Call Info
 var setCallInfo = function(bet, cb) {
 	// set bet called = true
-  bet.update({called:true}, function(err, bet){
+  bet.update({called:true}, function(err, success){
   	// update new user balance
-		userController.updateUserBalance(bet.callFBId, -parseFloat(bet.betAmount), function(err, updatedMoney) {           
-		    // add to list of bets per game		 
-	        cb(null, {balance:updatedMoney})
+		userController.updateUserBalance(bet.callFBId, -parseFloat(bet.betAmount), function(err, updateUser) {           
+		    // add to list of bets per game	
+	        cb()
 		});
   })
 }
