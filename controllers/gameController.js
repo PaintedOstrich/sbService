@@ -35,7 +35,7 @@ var saveGame = function(newGameInfo, cb){
     }
     else {
       if (isBlacklist(newGameInfo)) {
-        cb();
+        return cb();
       }
 
       var teamNames = [newGameInfo.team1Name,newGameInfo.team2Name];
@@ -56,7 +56,7 @@ var saveGame = function(newGameInfo, cb){
  *  Temporary solution to dealing with bad api results from pickmonitor
  *  Should have solution that doesn't require code to be pushed
  */
-var isisBlacklist = function(gameInfo){
+var isBlacklist = function(gameInfo){
   if (gameInfo.header = 'San Francisco 49ers At Seatlle Seahawks'){
     return true;
   }
