@@ -34,6 +34,10 @@ var saveGame = function(newGameInfo, cb){
        }
     }
     else {
+      if (isBlacklist(newGameInfo) {
+        cb();
+      }
+
       var teamNames = [newGameInfo.team1Name,newGameInfo.team2Name];
       // adding new game, get team names
       gameModel.getUniqueTeamIds(teamNames, function(err, teamNamesToIds) {
@@ -46,6 +50,16 @@ var saveGame = function(newGameInfo, cb){
       })
     }  
   })
+}
+
+/*
+ *  Temporary solution to dealing with bad api results from pickmonitor
+ *  Should have solution that doesn't require code to be pushed
+ */
+var isisBlacklist = function(gameInfo){
+  if (gameInfo.header = 'San Francisco 49ers At Seatlle Seahawks'){
+    return true;
+  }
 }
 
 // gets game info from header and date
