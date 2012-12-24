@@ -34,7 +34,7 @@ var saveGame = function(newGameInfo, cb){
        }
     }
     else {
-      if (isBlacklist(newGameInfo) {
+      if (isBlacklist(newGameInfo)) {
         cb();
       }
 
